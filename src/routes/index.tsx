@@ -1,26 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Hero } from "@/components/home/Hero";
+import { FeaturedStrip } from "@/components/home/FeaturedStrip";
+import { LatestGrid } from "@/components/home/LatestGrid";
+import { NewsletterCTA } from "@/components/home/NewsletterCTA";
+import { featuredArticle } from "@/content/articles";
+import { SectionDivider } from "@/components/brand/SectionDivider";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: HomePage,
+  head: () => ({
+    meta: [
+      { title: "Shelf Life Wisdom — Know your shelf." },
+      {
+        name: "description",
+        content:
+          "Editorial-grade inventory wisdom for operators, floor managers, and inventory professionals. By ExpiryDesk.",
+      },
+      { property: "og:title", content: "Shelf Life Wisdom — Know your shelf." },
+      {
+        property: "og:description",
+        content: "Where the real operators read. Inventory, expiry, waste — without the fluff.",
+      },
+    ],
+  }),
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function HomePage() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <>
+      <Hero />
+      <FeaturedStrip article={featuredArticle} />
+      <LatestGrid />
+      <SectionDivider />
+      <NewsletterCTA source="home" />
+    </>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
