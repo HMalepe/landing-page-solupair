@@ -3,6 +3,7 @@ import appCss from "../styles.css?url";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/brand/Cursor";
+import { Toaster } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -85,6 +86,7 @@ function RootComponent() {
         <Outlet />
       </main>
       <Footer />
+      <Toaster theme="dark" position="bottom-center" toastOptions={{ style: { background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-foreground)", fontFamily: "var(--font-mono)", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em" } }} />
     </>
   );
 }
