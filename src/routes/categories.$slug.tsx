@@ -45,7 +45,7 @@ function CategoryPage() {
         Everything we've published on {cat.label}.
       </p>
       <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {articles.map((a) => <ArticleCard key={a.slug} article={a} />)}
+        {articles.map((a: typeof articles[number]) => <ArticleCard key={a.slug} article={a} />)}
       </div>
       {articles.length === 0 && <p className="py-16 text-center text-muted-foreground">No articles in this topic yet.</p>}
     </div>
