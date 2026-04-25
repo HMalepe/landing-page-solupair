@@ -3,7 +3,6 @@ import appCss from "../styles.css?url";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/brand/Cursor";
-import { Toaster } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -47,6 +46,12 @@ export const Route = createRootRoute({
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Shelf Life Wisdom" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Shelf Life Wisdom — Know your shelf." },
+      { name: "description", content: "Shelf Life Wisdom Hub is a premium editorial platform for inventory professionals." },
+      { property: "og:description", content: "Shelf Life Wisdom Hub is a premium editorial platform for inventory professionals." },
+      { name: "twitter:description", content: "Shelf Life Wisdom Hub is a premium editorial platform for inventory professionals." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e22cdd90-3c58-4a7a-871d-f4f565105864/id-preview-4bb93685--08690d1f-965c-4c6b-8023-8849e6e87516.lovable.app-1777146004916.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e22cdd90-3c58-4a7a-871d-f4f565105864/id-preview-4bb93685--08690d1f-965c-4c6b-8023-8849e6e87516.lovable.app-1777146004916.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -86,7 +91,6 @@ function RootComponent() {
         <Outlet />
       </main>
       <Footer />
-      <Toaster theme="dark" position="bottom-center" toastOptions={{ style: { background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-foreground)", fontFamily: "var(--font-mono)", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em" } }} />
     </>
   );
 }
