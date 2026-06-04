@@ -4,9 +4,8 @@ import { Menu, X } from "lucide-react";
 
 const NAV = [
   { to: "/services", label: "Services" },
-  { to: "/work", label: "Work" },
-  { to: "/process", label: "Process" },
   { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
 ] as const;
 
 function Logo() {

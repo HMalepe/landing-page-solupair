@@ -32,9 +32,9 @@ export function Footer() {
               <p className="mb-4 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">{SITE_NAME}</p>
               <ul className="space-y-3 text-muted-foreground">
                 <li><Link to="/services" className="hover:text-cyan transition-colors">Services</Link></li>
-                <li><Link to="/work" className="hover:text-cyan transition-colors">Work</Link></li>
-                <li><Link to="/process" className="hover:text-cyan transition-colors">Process</Link></li>
                 <li><Link to="/about" className="hover:text-cyan transition-colors">About</Link></li>
+                <li><Link to="/contact" className="hover:text-cyan transition-colors">Contact</Link></li>
+                <li><Link to="/work" className="hover:text-cyan transition-colors text-text-tertiary">Work</Link></li>
               </ul>
             </div>
             <div>
