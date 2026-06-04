@@ -2,17 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Reveal } from "@/components/brand/Reveal";
+import { CONTACT_EMAIL, pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
   component: ContactPage,
-  head: () => ({
-    meta: [
-      { title: "Contact — Solupair Studio" },
-      { name: "description", content: "Tell us what you're shipping. We respond in 24 hours with whether we're the right studio for it." },
-      { property: "og:title", content: "Contact — Solupair Studio" },
-      { property: "og:description", content: "Brief us in five fields. We respond in 24h." },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Contact — Solupair Studio",
+      description: "Tell us what you're shipping. We respond in 24 hours with whether we're the right studio for it.",
+      path: "/contact",
+    }),
 });
 
 const BUDGETS = ["< $25k", "$25k – $75k", "$75k – $200k", "$200k+", "Not sure yet"];
@@ -55,7 +54,7 @@ function ContactPage() {
           <div className="mt-12 space-y-6">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Direct line</p>
-              <a href="mailto:hello@solupair.studio" className="mt-1 block font-display text-2xl tracking-tight hover:gradient-aurora-text">hello@solupair.studio</a>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="mt-1 block font-display text-2xl tracking-tight hover:gradient-aurora-text">{CONTACT_EMAIL}</a>
             </div>
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Studio</p>

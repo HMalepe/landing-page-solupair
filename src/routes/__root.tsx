@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/brand/Cursor";
 import { Toaster } from "@/components/ui/sonner";
+import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
@@ -43,10 +44,12 @@ export const Route = createRootRoute({
         content: "Product UI/UX, brand systems, landing pages, e-commerce and internal tools built for ambitious software teams.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Solupair" },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:site_name", content: SITE_NAME },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
+      { rel: "canonical", href: absoluteUrl("/") },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },

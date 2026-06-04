@@ -1,15 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Reveal } from "@/components/brand/Reveal";
+import { SITE_HOST, pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
-  head: () => ({
-    meta: [
-      { title: "Solupair — Design studio for software that ships." },
-      { name: "description", content: "Futures-first B2B design studio. Product UI/UX, brand systems, landing pages, e-commerce and internal tools." },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Solupair — Design studio for software that ships.",
+      description:
+        "Futures-first B2B design studio. Product UI/UX, brand systems, landing pages, e-commerce and internal tools.",
+      path: "/",
+    }),
 });
 
 /* ───────────────────────────────────── HERO ─────────────────────────────────── */
@@ -93,7 +95,7 @@ function Hero() {
 
 function StudioTerminal() {
   const lines = [
-    { t: "boot", v: "solupair.studio · v.2026.4", c: "text-cyan" },
+    { t: "boot", v: `${SITE_HOST} · v.2026.4`, c: "text-cyan" },
     { t: "auth", v: "ok · session @ ops.deck", c: "text-lime" },
     { t: "scan", v: "queue · 3 projects in flight", c: "" },
     { t: "spec", v: "design system · 184 components", c: "" },

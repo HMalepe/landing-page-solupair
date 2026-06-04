@@ -1,16 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/brand/Reveal";
+import { pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/services")({
   component: ServicesPage,
-  head: () => ({
-    meta: [
-      { title: "Services — Solupair Studio" },
-      { name: "description", content: "Product UI/UX, brand systems, landing pages, e-commerce, internal tools, design-engineering, and AI surface design." },
-      { property: "og:title", content: "Services — Solupair Studio" },
-      { property: "og:description", content: "Seven capabilities, one senior team, four-to-eight week engagements." },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Services — Solupair Studio",
+      description:
+        "Product UI/UX, brand systems, landing pages, e-commerce, internal tools, design-engineering, and AI surface design.",
+      path: "/services",
+    }),
 });
 
 const SERVICES = [

@@ -1,16 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/brand/Reveal";
+import { pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
-  head: () => ({
-    meta: [
-      { title: "About — Solupair Studio" },
-      { name: "description", content: "Solupair is a futures-first design studio. Six people, twelve combined years of senior craft, one shared belief: design that ships beats design that wins awards." },
-      { property: "og:title", content: "About — Solupair Studio" },
-      { property: "og:description", content: "A small, senior, futures-first design studio for software companies." },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "About — Solupair Studio",
+      description:
+        "Solupair is a futures-first design studio. Six people, twelve combined years of senior craft, one shared belief: design that ships beats design that wins awards.",
+      path: "/about",
+    }),
 });
 
 const PRINCIPLES = [

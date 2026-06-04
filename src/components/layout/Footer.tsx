@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 export function Footer() {
   return (
@@ -51,7 +52,7 @@ export function Footer() {
 
           <div className="md:col-span-3">
             <p className="mb-4 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Signal</p>
-            <p className="text-sm text-muted-foreground">hello@solupair.studio</p>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-sm text-muted-foreground hover:text-cyan transition-colors">{CONTACT_EMAIL}</a>
             <p className="text-sm text-muted-foreground">+1 (415) 555·0117</p>
             <p className="mt-4 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Located</p>
             <p className="text-sm text-muted-foreground">SF · Lisbon · Remote-first</p>

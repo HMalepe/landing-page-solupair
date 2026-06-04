@@ -1,16 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/brand/Reveal";
+import { pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/process")({
   component: ProcessPage,
-  head: () => ({
-    meta: [
-      { title: "Process — Solupair Studio" },
-      { name: "description", content: "How we work: Signal, Shape, System, Ship. Four phases, one senior team, 4-to-8 week cycles." },
-      { property: "og:title", content: "Process — Solupair Studio" },
-      { property: "og:description", content: "The four-phase model behind every Solupair engagement." },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Process — Solupair Studio",
+      description: "How we work: Signal, Shape, System, Ship. Four phases, one senior team, 4-to-8 week cycles.",
+      path: "/process",
+    }),
 });
 
 const PHASES = [
