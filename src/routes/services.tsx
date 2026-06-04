@@ -14,20 +14,20 @@ export const Route = createFileRoute("/services")({
 });
 
 const SERVICES = [
-  { idx: "01", name: "Product UI / UX", lede: "Multi-quarter product design with embedded design-engineering. The flagship offer.",
-    deliverables: ["Design system + component lib", "Research & flow architecture", "Prototype + production handoff", "Weekly design-eng pairing"], time: "8–24 weeks", accent: "cyan" },
-  { idx: "02", name: "Landing pages", lede: "Editorial marketing surfaces that ship in 14 days. Motion, copy, art direction included.",
-    deliverables: ["Concept + art direction", "Copy collaboration", "Production code in React + Tailwind", "A/B-ready variants"], time: "2 weeks", accent: "plasma" },
-  { idx: "03", name: "Brand systems", lede: "Identity that scales from pitch deck to product chrome to billboard.",
-    deliverables: ["Logo + wordmark system", "Type + color tokens", "Voice + tone", "Brand book + asset library"], time: "4–6 weeks", accent: "lime" },
-  { idx: "04", name: "E-commerce", lede: "Shopify and headless storefronts that look like editorial, convert like DTC.",
-    deliverables: ["Theme architecture", "PDP / cart / checkout polish", "Performance budget", "Lifecycle email design"], time: "4–8 weeks", accent: "cyan" },
-  { idx: "05", name: "Internal tools", lede: "Admin panels, ops dashboards, internal consoles your team actually wants to open.",
-    deliverables: ["UX audit + IA", "Component library", "Live data wiring", "Empty + edge states"], time: "4–10 weeks", accent: "plasma" },
-  { idx: "06", name: "Design-engineering", lede: "We ship the code. React, Tailwind, Framer Motion, TanStack, three.js when it counts.",
-    deliverables: ["Production components", "Animation systems", "Perf budgets + accessibility", "Storybook + docs"], time: "Continuous", accent: "lime" },
-  { idx: "07", name: "AI surface design", lede: "Chat, agents, command bars, copilots. The new surface where models meet humans.",
-    deliverables: ["Conversation IA", "Streaming UI patterns", "Tool-use affordances", "Trust + guardrail design"], time: "3–8 weeks", accent: "cyan" },
+  { idx: "01", name: "Product UI / UX", lede: "Product design with embedded design-engineering for SA SaaS teams.",
+    deliverables: ["Design system + component lib", "Research & flow architecture", "Prototype + production handoff", "Weekly design-eng pairing"], time: "6–12 weeks · from R120k", accent: "cyan" },
+  { idx: "02", name: "Landing pages", lede: "Marketing surfaces that ship fast — built for local startups and scale-ups.",
+    deliverables: ["Concept + art direction", "Copy collaboration", "Production code in React + Tailwind", "A/B-ready variants"], time: "2–3 weeks · from R35k", accent: "plasma" },
+  { idx: "03", name: "Brand systems", lede: "Identity from pitch deck to product — POPIA-aware, investor-ready.",
+    deliverables: ["Logo + wordmark system", "Type + color tokens", "Voice + tone", "Brand book + asset library"], time: "3–5 weeks · from R45k", accent: "lime" },
+  { idx: "04", name: "E-commerce", lede: "Shopify and headless storefronts tuned for SA payments and mobile-first buyers.",
+    deliverables: ["Theme architecture", "PDP / cart / checkout polish", "Performance budget", "Lifecycle email design"], time: "4–6 weeks · from R80k", accent: "cyan" },
+  { idx: "05", name: "Internal tools", lede: "Admin panels and ops dashboards your team will actually use.",
+    deliverables: ["UX audit + IA", "Component library", "Live data wiring", "Empty + edge states"], time: "4–8 weeks · from R90k", accent: "plasma" },
+  { idx: "06", name: "Design-engineering", lede: "We ship the code — React, Tailwind, TanStack. Same team, JHB / CPT / remote.",
+    deliverables: ["Production components", "Animation systems", "Perf budgets + accessibility", "Storybook + docs"], time: "Ongoing · day rates", accent: "lime" },
+  { idx: "07", name: "AI surface design", lede: "Chat, agents, and copilots — UI where your models meet users.",
+    deliverables: ["Conversation IA", "Streaming UI patterns", "Tool-use affordances", "Trust + guardrail design"], time: "3–6 weeks · from R60k", accent: "cyan" },
 ];
 
 function ServicesPage() {
@@ -44,7 +44,7 @@ function ServicesPage() {
           <span className="font-serif italic gradient-aurora-text">we do well.</span>
         </h1>
         <p className="mt-8 max-w-xl text-lg text-muted-foreground">
-          One senior team. No handoffs. Most engagements run 4 to 8 weeks. Every brief gets a written response in 24 hours.
+          One senior team based in South Africa. Startup-friendly scopes in ZAR. Most projects run 3 to 8 weeks. Written response within 24 hours.
         </p>
       </header>
 

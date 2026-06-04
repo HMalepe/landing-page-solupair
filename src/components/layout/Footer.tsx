@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_DISPLAY, LEGAL_NAME, SITE_NAME } from "@/lib/site";
+import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_DISPLAY, LEGAL_NAME, LOCATION_LABEL, SITE_NAME } from "@/lib/site";
 
 export function Footer() {
   return (
@@ -54,7 +54,7 @@ export function Footer() {
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-sm text-muted-foreground hover:text-cyan transition-colors">{CONTACT_EMAIL}</a>
             <a href={`tel:${CONTACT_PHONE}`} className="mt-2 block text-sm text-muted-foreground hover:text-cyan transition-colors">{CONTACT_PHONE_DISPLAY}</a>
             <p className="mt-4 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Located</p>
-            <p className="text-sm text-muted-foreground">South Africa · Remote-first</p>
+            <p className="text-sm text-muted-foreground">{LOCATION_LABEL}</p>
           </div>
         </div>
       </div>

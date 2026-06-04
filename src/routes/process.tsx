@@ -33,7 +33,7 @@ function ProcessPage() {
           <span className="font-serif italic gradient-aurora-text">Zero handoffs.</span>
         </h1>
         <p className="mt-8 max-w-xl text-lg text-muted-foreground">
-          Same senior team from first call to last commit. Most engagements run 4 to 8 weeks. No account managers, no junior designers, no surprise invoices.
+          Same senior team from first call to last commit. Most SA startup projects run 3 to 8 weeks. Quotes in ZAR, ex. VAT where applicable — no surprise invoices.
         </p>
       </header>
 

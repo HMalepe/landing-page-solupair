@@ -73,7 +73,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               <span className="h-1.5 w-1.5 rounded-full bg-lime pulse-dot" />
-              Booking · Q3
+              ZA · Open briefs
             </span>
             <Link
               to="/contact"

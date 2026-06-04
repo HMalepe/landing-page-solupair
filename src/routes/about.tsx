@@ -22,9 +22,9 @@ const PRINCIPLES = [
 ];
 
 const TEAM = [
-  { name: "Mae Otsuka", role: "Founder · Design Director", bio: "Ex-Stripe, ex-Linear. 9 years in product design. Designs the system.", grad: "linear-gradient(135deg, oklch(0.78 0.16 200), oklch(0.66 0.27 5))" },
-  { name: "Daniel Cole", role: "Design Engineer", bio: "React + Motion specialist. Writes the production code.", grad: "linear-gradient(135deg, oklch(0.92 0.22 125), oklch(0.78 0.16 200))" },
-  { name: "Ines Marques", role: "Brand Director", bio: "Identity systems for software companies. From wordmark to billboard.", grad: "linear-gradient(135deg, oklch(0.66 0.27 5), oklch(0.85 0.17 195))" },
+  { name: "Naledi Khumalo", role: "Founder · Design Director", bio: "Product design for SA fintech and SaaS startups. Based in Johannesburg.", grad: "linear-gradient(135deg, oklch(0.78 0.16 200), oklch(0.66 0.27 5))" },
+  { name: "Sipho Ndlovu", role: "Design Engineer", bio: "Ships production React for local teams — remote-first across ZA.", grad: "linear-gradient(135deg, oklch(0.92 0.22 125), oklch(0.78 0.16 200))" },
+  { name: "Amira Patel", role: "Brand Director", bio: "Brand systems for software companies from Cape Town to the continent.", grad: "linear-gradient(135deg, oklch(0.66 0.27 5), oklch(0.85 0.17 195))" },
 ];
 
 function AboutPage() {
@@ -41,7 +41,7 @@ function AboutPage() {
         </h1>
         <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-cyan">{SITE_NAME}</p>
         <p className="mt-8 max-w-2xl text-lg text-muted-foreground">
-          <strong className="text-foreground">{LEGAL_NAME}</strong> is a South African B2B company building product UI, brand systems, and software surfaces. Six people, twelve combined years of senior craft. One shared belief: design that ships beats design that wins awards — even though sometimes the same work does both.
+          <strong className="text-foreground">{LEGAL_NAME}</strong> is a South African B2B company building product UI, brand systems, and software surfaces for startups and scale-ups. Registered in SA, pricing in rands, POPIA-aware workflows. One shared belief: design that ships beats design that wins awards.
         </p>
       </header>
 

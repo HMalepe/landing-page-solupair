@@ -13,9 +13,9 @@ export const Route = createFileRoute("/work")({
 });
 
 const CASES = [
-  { n: "01", client: "Cobra Labs", scope: "Product UI · Design System", year: "2025", tag: "B2B SaaS", grad: "linear-gradient(135deg, oklch(0.78 0.16 200), oklch(0.35 0.14 220))", size: "lg" },
-  { n: "02", client: "Helix.ai", scope: "Brand + Landing + Docs", year: "2025", tag: "AI Platform", grad: "linear-gradient(135deg, oklch(0.66 0.27 5), oklch(0.32 0.18 350))", size: "md" },
-  { n: "03", client: "Atlas Capital", scope: "Trading Console", year: "2024", tag: "Fintech", grad: "linear-gradient(135deg, oklch(0.92 0.22 125), oklch(0.36 0.14 145))", size: "md" },
+  { n: "01", client: "Payflow", scope: "Product UI · Design System", year: "2025", tag: "SA Fintech", grad: "linear-gradient(135deg, oklch(0.78 0.16 200), oklch(0.35 0.14 220))", size: "lg" },
+  { n: "02", client: "Ledger Rhino", scope: "Brand + Landing", year: "2025", tag: "B2B SaaS", grad: "linear-gradient(135deg, oklch(0.66 0.27 5), oklch(0.32 0.18 350))", size: "md" },
+  { n: "03", client: "AgriSense", scope: "Ops Dashboard", year: "2024", tag: "Agtech · CPT", grad: "linear-gradient(135deg, oklch(0.92 0.22 125), oklch(0.36 0.14 145))", size: "md" },
   { n: "04", client: "Northwind Mail", scope: "Marketing UI redesign", year: "2024", tag: "Communications", grad: "linear-gradient(135deg, oklch(0.78 0.16 200), oklch(0.66 0.27 5))", size: "lg" },
   { n: "05", client: "Verge Studio", scope: "Brand + Identity", year: "2024", tag: "Creative", grad: "linear-gradient(135deg, oklch(0.85 0.17 195), oklch(0.4 0.1 260))", size: "sm" },
   { n: "06", client: "Pinecone HR", scope: "Internal admin tools", year: "2023", tag: "HR Tech", grad: "linear-gradient(135deg, oklch(0.66 0.27 5), oklch(0.92 0.22 125))", size: "sm" },

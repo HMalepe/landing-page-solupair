@@ -2,7 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Reveal } from "@/components/brand/Reveal";
-import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_DISPLAY, LEGAL_NAME, pageHead } from "@/lib/site";
+import {
+  BUDGET_OPTIONS,
+  CONTACT_EMAIL,
+  CONTACT_PHONE,
+  CONTACT_PHONE_DISPLAY,
+  CURRENCY,
+  LEGAL_NAME,
+  LOCATION_LABEL,
+  pageHead,
+} from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
   component: ContactPage,
@@ -14,14 +23,13 @@ export const Route = createFileRoute("/contact")({
     }),
 });
 
-const BUDGETS = ["< $25k", "$25k – $75k", "$75k – $200k", "$200k+", "Not sure yet"];
 const SCOPES = ["Product UI / UX", "Brand system", "Landing page", "E-commerce", "Internal tools", "Design-engineering", "AI surface", "Something else"];
 
 function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [pending, setPending] = useState(false);
   const [scope, setScope] = useState<string>(SCOPES[0]);
-  const [budget, setBudget] = useState<string>(BUDGETS[1]);
+  const [budget, setBudget] = useState<string>(BUDGET_OPTIONS[1]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,13 +68,13 @@ function ContactPage() {
             </div>
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">{LEGAL_NAME}</p>
-              <p className="mt-1 text-foreground/90">South Africa · Remote-first</p>
+              <p className="mt-1 text-foreground/90">{LOCATION_LABEL}</p>
             </div>
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Booking window</p>
               <p className="mt-1 flex items-center gap-2 text-foreground/90">
                 <span className="h-2 w-2 rounded-full bg-lime pulse-dot" />
-                Q3 2026 · 2 slots open
+                Open for new briefs · 2 slots
               </p>
             </div>
           </div>
@@ -89,10 +97,10 @@ function ContactPage() {
               ) : (
                 <form onSubmit={onSubmit} className="relative space-y-6">
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <Field label="Your name" name="name" placeholder="Jane Operator" required />
-                    <Field label="Email" name="email" type="email" placeholder="jane@company.com" required />
+                    <Field label="Your name" name="name" placeholder="Thabo Molefe" required />
+                    <Field label="Email" name="email" type="email" placeholder="you@startup.co.za" required />
                   </div>
-                  <Field label="Company" name="company" placeholder="Cobra Labs" required />
+                  <Field label="Company" name="company" placeholder="Your Startup (Pty) Ltd" required />
 
                   <div>
                     <Label>Scope</Label>
@@ -111,9 +119,10 @@ function ContactPage() {
                   </div>
 
                   <div>
-                    <Label>Budget</Label>
+                    <Label>Budget ({CURRENCY})</Label>
+                    <p className="mt-1 text-xs text-text-tertiary">Typical early-stage ranges · quotes ex. VAT where applicable</p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {BUDGETS.map((b) => (
+                      {BUDGET_OPTIONS.map((b) => (
                         <button
                           type="button"
                           key={b}
@@ -145,7 +154,7 @@ function ContactPage() {
                     {pending ? "Transmitting…" : "Transmit brief →"}
                   </button>
                   <p className="text-center font-mono text-[10px] uppercase tracking-widest text-text-tertiary">
-                    NDA on request · No marketing follow-ups · Promise
+                    POPIA respected · No marketing follow-ups · Promise
                   </p>
                 </form>
               )}

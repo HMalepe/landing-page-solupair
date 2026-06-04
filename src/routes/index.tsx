@@ -37,7 +37,7 @@ function HomePage() {
           that ship.
         </h1>
         <p className="mx-auto mt-6 max-w-lg text-lg text-muted-foreground">
-          {SITE_TAGLINE} One senior team — product UI, brand, and code — for B2B teams who need clarity, not clutter.
+          {SITE_TAGLINE} Product UI, brand, and code for SA startups — JHB, CPT, and remote. Clear scopes in rands, no agency bloat.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <Link
@@ -97,7 +97,7 @@ function HomePage() {
               </span>
             ))}
           </div>
-          <p className="mt-4 text-sm text-muted-foreground">Most engagements · 4–8 weeks</p>
+          <p className="mt-4 text-sm text-muted-foreground">Most projects · 3–8 weeks · budgets from R35k</p>
           <Link to="/process" className="mt-3 inline-block font-mono text-[11px] uppercase tracking-widest text-cyan hover:underline">
             See the process →
           </Link>
