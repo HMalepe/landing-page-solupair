@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+type TrailPoint = { x: number; y: number; opacity: number };
+
+const TRAIL_LIFETIME_MS = 90;
+const TRAIL_MIN_GAP_PX = 5;
+const TRAIL_MAX_POINTS = 12;
 
 export function Cursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 });
-  const [ringPos, setRingPos] = useState({ x: -100, y: -100 });
-  const [active, setActive] = useState(false);
+  const [trail, setTrail] = useState<TrailPoint[]>([]);
   const [enabled, setEnabled] = useState(false);
+  const lastTrailRef = useRef({ x: -100, y: -100 });
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -17,57 +23,76 @@ export function Cursor() {
 
   useEffect(() => {
     if (!enabled) return;
+
     let raf = 0;
-    let target = { x: 0, y: 0 };
-    let current = { x: 0, y: 0 };
+    const points: { x: number; y: number; at: number }[] = [];
 
     const onMove = (e: MouseEvent) => {
-      target = { x: e.clientX, y: e.clientY };
-      setPos(target);
-      const el = e.target as HTMLElement | null;
-      const interactive =
-        !!el?.closest("a, button, [role=button], input, textarea, summary, label");
-      setActive(interactive);
+      const { clientX: x, clientY: y } = e;
+      setPos({ x, y });
+
+      const last = lastTrailRef.current;
+      const dx = x - last.x;
+      const dy = y - last.y;
+      if (dx * dx + dy * dy >= TRAIL_MIN_GAP_PX * TRAIL_MIN_GAP_PX) {
+        lastTrailRef.current = { x, y };
+        points.push({ x, y, at: performance.now() });
+        if (points.length > TRAIL_MAX_POINTS) points.shift();
+      }
     };
 
     const tick = () => {
-      current.x += (target.x - current.x) * 0.18;
-      current.y += (target.y - current.y) * 0.18;
-      setRingPos({ x: current.x, y: current.y });
+      const now = performance.now();
+      const visible = points
+        .filter((p) => now - p.at <= TRAIL_LIFETIME_MS)
+        .map((p) => {
+          const t = 1 - (now - p.at) / TRAIL_LIFETIME_MS;
+          return { x: p.x, y: p.y, opacity: t * 0.28 };
+        });
+      while (points.length > 0 && now - points[0].at > TRAIL_LIFETIME_MS) {
+        points.shift();
+      }
+      setTrail(visible);
       raf = requestAnimationFrame(tick);
     };
 
     window.addEventListener("mousemove", onMove);
     raf = requestAnimationFrame(tick);
     document.body.style.cursor = "none";
+
     return () => {
       window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(raf);
       document.body.style.cursor = "";
+      setTrail([]);
     };
   }, [enabled]);
 
   if (!enabled) return null;
 
   return (
-    <>
+    <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
+      {trail.map((p, i) => (
+        <div
+          key={`${p.x}-${p.y}-${i}`}
+          className="absolute rounded-full bg-cyan"
+          style={{
+            left: p.x - 1.5,
+            top: p.y - 1.5,
+            width: 3,
+            height: 3,
+            opacity: p.opacity,
+          }}
+        />
+      ))}
       <div
-        className="pointer-events-none fixed z-[9999] h-2 w-2 rounded-full bg-teal"
-        style={{ left: pos.x - 4, top: pos.y - 4 }}
-      />
-      <div
-        className="pointer-events-none fixed z-[9999] rounded-full border transition-[width,height,background-color,border-color] duration-200"
+        className="absolute h-2 w-2 rounded-full bg-cyan"
         style={{
-          left: ringPos.x - 16,
-          top: ringPos.y - 16,
-          width: active ? 40 : 32,
-          height: active ? 40 : 32,
-          marginLeft: active ? -4 : 0,
-          marginTop: active ? -4 : 0,
-          borderColor: active ? "var(--color-teal)" : "color-mix(in oklab, var(--color-teal) 40%, transparent)",
-          backgroundColor: active ? "color-mix(in oklab, var(--color-teal) 15%, transparent)" : "transparent",
+          left: pos.x - 4,
+          top: pos.y - 4,
+          boxShadow: "0 0 10px color-mix(in oklab, var(--color-cyan) 70%, transparent)",
         }}
       />
-    </>
+    </div>
   );
 }
