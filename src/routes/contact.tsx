@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Reveal } from "@/components/brand/Reveal";
-import { CONTACT_EMAIL, pageHead } from "@/lib/site";
+import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_DISPLAY, pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
   component: ContactPage,
@@ -55,6 +55,7 @@ function ContactPage() {
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Direct line</p>
               <a href={`mailto:${CONTACT_EMAIL}`} className="mt-1 block font-display text-2xl tracking-tight hover:gradient-aurora-text">{CONTACT_EMAIL}</a>
+              <a href={`tel:${CONTACT_PHONE}`} className="mt-3 block font-display text-2xl tracking-tight hover:gradient-aurora-text">{CONTACT_PHONE_DISPLAY}</a>
             </div>
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Studio</p>
