@@ -4,7 +4,7 @@ export const SITE_URL = `https://${SITE_HOST}`;
 export const SITE_NAME = "Solupair";
 export const CONTACT_EMAIL = `info@${SITE_HOST}`;
 export const CONTACT_PHONE = "+2762476899";
-export const CONTACT_PHONE_DISPLAY = "+27 62 476 8999";
+export const CONTACT_PHONE_DISPLAY = "+27 62 476 899";
 
 export function absoluteUrl(path = "/") {
   const normalized = path.startsWith("/") ? path : `/${path}`;
