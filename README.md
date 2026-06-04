@@ -22,7 +22,7 @@ Open [http://localhost:5173](http://localhost:5173) (port may vary if 5173 is in
 ## Production domain
 
 - **Primary:** [https://solupair.co.za](https://solupair.co.za)
-- **Redirect:** `www.solupair.co.za` → apex (configured in `vercel.json`)
+- In Vercel → **Settings → Domains**, set `solupair.co.za` as the **primary** domain (Vercel will redirect `www` consistently). Do not add conflicting www↔apex redirects in `vercel.json` or CSS will fail to load.
 - Site constants live in `src/lib/site.ts` (email, canonical URLs, Open Graph)
 
 ### DNS (at your .co.za registrar)

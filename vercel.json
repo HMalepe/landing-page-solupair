@@ -3,13 +3,5 @@
   "framework": null,
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "devCommand": "npm run dev",
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.solupair.co.za" }],
-      "destination": "https://solupair.co.za/:path*",
-      "permanent": true
-    }
-  ]
+  "devCommand": "npm run dev"
 }
