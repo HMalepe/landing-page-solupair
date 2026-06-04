@@ -1,69 +1,112 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { XMark } from "@/components/brand/XMark";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Reveal } from "@/components/brand/Reveal";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
   head: () => ({
     meta: [
-      { title: "About — Shelf Life Wisdom" },
-      { name: "description", content: "Why Shelf Life Wisdom exists, and who it's for." },
-      { property: "og:title", content: "About — Shelf Life Wisdom" },
-      { property: "og:description", content: "An editorial platform for inventory operators. By ExpiryDesk." },
+      { title: "About — Solupair Studio" },
+      { name: "description", content: "Solupair is a futures-first design studio. Six people, twelve combined years of senior craft, one shared belief: design that ships beats design that wins awards." },
+      { property: "og:title", content: "About — Solupair Studio" },
+      { property: "og:description", content: "A small, senior, futures-first design studio for software companies." },
     ],
   }),
 });
 
+const PRINCIPLES = [
+  { n: "I.", t: "Ship over polish.", d: "Done in production beats perfect in Figma. We design with the deploy in mind." },
+  { n: "II.", t: "Senior only.", d: "No juniors, no offshore, no account managers. The hands on your project are the hands you hired." },
+  { n: "III.", t: "Opinions are deliverables.", d: "If we don't have a view, we haven't done the work yet." },
+  { n: "IV.", t: "Design is downstream of decisions.", d: "Most design problems are product decisions in disguise. We help you make them." },
+  { n: "V.", t: "Code is craft.", d: "We ship production React, Tailwind, Motion. The handoff is a commit, not a Figma link." },
+  { n: "VI.", t: "Quiet over loud.", d: "We don't post our process on Twitter. The work is the proof." },
+];
+
+const TEAM = [
+  { name: "Mae Otsuka", role: "Founder · Design Director", bio: "Ex-Stripe, ex-Linear. 9 years in product design. Designs the system.", grad: "linear-gradient(135deg, oklch(0.78 0.16 200), oklch(0.66 0.27 5))" },
+  { name: "Daniel Cole", role: "Design Engineer", bio: "React + Motion specialist. Writes the production code.", grad: "linear-gradient(135deg, oklch(0.92 0.22 125), oklch(0.78 0.16 200))" },
+  { name: "Ines Marques", role: "Brand Director", bio: "Identity systems for software companies. From wordmark to billboard.", grad: "linear-gradient(135deg, oklch(0.66 0.27 5), oklch(0.85 0.17 195))" },
+];
+
 function AboutPage() {
   return (
-    <div className="mx-auto max-w-[760px] px-6 pt-32 pb-24">
-      <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-teal">About</p>
-      <h1 className="mt-4 font-serif text-5xl tracking-tight md:text-6xl">
-        Where the real operators read.
-      </h1>
-      <div className="mt-10 space-y-6 text-[18px] leading-[1.9] text-foreground/90">
-        <p>
-          Shelf Life Wisdom is an editorial platform for the people who actually work the floor.
-          Floor managers. Receiving leads. Inventory directors. Buyers who know that the
-          spreadsheet stopped telling the truth around lunchtime.
-        </p>
-        <p>
-          We don't write for executives. We write for operators. The difference shows up in every
-          paragraph: less theory, more discipline. Less narrative, more numbers. Less brand,
-          more bench depth.
-        </p>
-        <blockquote
-          className="my-10 -mx-2 rounded-r-md py-2 pl-6 pr-2"
-          style={{
-            borderLeft: "3px solid var(--color-teal)",
-            backgroundColor: "color-mix(in oklab, var(--color-teal) 5%, transparent)",
-          }}
-        >
-          <p className="font-serif text-2xl italic md:text-[28px]">
-            Know your shelf. The rest follows.
-          </p>
-        </blockquote>
-        <p>
-          Every article is verified at publication and reviewed again every six months. When
-          numbers change, we say so. When something we wrote is no longer true, we mark it stale
-          and rewrite it. This isn't a content marketing site. It's a working reference.
-        </p>
-        <h2 className="mt-12 flex items-baseline gap-2 font-serif text-3xl">
-          <span className="text-teal">·</span> Published by ExpiryDesk
-        </h2>
-        <p>
-          Shelf Life Wisdom is a quiet project from{" "}
-          <a href="https://expirydesk.com" className="text-teal hover:underline">ExpiryDesk</a> —
-          the inventory tracking platform that prevents expired stock before it costs you. We
-          built the tool because we kept reading bad inventory advice. We built this publication
-          because we wanted somewhere good to point people.
-        </p>
-      </div>
+    <div className="relative pt-32 pb-32">
+      <div className="absolute inset-x-0 top-0 h-[60vh] bg-grid opacity-[0.25]" />
+      <div className="aurora-blob top-32 -left-10 h-[420px] w-[420px] bg-plasma/20" />
+      <div className="aurora-blob top-80 right-0 h-[500px] w-[500px] bg-cyan/20" />
 
-      <div className="mt-16 flex items-center justify-center gap-4 text-teal/30">
-        <span className="h-px w-16 bg-border" />
-        <XMark size={14} />
-        <span className="h-px w-16 bg-border" />
-      </div>
+      <header className="relative mx-auto max-w-[1320px] px-6">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-cyan">[ about / studio ]</p>
+        <h1 className="mt-4 headline-mega text-[clamp(3rem,9vw,8rem)]">
+          A small studio<br />
+          <span className="font-serif italic gradient-aurora-text">making big surfaces.</span>
+        </h1>
+        <p className="mt-8 max-w-2xl text-lg text-muted-foreground">
+          Solupair is six people. Twelve combined years of senior craft. One shared belief: design that ships beats design that wins awards — even though sometimes the same work does both.
+        </p>
+      </header>
+
+      {/* Manifesto */}
+      <section className="relative mx-auto mt-24 max-w-[1320px] px-6">
+        <Reveal>
+          <p className="font-mono text-[10px] uppercase tracking-widest text-cyan">[ principles ]</p>
+          <h2 className="mt-3 font-display text-5xl tracking-tight md:text-6xl">Six rules we work by.</h2>
+        </Reveal>
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+          {PRINCIPLES.map((p, i) => (
+            <Reveal key={p.n} delay={i * 50}>
+              <div className="group flex gap-5 rounded-2xl border border-border bg-surface/40 p-6 transition-colors hover:border-cyan">
+                <span className="font-serif text-3xl italic text-cyan/60">{p.n}</span>
+                <div>
+                  <h3 className="font-display text-2xl tracking-tight">{p.t}</h3>
+                  <p className="mt-2 text-muted-foreground">{p.d}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Team */}
+      <section className="relative mx-auto mt-32 max-w-[1320px] px-6">
+        <Reveal>
+          <p className="font-mono text-[10px] uppercase tracking-widest text-cyan">[ the team ]</p>
+          <h2 className="mt-3 font-display text-5xl tracking-tight md:text-6xl">
+            Who you'll actually <span className="font-serif italic">be working with.</span>
+          </h2>
+        </Reveal>
+
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {TEAM.map((p, i) => (
+            <Reveal key={p.name} delay={i * 80}>
+              <div className="group rounded-2xl border border-border bg-surface/40 overflow-hidden lift">
+                <div className="relative aspect-[4/5] w-full overflow-hidden" style={{ background: p.grad }}>
+                  <div className="absolute inset-0 bg-grid opacity-30 mix-blend-overlay" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-background/80">
+                    <span>operator · {String(i + 1).padStart(2, "0")}</span>
+                    <span>● online</span>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-display text-2xl tracking-tight">{p.name}</h3>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-cyan">{p.role}</p>
+                  <p className="mt-3 text-sm text-muted-foreground">{p.bio}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="relative mx-auto mt-32 max-w-[1320px] px-6 text-center">
+        <h3 className="font-display text-4xl tracking-tight md:text-6xl">
+          Reasons to <span className="font-serif italic gradient-aurora-text">talk.</span>
+        </h3>
+        <Link to="/contact" className="mt-8 inline-flex items-center gap-3 rounded-full bg-cyan px-8 py-4 font-mono text-[11px] uppercase tracking-widest text-background shadow-glow-cyan">
+          Start the conversation →
+        </Link>
+      </section>
     </div>
   );
 }

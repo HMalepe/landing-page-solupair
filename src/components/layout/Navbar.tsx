@@ -1,14 +1,27 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { XMark } from "@/components/brand/XMark";
 
 const NAV = [
-  { to: "/articles", label: "Articles" },
-  { to: "/categories", label: "Categories" },
+  { to: "/services", label: "Services" },
+  { to: "/work", label: "Work" },
+  { to: "/process", label: "Process" },
   { to: "/about", label: "About" },
-  { to: "/newsletter", label: "Newsletter" },
 ] as const;
+
+function Logo() {
+  return (
+    <span className="flex items-center gap-2">
+      <span className="relative inline-flex h-7 w-7 items-center justify-center">
+        <span className="absolute inset-0 rounded-md bg-gradient-to-br from-cyan to-plasma opacity-90" />
+        <span className="absolute inset-[3px] rounded-[5px] bg-background" />
+        <span className="relative font-mono text-[11px] font-bold tracking-tighter text-foreground">SP</span>
+      </span>
+      <span className="font-display text-lg font-medium tracking-tight">solupair</span>
+      <span className="hidden font-mono text-[9px] uppercase tracking-widest text-text-tertiary md:inline">/ studio</span>
+    </span>
+  );
+}
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -22,54 +35,58 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    setOpen(false);
-  }, [location.pathname]);
+  useEffect(() => setOpen(false), [location.pathname]);
 
   return (
     <>
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "border-b border-border bg-background/85 backdrop-blur-xl"
-            : "border-b border-transparent bg-transparent"
+            ? "border-b border-border bg-background/80 backdrop-blur-xl"
+            : "border-b border-transparent"
         }`}
       >
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
-          <Link to="/" className="group flex items-center gap-2">
-            <XMark size={14} className="text-teal transition-transform duration-300 group-hover:rotate-45" />
-            <span className="font-serif text-lg tracking-tight md:text-xl">Shelf Life Wisdom</span>
+        <div className="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-6">
+          <Link to="/" className="group">
+            <Logo />
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-1 md:flex">
             {NAV.map((item) => {
               const active = location.pathname.startsWith(item.to);
               return (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className="group relative font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+                  className={`group relative rounded-full px-4 py-2 font-mono text-[11px] uppercase tracking-wider transition-colors ${
+                    active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
-                  <span className={active ? "text-foreground" : ""}>{item.label}</span>
-                  <span
-                    className="absolute -bottom-1 left-0 h-px bg-teal transition-all duration-300"
-                    style={{ width: active ? "100%" : "0%" }}
-                  />
-                  <span className="absolute -bottom-1 left-0 h-px w-0 bg-teal transition-all duration-300 group-hover:w-full" />
+                  <span className="relative z-10">{item.label}</span>
+                  {active && (
+                    <span className="absolute inset-0 rounded-full border border-border bg-surface" />
+                  )}
                 </Link>
               );
             })}
-            <Link
-              to="/newsletter"
-              className="rounded-full bg-teal px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-background transition-all hover:shadow-teal-glow"
-            >
-              Subscribe Free
-            </Link>
           </nav>
+
+          <div className="hidden md:flex items-center gap-3">
+            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-lime pulse-dot" />
+              Booking · Q3
+            </span>
+            <Link
+              to="/contact"
+              className="rounded-full border border-cyan px-5 py-2 font-mono text-[11px] uppercase tracking-wider text-cyan btn-fill"
+            >
+              Start a project →
+            </Link>
+          </div>
 
           <button
             onClick={() => setOpen(true)}
-            className="md:hidden rounded p-2 text-foreground"
+            className="md:hidden rounded p-2"
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
@@ -80,10 +97,7 @@ export function Navbar() {
       {open && (
         <div className="fixed inset-0 z-[100] flex flex-col bg-background md:hidden">
           <div className="flex h-16 items-center justify-between px-6">
-            <Link to="/" className="flex items-center gap-2">
-              <XMark size={14} className="text-teal" />
-              <span className="font-serif text-lg">Shelf Life Wisdom</span>
-            </Link>
+            <Link to="/"><Logo /></Link>
             <button onClick={() => setOpen(false)} className="p-2" aria-label="Close menu">
               <X className="h-5 w-5" />
             </button>
@@ -93,16 +107,16 @@ export function Navbar() {
               <Link
                 key={item.to}
                 to={item.to}
-                className="font-serif text-4xl tracking-tight text-foreground transition-colors hover:text-teal"
+                className="font-display text-5xl tracking-tight hover:gradient-aurora-text"
               >
                 {item.label}
               </Link>
             ))}
             <Link
-              to="/newsletter"
-              className="mt-4 rounded-full bg-teal px-6 py-3 font-mono text-xs uppercase tracking-wider text-background"
+              to="/contact"
+              className="mt-4 rounded-full bg-cyan px-6 py-3 font-mono text-xs uppercase tracking-wider text-background"
             >
-              Subscribe Free
+              Start a project →
             </Link>
           </nav>
         </div>
