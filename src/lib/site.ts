@@ -2,6 +2,8 @@
 export const SITE_HOST = "solupair.co.za";
 export const SITE_URL = `https://${SITE_HOST}`;
 export const SITE_NAME = "Solupair";
+export const LEGAL_NAME = "Solupair Pty Ltd";
+export const SITE_TAGLINE = "B2B design and software for teams that ship.";
 export const CONTACT_EMAIL = `info@${SITE_HOST}`;
 export const CONTACT_PHONE = "+27624760899";
 export const CONTACT_PHONE_DISPLAY = "+27 62 476 0899";

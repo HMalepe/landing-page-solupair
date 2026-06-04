@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_DISPLAY } from "@/lib/site";
+import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_DISPLAY, LEGAL_NAME, SITE_NAME } from "@/lib/site";
 
 export function Footer() {
   return (
@@ -11,14 +11,13 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
             <p className="font-mono text-[10px] uppercase tracking-widest text-cyan">
-              [ solupair / studio ]
+              [ {SITE_NAME.toLowerCase()} ]
             </p>
             <h2 className="mt-4 font-display text-5xl tracking-tight md:text-7xl">
-              Design that<br />
-              <span className="gradient-aurora-text">ships revenue.</span>
+              {LEGAL_NAME}
             </h2>
             <p className="mt-6 max-w-md text-muted-foreground">
-              A futures-first design studio building interfaces, brands and tools for ambitious software teams.
+              {LEGAL_NAME} builds interfaces, brands, and tools for ambitious software teams.
             </p>
             <Link
               to="/contact"
@@ -30,7 +29,7 @@ export function Footer() {
 
           <nav className="md:col-span-4 grid grid-cols-2 gap-8 text-sm">
             <div>
-              <p className="mb-4 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Studio</p>
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">{SITE_NAME}</p>
               <ul className="space-y-3 text-muted-foreground">
                 <li><Link to="/services" className="hover:text-cyan transition-colors">Services</Link></li>
                 <li><Link to="/work" className="hover:text-cyan transition-colors">Work</Link></li>
@@ -51,11 +50,11 @@ export function Footer() {
           </nav>
 
           <div className="md:col-span-3">
-            <p className="mb-4 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Signal</p>
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Contact</p>
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-sm text-muted-foreground hover:text-cyan transition-colors">{CONTACT_EMAIL}</a>
-            <a href={`tel:${CONTACT_PHONE}`} className="text-sm text-muted-foreground hover:text-cyan transition-colors">{CONTACT_PHONE_DISPLAY}</a>
+            <a href={`tel:${CONTACT_PHONE}`} className="mt-2 block text-sm text-muted-foreground hover:text-cyan transition-colors">{CONTACT_PHONE_DISPLAY}</a>
             <p className="mt-4 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Located</p>
-            <p className="text-sm text-muted-foreground">SF · Lisbon · Remote-first</p>
+            <p className="text-sm text-muted-foreground">South Africa · Remote-first</p>
           </div>
         </div>
       </div>
@@ -63,8 +62,8 @@ export function Footer() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-cyan/40 to-transparent" />
 
       <div className="relative mx-auto flex max-w-[1320px] flex-col items-center justify-between gap-2 px-6 py-6 font-mono text-[10px] uppercase tracking-widest text-text-tertiary md:flex-row">
-        <span>© {new Date().getFullYear()} Solupair Studio · All rights reserved</span>
-        <span>v.2026.4 · Built in-house</span>
+        <span>© {new Date().getFullYear()} {LEGAL_NAME} · All rights reserved</span>
+        <span>{SITE_NAME} · solupair.co.za</span>
       </div>
     </footer>
   );

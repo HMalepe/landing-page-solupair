@@ -18,7 +18,7 @@ function Logo() {
         <span className="relative font-mono text-[11px] font-bold tracking-tighter text-foreground">SP</span>
       </span>
       <span className="font-display text-lg font-medium tracking-tight">solupair</span>
-      <span className="hidden font-mono text-[9px] uppercase tracking-widest text-text-tertiary md:inline">/ studio</span>
+      <span className="hidden font-mono text-[9px] uppercase tracking-widest text-text-tertiary md:inline">pty ltd</span>
     </span>
   );
 }

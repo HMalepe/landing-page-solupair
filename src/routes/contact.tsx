@@ -2,14 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Reveal } from "@/components/brand/Reveal";
-import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_DISPLAY, pageHead } from "@/lib/site";
+import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_DISPLAY, LEGAL_NAME, pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
   component: ContactPage,
   head: () =>
     pageHead({
-      title: "Contact — Solupair Studio",
-      description: "Tell us what you're shipping. We respond in 24 hours with whether we're the right studio for it.",
+      title: `Contact — ${LEGAL_NAME}`,
+      description: `Contact ${LEGAL_NAME}. Tell us what you're shipping — we respond in 24 hours.`,
       path: "/contact",
     }),
 });
@@ -47,8 +47,9 @@ function ContactPage() {
             Tell us<br />what<br />
             <span className="font-serif italic gradient-aurora-text">you're shipping.</span>
           </h1>
+          <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-cyan">{LEGAL_NAME}</p>
           <p className="mt-8 max-w-md text-muted-foreground">
-            Five fields. Written response in 24 hours with whether we're the right studio — and if not, who is.
+            Five fields. Written response in 24 hours from {LEGAL_NAME} — and if we're not the right fit, we'll say who is.
           </p>
 
           <div className="mt-12 space-y-6">
@@ -58,8 +59,8 @@ function ContactPage() {
               <a href={`tel:${CONTACT_PHONE}`} className="mt-3 block font-display text-2xl tracking-tight hover:gradient-aurora-text">{CONTACT_PHONE_DISPLAY}</a>
             </div>
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Studio</p>
-              <p className="mt-1 text-foreground/90">San Francisco · Lisbon · Remote-first</p>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">{LEGAL_NAME}</p>
+              <p className="mt-1 text-foreground/90">South Africa · Remote-first</p>
             </div>
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">Booking window</p>

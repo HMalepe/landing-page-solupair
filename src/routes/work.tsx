@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/brand/Reveal";
-import { pageHead } from "@/lib/site";
+import { LEGAL_NAME, pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/work")({
   component: WorkPage,
   head: () =>
     pageHead({
-      title: "Work — Solupair Studio",
+      title: `Work — ${LEGAL_NAME}`,
       description: "Selected case studies in product UI, brand, landing pages and internal tools.",
       path: "/work",
     }),

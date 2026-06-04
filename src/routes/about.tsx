@@ -1,14 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/brand/Reveal";
-import { pageHead } from "@/lib/site";
+import { LEGAL_NAME, SITE_NAME, pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
   head: () =>
     pageHead({
-      title: "About — Solupair Studio",
-      description:
-        "Solupair is a futures-first design studio. Six people, twelve combined years of senior craft, one shared belief: design that ships beats design that wins awards.",
+      title: `About — ${LEGAL_NAME}`,
+      description: `${LEGAL_NAME} is a South African B2B company. Six people, twelve combined years of senior craft — design that ships beats design that wins awards.`,
       path: "/about",
     }),
 });
@@ -36,13 +35,13 @@ function AboutPage() {
       <div className="aurora-blob top-80 right-0 h-[500px] w-[500px] bg-cyan/20" />
 
       <header className="relative mx-auto max-w-[1320px] px-6">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-cyan">[ about / studio ]</p>
+        <p className="font-mono text-[10px] uppercase tracking-widest text-cyan">[ about / {SITE_NAME.toLowerCase()} ]</p>
         <h1 className="mt-4 headline-mega text-[clamp(3rem,9vw,8rem)]">
-          A small studio<br />
-          <span className="font-serif italic gradient-aurora-text">making big surfaces.</span>
+          {LEGAL_NAME}
         </h1>
+        <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-cyan">{SITE_NAME}</p>
         <p className="mt-8 max-w-2xl text-lg text-muted-foreground">
-          Solupair is six people. Twelve combined years of senior craft. One shared belief: design that ships beats design that wins awards — even though sometimes the same work does both.
+          <strong className="text-foreground">{LEGAL_NAME}</strong> is a South African B2B company building product UI, brand systems, and software surfaces. Six people, twelve combined years of senior craft. One shared belief: design that ships beats design that wins awards — even though sometimes the same work does both.
         </p>
       </header>
 

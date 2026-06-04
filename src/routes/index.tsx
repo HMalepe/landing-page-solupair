@@ -1,15 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Reveal } from "@/components/brand/Reveal";
-import { SITE_HOST, pageHead } from "@/lib/site";
+import { LEGAL_NAME, SITE_HOST, SITE_NAME, SITE_TAGLINE, pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
   head: () =>
     pageHead({
-      title: "Solupair — Design studio for software that ships.",
-      description:
-        "Futures-first B2B design studio. Product UI/UX, brand systems, landing pages, e-commerce and internal tools.",
+      title: `${LEGAL_NAME} — ${SITE_TAGLINE}`,
+      description: `${LEGAL_NAME} — Product UI/UX, brand systems, landing pages, e-commerce and internal tools for software teams.`,
       path: "/",
     }),
 });
@@ -58,7 +57,7 @@ function Hero() {
 
           <Reveal delay={700}>
             <p className="mt-8 max-w-xl text-lg text-muted-foreground">
-              Solupair is a small, surgical design studio. We ship product UI, brand systems, landing pages,
+              {LEGAL_NAME} ships product UI, brand systems, landing pages,
               e-commerce and internal tools for software companies that refuse to look like the rest.
             </p>
           </Reveal>
@@ -82,10 +81,9 @@ function Hero() {
           </Reveal>
         </div>
 
-        {/* Studio terminal */}
         <div className="lg:col-span-5 lg:pl-6">
           <Reveal delay={400}>
-            <StudioTerminal />
+            <OpsTerminal />
           </Reveal>
         </div>
       </div>
@@ -93,7 +91,7 @@ function Hero() {
   );
 }
 
-function StudioTerminal() {
+function OpsTerminal() {
   const lines = [
     { t: "boot", v: `${SITE_HOST} · v.2026.4`, c: "text-cyan" },
     { t: "auth", v: "ok · session @ ops.deck", c: "text-lime" },
@@ -119,7 +117,7 @@ function StudioTerminal() {
           <span className="h-2.5 w-2.5 rounded-full bg-amber/70" />
           <span className="h-2.5 w-2.5 rounded-full bg-lime/70" />
         </div>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">~/studio · ops.deck</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">~/{SITE_NAME.toLowerCase()} · ops.deck</span>
         <span className="font-mono text-[10px] text-cyan">●REC</span>
       </div>
       {/* lines */}
@@ -196,7 +194,7 @@ function ServicesBento() {
               <p className="font-mono text-[10px] uppercase tracking-widest text-cyan">[ 01 / services ]</p>
               <h2 className="mt-3 font-display text-5xl tracking-tight md:text-7xl">
                 Five surfaces.<br />
-                <span className="font-serif italic gradient-aurora-text">One studio.</span>
+                <span className="font-serif italic gradient-aurora-text">One team.</span>
               </h2>
             </div>
             <p className="max-w-md text-muted-foreground">
@@ -357,7 +355,7 @@ function ProcessOrbit() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-widest text-cyan">[ 03 / process ]</p>
           <h2 className="mt-3 font-display text-5xl tracking-tight md:text-7xl">
-            A studio,<br />
+            {SITE_NAME},<br />
             <span className="font-serif italic">not an agency.</span>
           </h2>
           <p className="mt-6 max-w-md text-muted-foreground">
@@ -399,7 +397,7 @@ function ProcessOrbit() {
             {/* core */}
             <circle cx="200" cy="200" r="44" fill="var(--color-background)" stroke="var(--color-cyan)" strokeWidth="1" />
             <text x="200" y="196" textAnchor="middle" fontFamily="Space Grotesk" fontSize="14" fill="var(--color-foreground)" letterSpacing="-0.04em">solupair</text>
-            <text x="200" y="214" textAnchor="middle" fontFamily="JetBrains Mono" fontSize="8" fill="var(--color-cyan)" letterSpacing="0.2em">/ STUDIO</text>
+            <text x="200" y="214" textAnchor="middle" fontFamily="JetBrains Mono" fontSize="8" fill="var(--color-cyan)" letterSpacing="0.2em">PTY LTD</text>
           </svg>
         </div>
       </div>
@@ -446,7 +444,7 @@ function FinalCTA() {
           <span className="gradient-aurora-text">designed in public.</span>
         </h2>
         <p className="mx-auto mt-6 max-w-xl text-muted-foreground">
-          We're booking Q3. Tell us what you're shipping — we'll come back in 24h with whether we're the right studio for it.
+          We're booking Q3. Tell us what you're shipping — we'll come back in 24h with whether {LEGAL_NAME} is the right fit.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <Link
