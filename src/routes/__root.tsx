@@ -3,6 +3,7 @@ import appCss from "../styles.css?url";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/brand/Cursor";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -83,6 +84,7 @@ function RootComponent() {
         <Outlet />
       </main>
       <Footer />
+      <Toaster theme="dark" />
     </>
   );
 }
