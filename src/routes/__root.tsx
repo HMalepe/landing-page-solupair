@@ -8,16 +8,16 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6">
       <div className="max-w-md text-center">
-        <p className="font-mono text-[11px] uppercase tracking-wider text-teal">404 · Off Shelf</p>
-        <h1 className="mt-4 font-serif text-6xl">Out of stock.</h1>
+        <p className="font-mono text-[11px] uppercase tracking-widest text-cyan">404 · signal lost</p>
+        <h1 className="mt-4 font-display text-7xl tracking-tight">Off-grid.</h1>
         <p className="mt-4 text-muted-foreground">
-          The page you're looking for has expired — or never made it to the floor.
+          That route never made it through QA. Let's get you somewhere real.
         </p>
         <a
           href="/"
-          className="mt-8 inline-flex items-center justify-center rounded-full border border-teal px-5 py-2 font-mono text-[11px] uppercase tracking-wider text-teal btn-fill"
+          className="mt-8 inline-flex items-center justify-center rounded-full border border-cyan px-5 py-2 font-mono text-[11px] uppercase tracking-widest text-cyan btn-fill"
         >
-          Back to the floor
+          Return to studio →
         </a>
       </div>
     </div>
@@ -29,29 +29,21 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Shelf Life Wisdom — Know your shelf." },
+      { title: "Solupair — Design studio for software that ships." },
       {
         name: "description",
         content:
-          "Editorial-grade inventory wisdom for operators, floor managers, and inventory professionals. Published by ExpiryDesk.",
+          "Solupair is a futures-first B2B design studio. Product UI/UX, brand systems, landing pages, e-commerce and internal tools for ambitious software teams.",
       },
-      { name: "author", content: "Shelf Life Wisdom" },
-      { name: "theme-color", content: "#0A0A0A" },
-      { property: "og:title", content: "Shelf Life Wisdom — Know your shelf." },
+      { name: "theme-color", content: "#0A0814" },
+      { property: "og:title", content: "Solupair — Design studio for software that ships." },
       {
         property: "og:description",
-        content:
-          "Editorial-grade inventory wisdom for the people who actually work the floor. By ExpiryDesk.",
+        content: "Product UI/UX, brand systems, landing pages, e-commerce and internal tools built for ambitious software teams.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Shelf Life Wisdom" },
+      { property: "og:site_name", content: "Solupair" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Shelf Life Wisdom — Know your shelf." },
-      { name: "description", content: "Shelf Life Wisdom Hub is a premium editorial platform for inventory professionals." },
-      { property: "og:description", content: "Shelf Life Wisdom Hub is a premium editorial platform for inventory professionals." },
-      { name: "twitter:description", content: "Shelf Life Wisdom Hub is a premium editorial platform for inventory professionals." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e22cdd90-3c58-4a7a-871d-f4f565105864/id-preview-4bb93685--08690d1f-965c-4c6b-8023-8849e6e87516.lovable.app-1777146004916.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e22cdd90-3c58-4a7a-871d-f4f565105864/id-preview-4bb93685--08690d1f-965c-4c6b-8023-8849e6e87516.lovable.app-1777146004916.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -59,7 +51,7 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
       },
     ],
   }),
