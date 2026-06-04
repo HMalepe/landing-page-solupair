@@ -29,7 +29,7 @@ function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [pending, setPending] = useState(false);
   const [scope, setScope] = useState<string>(SCOPES[0]);
-  const [budget, setBudget] = useState<string>(BUDGET_OPTIONS[1]);
+  const [budget, setBudget] = useState<string>(BUDGET_OPTIONS[0]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

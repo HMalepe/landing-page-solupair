@@ -15,19 +15,19 @@ export const Route = createFileRoute("/services")({
 
 const SERVICES = [
   { idx: "01", name: "Product UI / UX", lede: "Product design with embedded design-engineering for SA SaaS teams.",
-    deliverables: ["Design system + component lib", "Research & flow architecture", "Prototype + production handoff", "Weekly design-eng pairing"], time: "6–12 weeks · from R120k", accent: "cyan" },
+    deliverables: ["Design system + component lib", "Research & flow architecture", "Prototype + production handoff", "Weekly design-eng pairing"], time: "6–12 weeks · from R40k", accent: "cyan" },
   { idx: "02", name: "Landing pages", lede: "Marketing surfaces that ship fast — built for local startups and scale-ups.",
-    deliverables: ["Concept + art direction", "Copy collaboration", "Production code in React + Tailwind", "A/B-ready variants"], time: "2–3 weeks · from R35k", accent: "plasma" },
+    deliverables: ["Concept + art direction", "Copy collaboration", "Production code in React + Tailwind", "A/B-ready variants"], time: "1–3 weeks · from R8k", accent: "plasma" },
   { idx: "03", name: "Brand systems", lede: "Identity from pitch deck to product — POPIA-aware, investor-ready.",
-    deliverables: ["Logo + wordmark system", "Type + color tokens", "Voice + tone", "Brand book + asset library"], time: "3–5 weeks · from R45k", accent: "lime" },
+    deliverables: ["Logo + wordmark system", "Type + color tokens", "Voice + tone", "Brand book + asset library"], time: "2–4 weeks · from R10k", accent: "lime" },
   { idx: "04", name: "E-commerce", lede: "Shopify and headless storefronts tuned for SA payments and mobile-first buyers.",
-    deliverables: ["Theme architecture", "PDP / cart / checkout polish", "Performance budget", "Lifecycle email design"], time: "4–6 weeks · from R80k", accent: "cyan" },
+    deliverables: ["Theme architecture", "PDP / cart / checkout polish", "Performance budget", "Lifecycle email design"], time: "3–6 weeks · from R25k", accent: "cyan" },
   { idx: "05", name: "Internal tools", lede: "Admin panels and ops dashboards your team will actually use.",
-    deliverables: ["UX audit + IA", "Component library", "Live data wiring", "Empty + edge states"], time: "4–8 weeks · from R90k", accent: "plasma" },
+    deliverables: ["UX audit + IA", "Component library", "Live data wiring", "Empty + edge states"], time: "3–8 weeks · from R30k", accent: "plasma" },
   { idx: "06", name: "Design-engineering", lede: "We ship the code — React, Tailwind, TanStack. Same team, JHB / CPT / remote.",
-    deliverables: ["Production components", "Animation systems", "Perf budgets + accessibility", "Storybook + docs"], time: "Ongoing · day rates", accent: "lime" },
+    deliverables: ["Production components", "Animation systems", "Perf budgets + accessibility", "Storybook + docs"], time: "Ongoing · from R5k/day", accent: "lime" },
   { idx: "07", name: "AI surface design", lede: "Chat, agents, and copilots — UI where your models meet users.",
-    deliverables: ["Conversation IA", "Streaming UI patterns", "Tool-use affordances", "Trust + guardrail design"], time: "3–6 weeks · from R60k", accent: "cyan" },
+    deliverables: ["Conversation IA", "Streaming UI patterns", "Tool-use affordances", "Trust + guardrail design"], time: "2–5 weeks · from R12k", accent: "cyan" },
 ];
 
 function ServicesPage() {

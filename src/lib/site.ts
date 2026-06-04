@@ -9,10 +9,10 @@ export const CURRENCY = "ZAR";
 
 /** Startup-friendly project budgets (South African Rand) */
 export const BUDGET_OPTIONS = [
-  "< R50 000",
-  "R50k – R150k",
-  "R150k – R400k",
-  "R400k+",
+  "R5k – R25k",
+  "R25k – R75k",
+  "R75k – R200k",
+  "R200k+",
   "Not sure yet",
 ] as const;
 

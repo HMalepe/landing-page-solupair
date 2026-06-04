@@ -97,7 +97,7 @@ function HomePage() {
               </span>
             ))}
           </div>
-          <p className="mt-4 text-sm text-muted-foreground">Most projects · 3–8 weeks · budgets from R35k</p>
+          <p className="mt-4 text-sm text-muted-foreground">Most projects · 2–8 weeks · budgets from R5k</p>
           <Link to="/process" className="mt-3 inline-block font-mono text-[11px] uppercase tracking-widest text-cyan hover:underline">
             See the process →
           </Link>
