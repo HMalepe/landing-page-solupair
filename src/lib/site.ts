@@ -2,7 +2,7 @@
 export const SITE_HOST = "solupair.co.za";
 export const SITE_URL = `https://${SITE_HOST}`;
 export const SITE_NAME = "Solupair";
-export const CONTACT_EMAIL = `hello@${SITE_HOST}`;
+export const CONTACT_EMAIL = `info@${SITE_HOST}`;
 
 export function absoluteUrl(path = "/") {
   const normalized = path.startsWith("/") ? path : `/${path}`;
