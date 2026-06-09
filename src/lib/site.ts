@@ -3,7 +3,7 @@ export const SITE_HOST = "solupair.co.za";
 export const SITE_URL = `https://${SITE_HOST}`;
 export const SITE_NAME = "Solupair";
 export const LEGAL_NAME = "Solupair Pty Ltd";
-export const SITE_TAGLINE = "South African B2B design and software for teams that ship.";
+export const SITE_TAGLINE = "South African design and software — grounded, human, built to grow.";
 export const LOCATION_LABEL = "South Africa · Johannesburg & Cape Town · Remote-first";
 export const CURRENCY = "ZAR";
 

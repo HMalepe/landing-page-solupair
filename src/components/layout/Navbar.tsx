@@ -10,14 +10,11 @@ const NAV = [
 
 function Logo() {
   return (
-    <span className="flex items-center gap-2">
-      <span className="relative inline-flex h-7 w-7 items-center justify-center">
-        <span className="absolute inset-0 rounded-md bg-gradient-to-br from-cyan to-plasma opacity-90" />
-        <span className="absolute inset-[3px] rounded-[5px] bg-background" />
-        <span className="relative font-mono text-[11px] font-bold tracking-tighter text-foreground">SP</span>
+    <span className="flex items-center gap-2.5">
+      <span className="relative inline-flex h-8 w-8 items-center justify-center rounded-full bg-sage/15 ring-1 ring-sage/30">
+        <span className="font-display text-sm font-semibold text-sage">S</span>
       </span>
       <span className="font-display text-lg font-medium tracking-tight">solupair</span>
-      <span className="hidden font-mono text-[9px] uppercase tracking-widest text-text-tertiary md:inline">pty ltd</span>
     </span>
   );
 }
@@ -41,11 +38,11 @@ export function Navbar() {
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "border-b border-border bg-background/80 backdrop-blur-xl"
+            ? "border-b border-border bg-background/85 backdrop-blur-xl"
             : "border-b border-transparent"
         }`}
       >
-        <div className="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-[1100px] items-center justify-between px-6">
           <Link to="/" className="group">
             <Logo />
           </Link>
@@ -57,7 +54,7 @@ export function Navbar() {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`group relative rounded-full px-4 py-2 font-mono text-[11px] uppercase tracking-wider transition-colors ${
+                  className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                     active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -70,22 +67,19 @@ export function Navbar() {
             })}
           </nav>
 
-          <div className="hidden md:flex items-center gap-3">
-            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-lime pulse-dot" />
-              ZA · Open briefs
+          <div className="hidden items-center gap-4 md:flex">
+            <span className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-sage pulse-dot" />
+              South Africa · Open briefs
             </span>
-            <Link
-              to="/contact"
-              className="rounded-full border border-cyan px-5 py-2 font-mono text-[11px] uppercase tracking-wider text-cyan btn-fill"
-            >
-              Start a project →
+            <Link to="/contact" className="btn-nature-primary py-2 text-sm">
+              Start a project
             </Link>
           </div>
 
           <button
             onClick={() => setOpen(true)}
-            className="md:hidden rounded p-2"
+            className="rounded p-2 md:hidden"
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
@@ -106,16 +100,13 @@ export function Navbar() {
               <Link
                 key={item.to}
                 to={item.to}
-                className="font-display text-5xl tracking-tight hover:gradient-aurora-text"
+                className="font-display text-4xl tracking-tight hover:text-sage"
               >
                 {item.label}
               </Link>
             ))}
-            <Link
-              to="/contact"
-              className="mt-4 rounded-full bg-cyan px-6 py-3 font-mono text-xs uppercase tracking-wider text-background"
-            >
-              Start a project →
+            <Link to="/contact" className="btn-nature-primary mt-4">
+              Start a project
             </Link>
           </nav>
         </div>

@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * SOLUPAIR — Solupair Pty Ltd design tokens.
- * Dark canvas, dual-accent (electric cyan + plasma magenta), lime energy pop.
+ * SOLUPAIR — earthy, nature-forward palette.
+ * Deep forest canvas, sage accent, clay warmth, golden light.
  */
 
 @theme inline {
@@ -37,13 +37,15 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-cyan: var(--cyan);
-  --color-cyan-bright: var(--cyan-bright);
-  --color-plasma: var(--plasma);
-  --color-plasma-bright: var(--plasma-bright);
-  --color-lime: var(--lime);
+  --color-sage: var(--sage);
+  --color-clay: var(--clay);
+  --color-cyan: var(--sage);
+  --color-cyan-bright: var(--sage-bright);
+  --color-plasma: var(--clay);
+  --color-plasma-bright: var(--clay-bright);
+  --color-lime: var(--leaf);
   --color-amber: var(--amber);
-  --color-teal: var(--cyan);
+  --color-teal: var(--sage);
   --color-navy: var(--navy);
   --color-text-tertiary: var(--text-tertiary);
 
@@ -56,54 +58,55 @@
 :root {
   --radius: 0.75rem;
 
-  /* Near-black with a faint violet undertone */
-  --background: oklch(0.13 0.012 280);
-  --foreground: oklch(0.96 0.005 80);
-  --surface: oklch(0.17 0.015 275);
-  --surface-hover: oklch(0.21 0.02 275);
+  /* Deep forest charcoal */
+  --background: oklch(0.15 0.022 145);
+  --foreground: oklch(0.94 0.012 95);
+  --surface: oklch(0.19 0.025 140);
+  --surface-hover: oklch(0.23 0.028 138);
 
   --card: var(--surface);
   --card-foreground: var(--foreground);
   --popover: var(--surface);
   --popover-foreground: var(--foreground);
 
-  /* Electric cyan */
-  --cyan: oklch(0.78 0.16 200);
-  --cyan-bright: oklch(0.85 0.17 195);
-  /* Plasma magenta */
-  --plasma: oklch(0.66 0.27 5);
-  --plasma-bright: oklch(0.72 0.28 358);
-  /* Lime energy */
-  --lime: oklch(0.92 0.22 125);
-  --amber: oklch(0.82 0.16 75);
+  /* Sage green */
+  --sage: oklch(0.72 0.09 145);
+  --sage-bright: oklch(0.78 0.1 142);
+  /* Warm clay */
+  --clay: oklch(0.62 0.07 55);
+  --clay-bright: oklch(0.68 0.08 52);
+  /* Leaf / golden */
+  --leaf: oklch(0.78 0.11 128);
+  --amber: oklch(0.78 0.1 75);
 
-  --primary: var(--cyan);
-  --primary-foreground: oklch(0.13 0.012 280);
+  --primary: var(--sage);
+  --primary-foreground: oklch(0.15 0.022 145);
 
-  --secondary: oklch(0.22 0.025 280);
+  --secondary: oklch(0.24 0.03 140);
   --secondary-foreground: var(--foreground);
 
-  --muted: oklch(0.22 0.02 280);
-  --muted-foreground: oklch(0.66 0.02 275);
-  --text-tertiary: oklch(0.45 0.02 275);
+  --muted: oklch(0.24 0.025 140);
+  --muted-foreground: oklch(0.68 0.025 130);
+  --text-tertiary: oklch(0.48 0.025 130);
 
-  --accent: var(--plasma);
+  --accent: var(--clay);
   --accent-foreground: oklch(0.98 0 0);
 
-  --destructive: oklch(0.62 0.22 25);
+  --destructive: oklch(0.58 0.18 25);
   --destructive-foreground: var(--foreground);
 
-  --border: oklch(0.26 0.02 280);
-  --input: oklch(0.26 0.02 280);
-  --ring: var(--cyan);
+  --border: oklch(0.28 0.025 140);
+  --input: oklch(0.28 0.025 140);
+  --ring: var(--sage);
 
-  --navy: oklch(0.22 0.06 270);
+  --navy: oklch(0.22 0.04 145);
 
-  --gradient-aurora: linear-gradient(120deg, oklch(0.78 0.16 200), oklch(0.66 0.27 5) 60%, oklch(0.92 0.22 125));
-  --gradient-cyan: linear-gradient(120deg, oklch(0.78 0.16 200), oklch(0.85 0.17 195));
-  --gradient-plasma: linear-gradient(120deg, oklch(0.66 0.27 5), oklch(0.72 0.28 358));
-  --shadow-glow-cyan: 0 16px 48px -12px oklch(0.78 0.16 200 / 0.35);
-  --shadow-glow-plasma: 0 16px 48px -12px oklch(0.66 0.27 5 / 0.32);
+  --gradient-aurora: linear-gradient(120deg, oklch(0.72 0.09 145), oklch(0.62 0.07 55) 55%, oklch(0.78 0.11 128));
+  --gradient-nature: linear-gradient(135deg, oklch(0.72 0.09 145), oklch(0.78 0.1 75));
+  --gradient-cyan: var(--gradient-nature);
+  --gradient-plasma: linear-gradient(120deg, oklch(0.62 0.07 55), oklch(0.68 0.08 52));
+  --shadow-glow-cyan: 0 16px 48px -12px oklch(0.72 0.09 145 / 0.28);
+  --shadow-glow-plasma: 0 16px 48px -12px oklch(0.62 0.07 55 / 0.22);
 }
 
 .dark { color-scheme: dark; }
@@ -136,7 +139,7 @@
   }
 
   ::selection {
-    background: oklch(0.66 0.27 5 / 0.45);
+    background: oklch(0.72 0.09 145 / 0.35);
     color: var(--color-foreground);
   }
 }
@@ -147,17 +150,26 @@
   .font-sans { font-family: var(--font-sans); }
   .font-mono { font-family: var(--font-mono); font-feature-settings: "ss01"; }
 
-  .text-cyan { color: var(--color-cyan); }
-  .text-plasma { color: var(--color-plasma); }
+  .text-sage { color: var(--color-sage); }
+  .text-clay { color: var(--color-clay); }
+  .text-cyan { color: var(--color-sage); }
+  .text-plasma { color: var(--color-clay); }
   .text-lime { color: var(--color-lime); }
-  .bg-cyan { background-color: var(--color-cyan); }
-  .bg-plasma { background-color: var(--color-plasma); }
+  .bg-cyan { background-color: var(--color-sage); }
+  .bg-plasma { background-color: var(--color-clay); }
   .bg-lime { background-color: var(--color-lime); }
-  .border-cyan { border-color: var(--color-cyan); }
-  .border-plasma { border-color: var(--color-plasma); }
-  .text-teal { color: var(--color-cyan); }
-  .border-teal { border-color: var(--color-cyan); }
-  .bg-teal { background-color: var(--color-cyan); }
+  .border-cyan { border-color: var(--color-sage); }
+  .border-plasma { border-color: var(--color-clay); }
+  .text-teal { color: var(--color-sage); }
+  .border-teal { border-color: var(--color-sage); }
+  .bg-teal { background-color: var(--color-sage); }
+
+  .gradient-nature-text {
+    background: var(--gradient-nature);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 
   .gradient-aurora-text {
     background: var(--gradient-aurora);
@@ -237,11 +249,43 @@
     isolation: isolate;
     transition: color 0.25s ease;
   }
+  .btn-nature-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-sage);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-background);
+    box-shadow: var(--shadow-glow-cyan);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .btn-nature-primary:hover { transform: scale(1.02); opacity: 0.95; }
+
+  .btn-nature-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-foreground);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .btn-nature-outline:hover {
+    border-color: var(--color-sage);
+    color: var(--color-sage);
+  }
+
   .btn-fill::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--color-cyan);
+    background: var(--color-sage);
     transform: translateY(101%);
     transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
     z-index: -1;
@@ -249,7 +293,7 @@
   .btn-fill:hover::before { transform: translateY(0); }
   .btn-fill:hover { color: var(--color-background); }
 
-  .btn-fill-plasma::before { background: var(--color-plasma); }
+  .btn-fill-plasma::before { background: var(--color-clay); }
   .btn-fill-plasma:hover { color: white; }
 
   /* Word reveal */
@@ -285,7 +329,7 @@
     content: "";
     position: absolute;
     inset: -1px;
-    background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--color-cyan) 20%, transparent), transparent 40%);
+    background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--color-sage) 18%, transparent), transparent 40%);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -299,7 +343,7 @@
   .lift:hover {
     transform: translateY(-6px);
     box-shadow: var(--shadow-glow-cyan);
-    border-color: color-mix(in oklab, var(--color-cyan) 50%, transparent);
+    border-color: color-mix(in oklab, var(--color-sage) 45%, transparent);
   }
 
   /* Scrolling vertical line glow */
