@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/dashboard/PageHeader";
 import { MetricTile } from "@/components/dashboard/MetricTile";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { AICoachCard } from "@/components/dashboard/AICoachCard";
+import { SectionHeader } from "@/components/dashboard/SectionHeader";
 import { metrics, bookings } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/_dashboard/")({
@@ -18,13 +19,15 @@ export const Route = createFileRoute("/_dashboard/")({
 
 function OverviewPage() {
   const today = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  const calmTiles = metrics.filter((m) => !m.accent);
+  const actionTiles = metrics.filter((m) => m.accent);
   return (
     <div>
       <PageHeader
-        eyebrow="Today at a glance"
+        eyebrow="Overview"
         title="Today at a glance"
         subtitle={`${today} — bookings, revenue, and bot activity in one place.`}
-        sections={["Snapshot", "Trends", "AI coach", "Today's schedule"]}
+        sections={["Needs you", "Snapshot", "Trends", "AI coach", "Schedule"]}
         right={
           <Link
             to="/appointments"
@@ -37,40 +40,64 @@ function OverviewPage() {
       />
 
       <div className="space-y-8 px-6 py-8 lg:px-10">
-        <section id="snapshot" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {metrics.map((m) => {
-            const { key, ...rest } = m;
-            return <MetricTile key={key} {...rest} />;
-          })}
+        {actionTiles.length > 0 && (
+          <section id="needs-you">
+            <SectionHeader
+              eyebrow="Needs you"
+              title="Action required"
+              hint={`${actionTiles.length} items waiting`}
+            />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {actionTiles.map((m) => {
+                const { key, ...rest } = m;
+                return <MetricTile key={key} {...rest} />;
+              })}
+            </div>
+          </section>
+        )}
+
+        <section id="snapshot">
+          <SectionHeader eyebrow="Snapshot" title="Today's numbers" hint="Updated live" />
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {calmTiles.map((m) => {
+              const { key, ...rest } = m;
+              return <MetricTile key={key} {...rest} />;
+            })}
+          </div>
         </section>
 
         <section id="trends">
+          <SectionHeader eyebrow="Trends" title="Revenue — last 7 days" hint="Daily totals · ZAR" />
           <RevenueChart />
         </section>
 
         <section id="ai-coach">
+          <SectionHeader eyebrow="AI coach" title="Proactive nudges" />
           <AICoachCard />
         </section>
 
-        <section id="todays-schedule" className="rounded-2xl border border-border bg-card p-6 shadow-elegant">
-          <div className="mb-4 flex items-baseline justify-between">
-            <div>
-              <div className="text-sm font-semibold text-foreground">Today's schedule</div>
-              <div className="text-xs text-muted-foreground">{bookings.length} bookings on the calendar</div>
-            </div>
-            <Link to="/appointments" className="text-xs text-primary hover:underline">Open bookings →</Link>
-          </div>
+        <section id="schedule">
+          <SectionHeader
+            eyebrow="Schedule"
+            title="Today's bookings"
+            hint={`${bookings.length} on the calendar`}
+            right={
+              <Link to="/appointments" className="text-xs font-medium text-primary hover:underline">
+                Open bookings →
+              </Link>
+            }
+          />
           <div className="grid gap-3 md:grid-cols-3">
             {bookings.map((b) => (
-              <div key={b.id} className="rounded-xl border border-border bg-background/40 p-4 transition hover:border-primary/40">
+              <div key={b.id} className="rounded-xl border border-border bg-card p-4 shadow-elegant transition hover:-translate-y-0.5 hover:border-primary/40">
                 <div className="font-mono text-xs text-muted-foreground">{b.time}</div>
-                <div className="mt-1 text-sm font-medium text-foreground">{b.service}</div>
-                <div className="mt-2 flex items-center justify-between text-xs">
+                <div className="mt-1.5 text-sm font-semibold text-foreground">{b.service}</div>
+                <div className="mt-3 flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">{b.client}</span>
                   <span className={
                     b.status === "confirmed paid"
-                      ? "rounded-full bg-emerald-500/15 px-2 py-0.5 text-emerald-500"
-                      : "rounded-full bg-amber-500/15 px-2 py-0.5 text-amber-500"
+                      ? "rounded-full bg-emerald-500/15 px-2 py-0.5 font-medium text-emerald-600 dark:text-emerald-400"
+                      : "rounded-full bg-amber-500/15 px-2 py-0.5 font-medium text-amber-600 dark:text-amber-400"
                   }>{b.status}</span>
                 </div>
               </div>
