@@ -81,11 +81,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Solupair — Your salon, in one place" },
       { name: "description", content: "Premium dashboard for WhatsApp-powered salon automation." },
       { name: "author", content: "Solupair" },
-      { property: "og:title", content: "Solupair Dashboard" },
+      { property: "og:title", content: "Solupair — Your salon, in one place" },
       { property: "og:description", content: "Premium dashboard for WhatsApp-powered salon automation." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Solupair — Your salon, in one place" },
+      { name: "twitter:description", content: "Premium dashboard for WhatsApp-powered salon automation." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/956e570b-f3f0-484d-b2e6-d58e8f9797aa/id-preview-fe3df3c5--2b6c26fb-e2ee-4f27-83ca-dace11c095a6.lovable.app-1782371973580.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/956e570b-f3f0-484d-b2e6-d58e8f9797aa/id-preview-fe3df3c5--2b6c26fb-e2ee-4f27-83ca-dace11c095a6.lovable.app-1782371973580.png" },
     ],
     links: [
       {
