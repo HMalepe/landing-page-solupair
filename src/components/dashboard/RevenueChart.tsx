@@ -4,12 +4,10 @@ import { revenueWeek } from "@/lib/mock-data";
 export function RevenueChart() {
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-elegant">
-      <div className="mb-4 flex items-baseline justify-between">
-        <div>
-          <div className="text-sm font-medium text-foreground">Revenue — last 7 days</div>
-          <div className="text-xs text-muted-foreground">Daily totals · ZAR</div>
+      <div className="mb-2 flex items-center justify-end">
+        <div className="rounded-full border border-border bg-background/40 px-2.5 py-1 font-mono text-[11px] text-muted-foreground">
+          Avg R 94
         </div>
-        <div className="font-mono text-xs text-muted-foreground">Avg R 94</div>
       </div>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">

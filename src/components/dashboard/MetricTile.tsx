@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect } from "react";
-import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, ArrowRight } from "lucide-react";
 
 function Number({ value }: { value: number | string }) {
   const isNum = typeof value === "number";
@@ -30,35 +30,59 @@ export function MetricTile({
   accent?: "warn" | "danger" | false;
   badge?: number;
 }) {
+  const isAction = accent === "warn" || accent === "danger";
+  const ring =
+    accent === "danger"
+      ? "border-rose-500/40 bg-rose-500/[0.04]"
+      : accent === "warn"
+        ? "border-amber-500/40 bg-amber-500/[0.04]"
+        : "border-border bg-card";
+  const bar =
+    accent === "danger" ? "bg-rose-500" : accent === "warn" ? "bg-amber-500" : "";
+  const labelTone =
+    accent === "danger" ? "text-rose-500" : accent === "warn" ? "text-amber-500" : "text-muted-foreground";
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-elegant transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-glow">
-      {accent && (
-        <div
-          aria-hidden
-          className={`absolute -top-16 -right-16 h-32 w-32 rounded-full blur-2xl opacity-60 ${
-            accent === "danger" ? "bg-rose-500/30" : "bg-amber-500/30"
-          }`}
-        />
-      )}
+    <div
+      className={`group relative overflow-hidden rounded-2xl border p-5 shadow-elegant transition hover:-translate-y-0.5 ${ring} ${
+        isAction ? "hover:shadow-glow" : "hover:border-primary/40"
+      }`}
+    >
+      {isAction && <span aria-hidden className={`absolute left-0 top-0 h-full w-1 ${bar}`} />}
       <div className="flex items-start justify-between gap-2">
-        <div className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">{label}</div>
+        <div className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${labelTone}`}>{label}</div>
         {badge ? (
           <span
-            className={`grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[10px] font-semibold ${
-              accent === "danger" ? "bg-rose-500/20 text-rose-400" : "bg-amber-500/20 text-amber-400"
+            className={`grid h-6 min-w-6 place-items-center rounded-full px-2 text-[11px] font-bold ${
+              accent === "danger" ? "bg-rose-500 text-white" : "bg-amber-500 text-white"
             }`}
           >
             {badge}
           </span>
         ) : null}
       </div>
-      <div className="mt-3 font-mono text-3xl font-semibold tracking-tight text-foreground">
+      <div className="mt-4 font-mono text-[2rem] font-semibold leading-none tracking-tight text-foreground">
         <Number value={value} />
       </div>
       {delta && (
-        <div className={`mt-2 flex items-center gap-1 text-xs ${deltaUp ? "text-emerald-500" : "text-muted-foreground"}`}>
-          {deltaUp ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-          {delta}
+        <div
+          className={`mt-3 flex items-center gap-1 text-xs ${
+            isAction
+              ? "font-medium text-foreground"
+              : deltaUp
+                ? "text-emerald-500"
+                : "text-muted-foreground"
+          }`}
+        >
+          {isAction ? (
+            <>
+              {delta} <ArrowRight className="h-3 w-3" />
+            </>
+          ) : (
+            <>
+              {deltaUp ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+              {delta}
+            </>
+          )}
         </div>
       )}
     </div>
