@@ -186,10 +186,12 @@ async function makeMarkIcon(size) {
 }
 
 const icon32 = await makeMarkIcon(32);
+const icon48 = await makeMarkIcon(48);
 const icon180 = await makeMarkIcon(180);
 
 writeFileSync(join(root, 'public', 'favicon-32x32.png'), icon32);
+writeFileSync(join(root, 'public', 'favicon-48x48.png'), icon48);
 writeFileSync(join(root, 'public', 'apple-touch-icon.png'), icon180);
 await sharp(icon32).toFile(join(root, 'public', 'favicon.ico'));
 
-console.log('Generated public favicons: favicon.ico, favicon-32x32.png, apple-touch-icon.png');
+console.log('Generated public favicons: favicon.ico, favicon-32x32.png, favicon-48x48.png, apple-touch-icon.png');
