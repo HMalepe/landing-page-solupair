@@ -89,6 +89,20 @@
   isolation: isolate;
 }
 
+.nova-theme .nova-hero-sphere-shadow {
+  width: min(48vw, 300px);
+  height: min(10vw, 52px);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, oklch(0.52 0.24 288 / 0.55) 0%, transparent 72%);
+  filter: blur(10px);
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.nova-theme .nova-hero-sphere-body {
+  transform-origin: center center;
+}
+
 .nova-theme .nova-ball-track {
   position: absolute;
   inset: 0;

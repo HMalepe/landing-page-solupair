@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   animate,
   motion,
@@ -10,28 +10,28 @@ import {
 } from "framer-motion";
 import { BallSphere } from "@/components/nova/ball-sphere";
 import {
-  createHeroBallState,
-  dragVelocityToSim,
-  measureHeroDragBounds,
-  stepHeroBallPhysics,
-  type HeroBallState,
-} from "@/lib/hero-ball-physics";
+  clientToSphereOffset,
+  HeroSphereSimulator,
+  measureSphereBounds,
+} from "@/lib/hero-sphere-physics";
 
-/** Hero only — scroll + pointer face; draggable with gravity bounce-back. */
-export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDivElement | null> }) {
+type FaceBallProps = {
+  playAreaRef: React.RefObject<HTMLDivElement | null>;
+  headlineRef: React.RefObject<HTMLDivElement | null>;
+};
+
+/** Premium physics sphere — float, weighted drag, bounce, roll home. */
+export function FaceBall({ playAreaRef, headlineRef }: FaceBallProps) {
   const reduceMotion = useReducedMotion();
+  const shellRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const shadowRef = useRef<HTMLDivElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
-  const simRef = useRef<HeroBallState | null>(null);
-  const simulatingRef = useRef(false);
+  const simRef = useRef<HeroSphereSimulator | null>(null);
   const rafRef = useRef<number>(0);
-
-  const [dragging, setDragging] = useState(false);
-  const [simulating, setSimulating] = useState(false);
-
-  const dragX = useMotionValue(0);
-  const dragY = useMotionValue(0);
-  const simSquashX = useMotionValue(1);
-  const simSquashY = useMotionValue(1);
+  const lastFrameRef = useRef<number>(0);
+  const draggingRef = useRef(false);
+  const pointerIdRef = useRef<number | null>(null);
 
   const { scrollY } = useScroll();
   const lidRaw = useTransform(scrollY, [0, 220], [1, 0]);
@@ -56,126 +56,144 @@ export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDiv
       `${50 - n * 40}% ${50 - n * 40}% ${50 + n * 45}% ${50 + n * 45}% / ${50 - n * 35}% ${50 - n * 35}% ${50 + n * 55}% ${50 + n * 55}%`,
   );
 
-  const bounceAmp = useTransform(scrollY, [0, 600], [8, 34]);
-  const ampPx = useTransform(bounceAmp, (v) => `${v}px`);
   const fadeRaw = useTransform(scrollY, [140, 520], [0, 1]);
   const fade = useSpring(fadeRaw, { stiffness: 110, damping: 26 });
   const ballOpacity = useTransform(fade, [0, 1], [1, 0.42]);
-  const ballBlur = useTransform(fade, (v) => `blur(${v * 14}px)`);
+  const scrollBlur = useTransform(fade, (v) => `blur(${v * 14}px)`);
   const ballZ = useTransform(fade, [0, 1], [30, 12]);
 
   const setFaceEngaged = (on: boolean) => {
     animate(faceEngage, on ? 1 : 0, { duration: on ? 0.28 : 0.4, ease: "easeOut" });
   };
 
-  const stopSimulation = () => {
-    cancelAnimationFrame(rafRef.current);
-    simRef.current = null;
-    simulatingRef.current = false;
-    setSimulating(false);
-    simSquashX.set(1);
-    simSquashY.set(1);
-    dragX.stop();
-    dragY.stop();
+  const measureAndApplyBounds = () => {
+    const sim = simRef.current;
+    const playArea = playAreaRef.current;
+    const anchor = headlineRef.current;
+    const ball = ballRef.current;
+    if (!sim || !playArea || !anchor || !ball) return;
+    sim.setBounds(measureSphereBounds(playArea, anchor, ball.offsetWidth / 2), ball.offsetWidth / 2);
   };
 
-  const startSimulation = (vx: number, vy: number) => {
-    const playArea = playAreaRef.current;
-    const ball = ballRef.current;
-    if (!playArea || !ball) return;
+  const applyRender = () => {
+    const sim = simRef.current;
+    const shell = shellRef.current;
+    const body = bodyRef.current;
+    const shadow = shadowRef.current;
+    if (!sim || !shell || !body || !shadow) return;
 
-    const bounds = measureHeroDragBounds(playArea, ball, dragX.get(), dragY.get());
-    simRef.current = createHeroBallState(dragX.get(), dragY.get(), vx, vy);
-    simulatingRef.current = true;
-    setSimulating(true);
+    const s = sim.getRenderState();
+    shell.style.transform = `translate3d(calc(-50% + ${s.x}px), calc(-50% + ${s.y}px), 0) rotate(${s.rotation}rad)`;
+    shell.style.cursor = draggingRef.current ? "grabbing" : "grab";
+    body.style.transform = `scale(${s.squashX * s.breathScale}, ${s.squashY * s.breathScale})`;
+    body.style.filter = s.motionBlur > 0.2 ? `blur(${s.motionBlur}px)` : "none";
+    shadow.style.transform = `translateX(-50%) scale(${s.shadowScaleX}, ${s.shadowScaleY})`;
+    shadow.style.opacity = `${s.shadowOpacity}`;
+  };
 
-    const tick = () => {
-      const state = simRef.current;
-      const area = playAreaRef.current;
-      const el = ballRef.current;
-      if (!state || !area || !el) return;
+  useEffect(() => {
+    simRef.current = new HeroSphereSimulator();
+    measureAndApplyBounds();
+    applyRender();
 
-      const done = stepHeroBallPhysics(state, bounds);
-      dragX.set(state.x);
-      dragY.set(state.y);
-      simSquashX.set(state.squashX);
-      simSquashY.set(state.squashY);
+    const onResize = () => measureAndApplyBounds();
+    window.addEventListener("resize", onResize);
 
-      if (done) {
-        stopSimulation();
-        return;
+    const tick = (now: number) => {
+      const sim = simRef.current;
+      if (sim) {
+        const last = lastFrameRef.current || now;
+        const dt = (now - last) / 1000;
+        lastFrameRef.current = now;
+        if (!reduceMotion) sim.step(dt);
+        else sim.step(dt * 0.4);
+        applyRender();
       }
-
       rafRef.current = requestAnimationFrame(tick);
     };
 
     rafRef.current = requestAnimationFrame(tick);
-  };
 
-  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [headlineRef, playAreaRef, reduceMotion]);
 
-  const handlePointerDown = () => {
-    stopSimulation();
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (reduceMotion) return;
+    const sim = simRef.current;
+    const anchor = headlineRef.current;
+    if (!sim || !anchor) return;
+
+    measureAndApplyBounds();
+    const offset = clientToSphereOffset(e.clientX, e.clientY, anchor);
+    sim.pointerDown(sim.x, sim.y, offset.x, offset.y);
+    draggingRef.current = true;
+    pointerIdRef.current = e.pointerId;
+    e.currentTarget.setPointerCapture(e.pointerId);
     setFaceEngaged(true);
   };
 
-  const onDragEnd = (_: unknown, info: { velocity: { x: number; y: number } }) => {
-    setDragging(false);
-    if (reduceMotion) {
-      animate(dragX, 0, { type: "spring", stiffness: 120, damping: 22, mass: 1.1 });
-      animate(dragY, 0, { type: "spring", stiffness: 120, damping: 22, mass: 1.1 });
-      return;
-    }
-    const { vx, vy } = dragVelocityToSim(info.velocity.x, info.velocity.y);
-    startSimulation(vx, vy);
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current || pointerIdRef.current !== e.pointerId) return;
+    const sim = simRef.current;
+    const anchor = headlineRef.current;
+    if (!sim || !anchor) return;
+    const offset = clientToSphereOffset(e.clientX, e.clientY, anchor);
+    sim.pointerMove(offset.x, offset.y);
   };
 
-  const idleBounce = !dragging && !simulating;
+  const endPointer = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (pointerIdRef.current !== e.pointerId) return;
+    const sim = simRef.current;
+    if (sim && draggingRef.current) sim.pointerUp();
+    draggingRef.current = false;
+    pointerIdRef.current = null;
+    setFaceEngaged(false);
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      /* already released */
+    }
+  };
 
   return (
     <motion.div
-      ref={ballRef}
-      drag={!reduceMotion}
-      dragConstraints={playAreaRef}
-      dragElastic={0.1}
-      dragMomentum={false}
-      onPointerDownCapture={handlePointerDown}
-      onDragStart={() => {
-        stopSimulation();
-        dragX.stop();
-        dragY.stop();
-        setDragging(true);
-        setFaceEngaged(true);
-      }}
-      onDragEnd={onDragEnd}
-      onHoverStart={() => setFaceEngaged(true)}
-      onHoverEnd={() => {
-        if (!dragging) setFaceEngaged(false);
-      }}
-      onPointerUp={() => {
-        if (!dragging) setFaceEngaged(false);
-      }}
-      whileDrag={{ scale: 1.04, cursor: "grabbing" }}
+      ref={shellRef}
       role="img"
       aria-label="Drag the face ball"
-      className="absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
-      style={{ x: dragX, y: dragY, opacity: ballOpacity, filter: ballBlur, zIndex: ballZ }}
+      className="nova-hero-sphere absolute left-1/2 top-1/2 touch-none select-none will-change-transform"
+      style={{ opacity: ballOpacity, zIndex: ballZ }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endPointer}
+      onPointerCancel={endPointer}
+      onHoverStart={() => setFaceEngaged(true)}
+      onHoverEnd={() => {
+        if (!draggingRef.current) setFaceEngaged(false);
+      }}
     >
-      <motion.div
-        className={idleBounce ? "h-full w-full animate-[novaBounce_2.8s_ease-in-out_infinite]" : "h-full w-full"}
-        style={{
-          ["--nova-amp" as string]: ampPx,
-          scaleX: simulating ? simSquashX : 1,
-          scaleY: simulating ? simSquashY : 1,
-        }}
-      >
-        <BallSphere
-          lidScale={combinedLid}
-          mouthRadius={mouthRadius}
-          mouthHeight={mouthHeight}
-          mouthWidth={mouthWidth}
-        />
-      </motion.div>
+      <div
+        ref={shadowRef}
+        aria-hidden
+        className="nova-hero-sphere-shadow pointer-events-none absolute left-1/2 top-[88%]"
+      />
+      <div ref={ballRef} className="relative">
+        <div
+          ref={bodyRef}
+          className="nova-hero-sphere-body relative h-[280px] w-[280px] sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px] will-change-transform"
+        >
+          <motion.div className="h-full w-full" style={{ filter: scrollBlur }}>
+            <BallSphere
+              lidScale={combinedLid}
+              mouthRadius={mouthRadius}
+              mouthHeight={mouthHeight}
+              mouthWidth={mouthWidth}
+            />
+          </motion.div>
+        </div>
+      </div>
     </motion.div>
   );
 }

@@ -9,6 +9,7 @@ import "@/styles-nova.css";
 
 function Hero() {
   const playAreaRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLDivElement>(null);
 
   return (
     <section className="nova-hero-bg relative z-10 min-h-screen overflow-hidden text-foreground">
@@ -38,8 +39,8 @@ function Hero() {
           AUTOMATION &amp; WEB DESIGN
         </div>
 
-        <div className="relative w-full">
-          <FaceBall playAreaRef={playAreaRef} />
+        <div ref={headlineRef} className="relative w-full">
+          <FaceBall playAreaRef={playAreaRef} headlineRef={headlineRef} />
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
