@@ -1,7 +1,24 @@
-# Deploy solupair.co.za from GitHub (no Lovable)
+# Deploy Solupair landing page (Cloudflare Workers)
 
-**Canonical code:** `marineflow` monorepo → `landing-page-solupair-check/`. Mirror repo: [landing-page-solupair](https://github.com/HMalepe/landing-page-solupair).
+**Live preview:** https://solupair-landing.holiday-malepe.workers.dev  
+**Target domain:** `solupair.co.za`
 
-Deploy workflow: `marineflow/.github/workflows/deploy-landing-page.yml` (pushes to `master`).
+## Cloudflare Git (primary)
 
-See `landing-page-solupair` repo `DEPLOY.md` for Cloudflare secrets and domain setup.
+Worker **`solupair-landing`** → **Settings → Builds**:
+
+| Setting | Value |
+|---------|--------|
+| Repository | `HMalepe/landing-page-solupair` |
+| Production branch | `main` |
+| Root directory | `/` |
+| Build command | `npm install && npm run cf:build` |
+| Deploy command | `npm run cf:deploy` |
+
+GitHub Actions deploy is disabled on push (manual only) so it does not fight Cloudflare Builds.
+
+## Custom domain
+
+1. Add `solupair.co.za` to Cloudflare (nameservers).
+2. Worker → **Domains & Routes** → add `solupair.co.za` and `www.solupair.co.za`.
+3. Remove domain from Lovable.
