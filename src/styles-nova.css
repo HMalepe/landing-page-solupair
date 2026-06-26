@@ -220,7 +220,8 @@
   perspective: 1600px;
   transform-style: preserve-3d;
   min-height: min(58vh, 560px);
-  contain: layout style;
+  overflow: hidden;
+  contain: layout style paint;
 }
 
 .nova-theme .nova-project-card {

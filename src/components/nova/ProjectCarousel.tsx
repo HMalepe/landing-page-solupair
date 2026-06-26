@@ -1,5 +1,5 @@
 import { memo, useLayoutEffect, useRef, useState } from "react";
-import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import {
   computeProjectCardMotion,
@@ -27,25 +27,18 @@ const ScrollProjectCard = memo(function ScrollProjectCard({
   stageWidth: number;
   total: number;
 }) {
-  const x = useTransform(slideProgress, (sp) => {
-    const m = computeProjectCardMotion(index, sp, total);
-    return (m.xPercent / 100) * stageWidth;
-  });
-  const transform = useTransform(slideProgress, (sp) => {
-    const m = computeProjectCardMotion(index, sp, total);
-    return {
-      scale: m.scale,
-      opacity: m.opacity,
-      zIndex: m.zIndex,
-    };
-  });
-  const scale = useTransform(transform, (t) => t.scale);
-  const opacity = useTransform(transform, (t) => t.opacity);
-  const zIndex = useTransform(transform, (t) => t.zIndex);
+  const motion = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total));
+
+  const x = useTransform(motion, (m) => (m.xPercent / 100) * stageWidth);
+  const y = useTransform(motion, (m) => m.yPx);
+  const scale = useTransform(motion, (m) => m.scale);
+  const opacity = useTransform(motion, (m) => m.opacity);
+  const zIndex = useTransform(motion, (m) => m.zIndex);
+  const visibility = useTransform(motion, (m) => (m.visible ? "visible" : "hidden"));
 
   return (
     <motion.article
-      style={{ x, scale, opacity, zIndex }}
+      style={{ x, y, scale, opacity, zIndex, visibility }}
       className="nova-project-card group absolute inset-0 overflow-hidden rounded-2xl border border-white/10"
     >
       <img
@@ -114,13 +107,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectItem[] }) {
     offset: ["start start", "end end"],
   });
 
-  const rawSlide = useTransform(scrollYProgress, [0, 1], [0, PROJECT_SCROLL_SEGMENTS]);
-  const slideProgress = useSpring(rawSlide, {
-    stiffness: 85,
-    damping: 26,
-    mass: 0.55,
-    restDelta: 0.0005,
-  });
+  const slideProgress = useTransform(scrollYProgress, [0, 1], [0, PROJECT_SCROLL_SEGMENTS]);
 
   useLayoutEffect(() => {
     const el = stageRef.current;
