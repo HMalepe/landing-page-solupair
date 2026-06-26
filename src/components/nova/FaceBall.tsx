@@ -122,8 +122,8 @@ export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDiv
   const onDragEnd = (_: unknown, info: { velocity: { x: number; y: number } }) => {
     setDragging(false);
     if (reduceMotion) {
-      animate(dragX, 0, { type: "spring", stiffness: 320, damping: 28 });
-      animate(dragY, 0, { type: "spring", stiffness: 320, damping: 28 });
+      animate(dragX, 0, { type: "spring", stiffness: 120, damping: 22, mass: 1.1 });
+      animate(dragY, 0, { type: "spring", stiffness: 120, damping: 22, mass: 1.1 });
       return;
     }
     const { vx, vy } = dragVelocityToSim(info.velocity.x, info.velocity.y);

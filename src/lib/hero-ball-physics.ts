@@ -14,11 +14,24 @@ export type HeroDragBounds = {
   bottom: number;
 };
 
-const GRAVITY = 0.42;
-const AIR_DRAG = 0.988;
-const WALL_RESTITUTION = 0.74;
-const SETTLE_SPEED = 0.55;
-const SETTLE_DIST = 3;
+const GRAVITY = 0.38;
+const AIR_DRAG = 0.989;
+const WALL_RESTITUTION = 0.72;
+const SETTLE_SPEED = 0.12;
+const SETTLE_DIST = 0.35;
+
+function applyHomePull(state: HeroBallState) {
+  const dist = Math.hypot(state.x, state.y);
+  if (dist < 0.001) return;
+
+  const speed = Math.hypot(state.vx, state.vy);
+  const distFactor = Math.min(dist / 320, 1);
+  const slowFactor = speed < 2.2 ? 1 + (2.2 - speed) * 0.35 : 1;
+  const pull = (0.0028 + distFactor * 0.0055) * slowFactor;
+
+  state.vx -= state.x * pull;
+  state.vy -= state.y * pull;
+}
 
 function applySquash(state: HeroBallState, nx: number, ny: number, intensity: number) {
   const ax = Math.abs(nx);
@@ -62,6 +75,8 @@ export function measureHeroDragBounds(
 }
 
 export function stepHeroBallPhysics(state: HeroBallState, bounds: HeroDragBounds): boolean {
+  applyHomePull(state);
+
   state.vy += GRAVITY;
   state.x += state.vx;
   state.y += state.vy;
@@ -93,6 +108,12 @@ export function stepHeroBallPhysics(state: HeroBallState, bounds: HeroDragBounds
   const speed = Math.hypot(state.vx, state.vy);
   const dist = Math.hypot(state.x, state.y);
 
+  if (dist < 24 && speed < 0.55) {
+    const creep = 0.018 + (24 - dist) * 0.0012;
+    state.vx -= state.x * creep;
+    state.vy -= state.y * creep;
+  }
+
   if (speed < SETTLE_SPEED && dist < SETTLE_DIST) {
     state.x = 0;
     state.y = 0;
@@ -101,13 +122,6 @@ export function stepHeroBallPhysics(state: HeroBallState, bounds: HeroDragBounds
     state.squashX = 1;
     state.squashY = 1;
     return true;
-  }
-
-  if (speed < SETTLE_SPEED && dist < SETTLE_DIST * 4) {
-    state.x *= 0.82;
-    state.y *= 0.82;
-    state.vx *= 0.7;
-    state.vy *= 0.7;
   }
 
   return false;
