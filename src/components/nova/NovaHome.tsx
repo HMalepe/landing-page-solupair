@@ -36,7 +36,7 @@ function NovaLogo() {
   );
 }
 
-/** Hero only — scroll drives eyes, smile, and bounce amplitude. */
+/** Hero only — scroll drives eyes, smile, fade-back, and bounce amplitude. */
 function FaceBall() {
   const { scrollY } = useScroll();
   const lidRaw = useTransform(scrollY, [0, 220], [1, 0]);
@@ -52,11 +52,17 @@ function FaceBall() {
   );
   const bounceAmp = useTransform(scrollY, [0, 600], [8, 34]);
   const ampPx = useTransform(bounceAmp, (v) => `${v}px`);
+  const fadeRaw = useTransform(scrollY, [140, 520], [0, 1]);
+  const fade = useSpring(fadeRaw, { stiffness: 110, damping: 26 });
+  const ballOpacity = useTransform(fade, [0, 1], [1, 0.42]);
+  const ballBlur = useTransform(fade, (v) => `blur(${v * 14}px)`);
+  const ballZ = useTransform(fade, [0, 1], [10, 0]);
 
   return (
-    <div
+    <motion.div
       aria-hidden
-      className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
+      className="pointer-events-none absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
+      style={{ opacity: ballOpacity, filter: ballBlur, zIndex: ballZ }}
     >
       <motion.div
         className="h-full w-full animate-[novaBounce_2.8s_ease-in-out_infinite]"
@@ -69,7 +75,7 @@ function FaceBall() {
           mouthWidth={mouthWidth}
         />
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -105,7 +111,7 @@ function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="relative z-0 w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter text-foreground"
+            className="relative z-[1] w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter text-foreground"
             style={{ fontSize: "clamp(4rem, 18vw, 18rem)" }}
           >
             WE DESIGN
@@ -114,7 +120,7 @@ function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15 }}
-            className="nova-gradient-text relative z-0 w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter"
+            className="nova-gradient-text relative z-[1] w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter"
             style={{ fontSize: "clamp(4rem, 18vw, 18rem)" }}
           >
             THE FUTURE
