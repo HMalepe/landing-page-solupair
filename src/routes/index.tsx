@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import project1 from "@/assets/project1.jpg";
 import project2 from "@/assets/project2.jpg";
@@ -31,14 +32,62 @@ function NovaLogo() {
 }
 
 function FaceBall() {
+  const { scrollY } = useScroll();
+  // Eye lid opening: closed (1) → open (0) between 0 and 240px scroll
+  const lidScaleRaw = useTransform(scrollY, [0, 240], [1, 0]);
+  const lidScale = useSpring(lidScaleRaw, { stiffness: 120, damping: 20 });
+  // Smile curve: 0 (flat dot) → 1 (smile) between 200 and 500px
+  const smileRaw = useTransform(scrollY, [200, 500], [0, 1]);
+  const smile = useSpring(smileRaw, { stiffness: 120, damping: 20 });
+  const mouthRadius = useTransform(smile, (v) => `${50 - v * 35}% ${50 - v * 35}% ${50 + v * 40}% ${50 + v * 40}% / ${50 - v * 30}% ${50 - v * 30}% ${50 + v * 50}% ${50 + v * 50}%`);
+  const mouthHeight = useTransform(smile, (v) => `${36 + v * 20}px`);
+  const mouthWidth = useTransform(smile, (v) => `${22 + v * 60}px`);
+  // Bounce amplitude grows with scroll
+  const bounceAmp = useTransform(scrollY, [0, 600], [10, 36]);
   return (
     <motion.div
       aria-hidden
-      initial={{ y: 0 }}
-      animate={{ y: [0, -18, 0] }}
-      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
     >
+      <motion.div
+        animate={{ y: [0, -1, 0] }}
+        style={{
+          // chain bounce via CSS variable approach using framer
+        }}
+      >
+        <BouncingBall lidScale={lidScale} mouthRadius={mouthRadius} mouthHeight={mouthHeight} mouthWidth={mouthWidth} bounceAmp={bounceAmp} />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function BouncingBall({ lidScale, mouthRadius, mouthHeight, mouthWidth, bounceAmp }: any) {
+  return (
+    <motion.div
+      animate={{ y: [0, -1, 0] }}
+      style={{
+        // we'll drive bounce via separate motion with dynamic amplitude
+      }}
+    >
+      <InnerBall lidScale={lidScale} mouthRadius={mouthRadius} mouthHeight={mouthHeight} mouthWidth={mouthWidth} bounceAmp={bounceAmp} />
+    </motion.div>
+  );
+}
+
+function InnerBall({ lidScale, mouthRadius, mouthHeight, mouthWidth, bounceAmp }: any) {
+  // bounce: oscillate y using a looped tween whose amplitude follows scroll
+  const yOffset = useTransform(bounceAmp, (a: number) => a);
+  return (
+    <motion.div
+      animate={{ y: [0, -1, 0, 1, 0] }}
+      transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+      style={{ y: undefined }}
+    >
+      <motion.div
+        style={{ y: useTransform(yOffset, (v) => -v) }}
+        animate={{ scale: [1, 1.02, 1] }}
+        transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+      >
       <div
         className="relative h-full w-full rounded-full"
         style={{
@@ -48,12 +97,39 @@ function FaceBall() {
         }}
       >
         {/* eyes */}
-        <div className="absolute left-[28%] top-[42%] text-[64px] leading-none text-black sm:text-[84px] lg:text-[104px]">✻</div>
-        <div className="absolute right-[28%] top-[42%] text-[64px] leading-none text-black sm:text-[84px] lg:text-[104px]">✻</div>
-        {/* mouth */}
-        <div className="absolute left-1/2 top-[68%] h-[36px] w-[22px] -translate-x-1/2 rounded-full bg-black sm:h-[46px] sm:w-[28px] lg:h-[58px] lg:w-[34px]" />
+        <Eye side="left" lidScale={lidScale} />
+        <Eye side="right" lidScale={lidScale} />
+        {/* mouth — morphs from neutral dot to smile */}
+        <motion.div
+          className="absolute left-1/2 top-[66%] -translate-x-1/2 bg-black"
+          style={{
+            width: mouthWidth,
+            height: mouthHeight,
+            borderRadius: mouthRadius,
+          }}
+        />
       </div>
+      </motion.div>
     </motion.div>
+  );
+}
+
+function Eye({ side, lidScale }: { side: "left" | "right"; lidScale: any }) {
+  const posClass = side === "left" ? "left-[26%]" : "right-[26%]";
+  return (
+    <div className={`absolute ${posClass} top-[38%] h-[60px] w-[60px] sm:h-[80px] sm:w-[80px] lg:h-[100px] lg:w-[100px]`}>
+      {/* open eye */}
+      <div className="absolute inset-0 flex items-center justify-center text-[60px] leading-none text-black sm:text-[80px] lg:text-[100px]">✻</div>
+      {/* lid that scales down to reveal eye */}
+      <motion.div
+        className="absolute inset-0 origin-center rounded-full"
+        style={{
+          scaleY: lidScale,
+          background:
+            "radial-gradient(circle at 32% 28%, oklch(0.72 0.18 275) 0%, oklch(0.48 0.26 275) 55%, oklch(0.32 0.22 275) 100%)",
+        }}
+      />
+    </div>
   );
 }
 
