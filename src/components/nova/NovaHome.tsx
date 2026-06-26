@@ -1,5 +1,8 @@
+import { useRef, useState } from "react";
 import {
+  animate,
   motion,
+  useMotionValue,
   useReducedMotion,
   useScroll,
   useSpring,
@@ -12,8 +15,14 @@ import { ViewportPhysicsBalls } from "@/components/nova/ViewportPhysicsBalls";
 import { Contact, NovaLogo, projects } from "@/components/nova/nova-home-shared";
 import "@/styles-nova.css";
 
-/** Hero only — scroll drives eyes, smile, fade-back, and bounce amplitude. */
-function FaceBall() {
+const HERO_BALL_SNAP_SPRING = { type: "spring" as const, stiffness: 400, damping: 16, mass: 0.85 };
+
+/** Hero only — scroll drives eyes, smile, fade-back, bounce; draggable with snap-back. */
+function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDivElement | null> }) {
+  const reduceMotion = useReducedMotion();
+  const [dragging, setDragging] = useState(false);
+  const dragX = useMotionValue(0);
+  const dragY = useMotionValue(0);
   const { scrollY } = useScroll();
   const lidRaw = useTransform(scrollY, [0, 220], [1, 0]);
   const lidScale = useSpring(lidRaw, { stiffness: 140, damping: 22 });
@@ -34,14 +43,30 @@ function FaceBall() {
   const ballBlur = useTransform(fade, (v) => `blur(${v * 14}px)`);
   const ballZ = useTransform(fade, [0, 1], [10, 0]);
 
+  const snapBack = () => {
+    animate(dragX, 0, HERO_BALL_SNAP_SPRING);
+    animate(dragY, 0, HERO_BALL_SNAP_SPRING);
+  };
+
   return (
     <motion.div
-      aria-hidden
-      className="pointer-events-none absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
-      style={{ opacity: ballOpacity, filter: ballBlur, zIndex: ballZ }}
+      drag={reduceMotion ? false : true}
+      dragConstraints={playAreaRef}
+      dragElastic={0.14}
+      dragMomentum
+      onDragStart={() => setDragging(true)}
+      onDragEnd={() => {
+        setDragging(false);
+        snapBack();
+      }}
+      whileDrag={{ scale: 1.04, cursor: "grabbing" }}
+      role="img"
+      aria-label="Drag the face ball"
+      className="absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
+      style={{ x: dragX, y: dragY, opacity: ballOpacity, filter: ballBlur, zIndex: ballZ }}
     >
       <motion.div
-        className="h-full w-full animate-[novaBounce_2.8s_ease-in-out_infinite]"
+        className={dragging ? "h-full w-full" : "h-full w-full animate-[novaBounce_2.8s_ease-in-out_infinite]"}
         style={{ ["--nova-amp" as string]: ampPx }}
       >
         <BallSphere
@@ -56,6 +81,8 @@ function FaceBall() {
 }
 
 function Hero() {
+  const playAreaRef = useRef<HTMLDivElement>(null);
+
   return (
     <section className="nova-hero-bg relative z-10 min-h-screen overflow-hidden text-foreground">
       <header className="relative z-20 flex items-center justify-between px-6 py-6 sm:px-10 lg:px-14">
@@ -76,13 +103,16 @@ function Hero() {
         </nav>
       </header>
 
-      <div className="relative flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center px-2">
+      <div
+        ref={playAreaRef}
+        className="relative flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center px-2"
+      >
         <div className="nova-gradient-text relative z-0 mb-4 text-center text-xs font-medium tracking-[0.28em] sm:text-sm">
           AUTOMATION &amp; WEB DESIGN
         </div>
 
         <div className="relative w-full">
-          <FaceBall />
+          <FaceBall playAreaRef={playAreaRef} />
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
