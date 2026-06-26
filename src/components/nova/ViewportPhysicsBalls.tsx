@@ -3,13 +3,10 @@ import { useReducedMotion } from "framer-motion";
 import { BallSphere } from "@/components/nova/ball-sphere";
 import {
   ballDiameterPx,
-  convergeBalls,
   createPhysicsBall,
   stepPhysics,
   type PhysicsBall,
 } from "@/lib/viewport-ball-physics";
-
-const MEET_INTERVAL_MS = 4500;
 
 function applyBallTransform(el: HTMLDivElement | null, ball: PhysicsBall) {
   if (!el) return;
@@ -54,8 +51,18 @@ function PhysicsPair() {
       const radius = ballDiameterPx(window.innerWidth) / 2;
       if (ballsRef.current.length === 0) {
         ballsRef.current = [
-          createPhysicsBall(boundsRef.current, radius),
-          createPhysicsBall(boundsRef.current, radius),
+          createPhysicsBall(boundsRef.current, radius, {
+            speedScale: 1.18,
+            minSpeed: 0.22,
+            maxSpeed: 7.8,
+            driftStrength: 0.42,
+          }),
+          createPhysicsBall(boundsRef.current, radius, {
+            speedScale: 0.92,
+            minSpeed: 0.16,
+            maxSpeed: 6.4,
+            driftStrength: 0.68,
+          }),
         ];
       } else {
         for (const ball of ballsRef.current) {
@@ -66,10 +73,6 @@ function PhysicsPair() {
 
     measure();
     window.addEventListener("resize", measure);
-
-    const meetTimer = window.setInterval(() => {
-      convergeBalls(ballsRef.current);
-    }, MEET_INTERVAL_MS);
 
     const tick = (now: number) => {
       const last = lastFrameRef.current || now;
@@ -89,7 +92,6 @@ function PhysicsPair() {
 
     return () => {
       window.removeEventListener("resize", measure);
-      window.clearInterval(meetTimer);
       cancelAnimationFrame(rafRef.current);
     };
   }, []);
