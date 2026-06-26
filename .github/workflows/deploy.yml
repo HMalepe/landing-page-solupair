@@ -34,6 +34,9 @@ jobs:
       - name: Clear Wrangler deploy metadata
         run: rm -rf .wrangler
 
+      - name: Patch Wrangler config for solupair.co.za
+        run: node scripts/patch-wrangler-config.mjs
+
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v3
         with:
