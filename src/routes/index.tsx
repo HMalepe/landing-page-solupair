@@ -166,8 +166,8 @@ function Hero() {
           </motion.h1>
         </div>
 
-        <p className="mt-10 max-w-md text-center text-xs tracking-[0.2em] text-foreground/70 sm:text-sm">
-          DIGITAL EXPERIENCES CRAFTED WITH PRECISION, MOTION &amp; PURPOSE.
+        <p className="mt-10 max-w-2xl text-center text-xs tracking-[0.2em] text-foreground/70 sm:text-sm">
+          WEB APPLICATIONS, DASHBOARDS, WHATSAPP BOOKING AGENTS — AND PLENTY MORE BUSINESS SOLUTIONS
         </p>
       </div>
     </section>
