@@ -5,6 +5,7 @@ import project1 from "@/assets/project1.jpg";
 import project2 from "@/assets/project2.jpg";
 import project3 from "@/assets/project3.jpg";
 import project4 from "@/assets/project4.jpg";
+import solupairLogo from "@/assets/solupair-logo.png";
 
 export const Route = createFileRoute("/")({
   component: NovaHome,
@@ -17,16 +18,15 @@ const projects = [
   { name: "Flux", tag: "Motion Platform", img: project4 },
 ];
 
-function NovaLogo() {
+function SolupairLogo() {
   return (
-    <div className="flex items-center gap-1 font-display text-2xl font-black tracking-tight text-primary">
-      <span>N</span>
-      <span className="relative inline-flex h-6 w-6 items-center justify-center">
-        <span className="absolute inset-0 rounded-full border-[2.5px] border-primary" />
-        <span className="relative">Ø</span>
-      </span>
-      <span>VA</span>
-    </div>
+    <a href="https://solupair.co.za" className="inline-flex items-center">
+      <img
+        src={solupairLogo}
+        alt="Solupair"
+        className="h-10 w-10 object-contain sm:h-12 sm:w-12"
+      />
+    </a>
   );
 }
 
@@ -122,7 +122,7 @@ function Hero() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <header className="relative z-20 flex items-center justify-between px-6 py-6 sm:px-10 lg:px-14">
-        <NovaLogo />
+        <SolupairLogo />
         <nav className="flex items-center gap-2 sm:gap-3">
           <a
             href="#work"
