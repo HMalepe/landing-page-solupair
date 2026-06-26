@@ -282,22 +282,7 @@ function Contact() {
           </div>
 
           <div className="lg:pl-12">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground/60">
-              Follow Us
-            </div>
-            <div className="mt-4 flex flex-wrap gap-3">
-              {["Instagram", "Twitter", "LinkedIn", "Dribbble"].map((label) => (
-                <a
-                  key={label}
-                  href="#"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-foreground transition hover:border-primary hover:text-primary"
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
-
-            <div className="mt-12 space-y-6">
+            <div className="space-y-6">
               <div>
                 <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground/60">Email</div>
                 <div className="mt-1 text-base text-foreground">hello@nova.studio</div>
