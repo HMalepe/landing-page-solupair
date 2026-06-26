@@ -133,8 +133,8 @@ export function ProjectCarousel({ projects }: { projects: ProjectItem[] }) {
       <div className="nova-projects-pin">
         <div className="mx-auto flex h-full max-w-7xl flex-col px-6 pb-10 pt-16 sm:px-10 lg:px-14 lg:pt-20">
           <ProjectsHeader />
-          <p className="mt-4 text-[11px] font-medium uppercase tracking-[0.28em] text-foreground/45">
-            Scroll to explore
+          <p className="mt-4 max-w-2xl text-[11px] font-medium uppercase tracking-[0.28em] text-foreground/45">
+            Scroll to explore digital experiences that push the boundaries of web design &amp; automation.
           </p>
 
           <div ref={stageRef} className="nova-projects-stage relative mx-auto mt-10 w-full max-w-5xl flex-1">
