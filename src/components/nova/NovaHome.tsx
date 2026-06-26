@@ -5,36 +5,12 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import { CONTACT_EMAIL, LEGAL_NAME, LOCATION_LABEL } from "@/lib/site";
-import project1 from "@/assets/project1.jpg";
-import project2 from "@/assets/project2.jpg";
-import project3 from "@/assets/project3.jpg";
-import project4 from "@/assets/project4.jpg";
 import { BallSphere } from "@/components/nova/ball-sphere";
-import { ProjectCarousel, ProjectsStaticGrid } from "@/components/nova/ProjectCarousel";
+import { ProjectCarousel } from "@/components/nova/ProjectCarousel";
+import { ProjectsStaticGrid } from "@/components/nova/ProjectsStaticGrid";
 import { ViewportDriftBall } from "@/components/nova/ViewportDriftBall";
+import { Contact, NovaLogo, projects } from "@/components/nova/nova-home-shared";
 import "@/styles-nova.css";
-
-const projects = [
-  { name: "Lumina", tag: "Interactive Dashboard", img: project1 },
-  { name: "Chroma", tag: "3D Brand Identity", img: project2 },
-  { name: "Forma", tag: "Product Showcase", img: project3 },
-  { name: "Flux", tag: "Motion Platform", img: project4 },
-];
-
-function NovaLogo() {
-  return (
-    <div className="nova-gradient-text flex items-center gap-1 font-display text-2xl font-black tracking-tight">
-      <span>N</span>
-      <span className="relative inline-flex h-6 w-6 items-center justify-center">
-        <span className="nova-logo-ring absolute inset-0 rounded-full border-[2.5px]" />
-        <span className="relative">Ø</span>
-      </span>
-      <span>VA</span>
-    </div>
-  );
-}
 
 /** Hero only — scroll drives eyes, smile, fade-back, and bounce amplitude. */
 function FaceBall() {
@@ -130,97 +106,6 @@ function Hero() {
         <p className="mt-10 max-w-xl px-4 text-center text-[11px] leading-relaxed tracking-[0.16em] text-foreground/70 sm:text-xs sm:tracking-[0.18em]">
           WE BUILD WEB APPLICATIONS WITH ADMIN DASHBOARDS, WHATSAPP BOOKING AGENTS — AND PLENTY MORE ON THE WAY.
         </p>
-      </div>
-    </section>
-  );
-}
-
-function Contact() {
-  return (
-    <section id="contact" className="relative z-[1] min-h-screen px-6 py-24 sm:px-10 lg:px-14 lg:py-32">
-      <div className="mx-auto max-w-7xl border-t border-white/10 pt-16">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-          <div>
-            <h2
-              className="font-display font-black uppercase leading-[0.9] tracking-tighter text-foreground"
-              style={{ fontSize: "clamp(2.5rem, 8vw, 7rem)" }}
-            >
-              Let&apos;s Talk
-            </h2>
-            <p className="mt-6 max-w-md text-xs uppercase tracking-[0.18em] text-foreground/70 sm:text-sm">
-              Got a project in mind? We&apos;d love to hear about it. Drop us a line and let&apos;s create something
-              extraordinary.
-            </p>
-
-            <form onSubmit={(e) => e.preventDefault()} className="mt-10 max-w-md space-y-6">
-              <input
-                placeholder="YOUR NAME"
-                className="w-full border-b border-white/20 bg-transparent py-3 text-sm tracking-wider text-foreground placeholder:text-foreground/40 focus:border-[var(--solupair-violet)] focus:outline-none focus:shadow-[0_1px_0_0_var(--solupair-cyan)]"
-              />
-              <input
-                type="email"
-                placeholder="YOUR EMAIL"
-                className="w-full border-b border-white/20 bg-transparent py-3 text-sm tracking-wider text-foreground placeholder:text-foreground/40 focus:border-[var(--solupair-violet)] focus:outline-none focus:shadow-[0_1px_0_0_var(--solupair-cyan)]"
-              />
-              <textarea
-                rows={3}
-                placeholder="Tell us about your project"
-                className="w-full resize-none border-b border-white/20 bg-transparent py-3 text-sm tracking-wider text-foreground placeholder:text-foreground/40 focus:border-[var(--solupair-violet)] focus:outline-none focus:shadow-[0_1px_0_0_var(--solupair-cyan)]"
-              />
-              <button
-                type="submit"
-                className="nova-cta-btn inline-flex items-center gap-2 rounded-full border px-6 py-3 text-xs font-bold uppercase tracking-[0.2em]"
-              >
-                Send Message <ArrowUpRight className="h-4 w-4" />
-              </button>
-            </form>
-          </div>
-
-          <div className="lg:pl-12">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground/60">Follow Us</div>
-            <div className="mt-4 flex flex-wrap gap-3">
-              {["Instagram", "Twitter", "LinkedIn", "Dribbble"].map((label) => (
-                <a
-                  key={label}
-                  href="#"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-foreground transition hover:border-[var(--solupair-violet)] hover:text-[var(--solupair-cyan)]"
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
-
-            <div className="mt-12 space-y-6">
-              <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground/60">Email</div>
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="mt-1 block text-base text-foreground hover:text-[var(--solupair-cyan)]"
-                >
-                  {CONTACT_EMAIL}
-                </a>
-              </div>
-              <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground/60">Location</div>
-                <div className="mt-1 text-base text-foreground">{LOCATION_LABEL}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-20 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 text-[11px] uppercase tracking-[0.2em] text-foreground/60">
-          <div>
-            © {new Date().getFullYear()} {LEGAL_NAME}. All rights reserved.
-          </div>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-[var(--solupair-cyan)]">
-              Privacy
-            </a>
-            <a href="#" className="hover:text-[var(--solupair-cyan)]">
-              Terms
-            </a>
-          </div>
-        </div>
       </div>
     </section>
   );

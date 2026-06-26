@@ -1,9 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { NovaHome } from "@/components/nova/NovaHome";
+import { NovaHomeFallback } from "@/components/nova/nova-home-shared";
 import { absoluteUrl } from "@/lib/site";
+import "@/styles-nova.css";
+
+function HomePage() {
+  return (
+    <ClientOnly fallback={<NovaHomeFallback />}>
+      <NovaHome />
+    </ClientOnly>
+  );
+}
 
 export const Route = createFileRoute("/")({
-  component: NovaHome,
+  component: HomePage,
   head: () => ({
     meta: [
       { title: "NØVA — We Design The Future" },
