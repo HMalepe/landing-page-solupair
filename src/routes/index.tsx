@@ -1,11 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, useScroll, useTransform, useSpring, type MotionValue } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { useRef, useState } from "react";
 import project1 from "@/assets/project1.jpg";
 import project2 from "@/assets/project2.jpg";
 import project3 from "@/assets/project3.jpg";
 import project4 from "@/assets/project4.jpg";
 import solupairLogo from "@/assets/solupair-logo.png";
+import {
+  DistortionProjectSlider,
+  type DistortionSliderHandle,
+} from "@/components/distortion-project-slider";
 
 export const Route = createFileRoute("/")({
   component: NovaHome,
@@ -175,60 +188,138 @@ function Hero() {
 }
 
 function Projects() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const sliderRef = useRef<DistortionSliderHandle>(null);
+  const scrollIndexRef = useRef(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+
+  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+    const targetIndex = Math.min(
+      projects.length - 1,
+      Math.max(0, Math.round(progress * (projects.length - 1))),
+    );
+
+    if (targetIndex === scrollIndexRef.current) return;
+    scrollIndexRef.current = targetIndex;
+    setActiveIndex(targetIndex);
+    sliderRef.current?.transitionTo(targetIndex);
+  });
+
+  const project = projects[activeIndex];
+  const imageSources = projects.map((item) => item.img);
+
   return (
     <section
+      ref={sectionRef}
       id="work"
-      className="relative px-6 py-24 sm:px-10 lg:px-14 lg:py-32"
-      style={{ background: "var(--section-dark)" }}
+      className="relative"
+      style={{ height: `${(projects.length - 1) * 55 + 100}vh` }}
     >
-      <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
-        <h2
-          className="font-display font-black uppercase leading-[0.9] tracking-tighter text-foreground"
-          style={{ fontSize: "clamp(3rem, 9vw, 9rem)" }}
-        >
-          Projects
-        </h2>
-        <p className="max-w-sm text-right text-xs tracking-[0.2em] text-foreground/70 sm:text-sm">
-          WE CRAFT IMMERSIVE DIGITAL EXPERIENCES THAT PUSH THE BOUNDARIES OF WEB DESIGN &amp; MOTION.
-        </p>
-      </div>
+      <div
+        className="sticky top-0 flex h-screen flex-col justify-center px-6 py-16 sm:px-10 lg:px-14"
+        style={{ background: "var(--section-dark)" }}
+      >
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
+          <div>
+            <h2
+              className="font-display font-black uppercase leading-[0.9] tracking-tighter text-foreground"
+              style={{ fontSize: "clamp(3rem, 9vw, 9rem)" }}
+            >
+              Projects
+            </h2>
+            <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.28em] text-foreground/45">
+              Scroll to explore
+            </p>
+          </div>
+          <p className="max-w-sm text-right text-xs tracking-[0.2em] text-foreground/70 sm:text-sm">
+            WE CRAFT IMMERSIVE DIGITAL EXPERIENCES THAT PUSH THE BOUNDARIES OF WEB DESIGN &amp; MOTION.
+          </p>
+        </div>
 
-      <div className="mx-auto mt-16 grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-2">
-        {projects.map((p, i) => (
-          <motion.a
-            key={p.name}
-            href="#"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, delay: i * 0.08 }}
-            className="group relative block overflow-hidden rounded-2xl"
-          >
-            <div className="aspect-square overflow-hidden">
-              <img
-                src={p.img}
-                alt={`${p.name} — ${p.tag}`}
-                loading="lazy"
-                width={1024}
-                height={1024}
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        <div className="relative mx-auto mt-10 w-full max-w-7xl flex-1 sm:mt-12">
+          <div className="relative h-full min-h-[320px] overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-[0_40px_120px_oklch(0_0_0_/_0.45)] sm:min-h-[420px] lg:min-h-[520px]">
+            <DistortionProjectSlider
+              ref={sliderRef}
+              images={imageSources}
+              className="absolute inset-0 overflow-hidden rounded-3xl"
+            />
+
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/35" />
+
+            <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8 lg:p-10">
+              <div className="flex items-start justify-between gap-4">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.div
+                    key={`counter-${activeIndex}`}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                    className="font-mono text-xs tracking-[0.2em] text-white/70 sm:text-sm"
+                  >
+                    {String(activeIndex + 1).padStart(2, "0")} /{" "}
+                    {String(projects.length).padStart(2, "0")}
+                  </motion.div>
+                </AnimatePresence>
+
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={`tag-${activeIndex}`}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                    className="rounded-full border border-white/15 bg-black/35 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/90 backdrop-blur sm:text-xs"
+                  >
+                    {project.tag}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+
+              <div className="flex items-end justify-between gap-4">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.h3
+                    key={`title-${activeIndex}`}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                    className="font-display text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl"
+                  >
+                    {project.name}
+                  </motion.h3>
+                </AnimatePresence>
+
+                <ArrowUpRight className="h-8 w-8 shrink-0 text-primary" />
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute right-0 top-1/2 hidden -translate-y-1/2 translate-x-1/2 flex-col gap-4 lg:flex">
+            {projects.map((item, index) => (
+              <button
+                key={item.name}
+                type="button"
+                aria-label={`View ${item.name}`}
+                onClick={() => {
+                  scrollIndexRef.current = index;
+                  setActiveIndex(index);
+                  sliderRef.current?.transitionTo(index);
+                }}
+                className={`relative h-3.5 w-3.5 rounded-full border border-white/20 transition ${
+                  index === activeIndex
+                    ? "scale-100 bg-white opacity-100"
+                    : "scale-90 bg-white/30 opacity-35 hover:opacity-70"
+                }`}
               />
-            </div>
-            <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8">
-              <div className="flex justify-end">
-                <span className="rounded-full bg-black/40 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/90 backdrop-blur sm:text-xs">
-                  {p.tag}
-                </span>
-              </div>
-              <div className="flex items-end justify-between">
-                <h3 className="font-display text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
-                  {p.name}
-                </h3>
-                <ArrowUpRight className="h-8 w-8 text-white opacity-0 transition group-hover:opacity-100" />
-              </div>
-            </div>
-          </motion.a>
-        ))}
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
