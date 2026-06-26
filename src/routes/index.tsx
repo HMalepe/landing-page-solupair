@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, type MotionValue } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import project1 from "@/assets/project1.jpg";
 import project2 from "@/assets/project2.jpg";
@@ -31,29 +31,90 @@ function NovaLogo() {
 }
 
 function FaceBall() {
+  const { scrollY } = useScroll();
+  // Eyes: lids closed (scaleY 1) → open (0) as user begins to scroll
+  const lidRaw = useTransform(scrollY, [0, 220], [1, 0]);
+  const lidScale = useSpring(lidRaw, { stiffness: 140, damping: 22 });
+  // Smile: 0 (neutral dot) → 1 (full grin) as scroll continues
+  const smileRaw = useTransform(scrollY, [180, 520], [0, 1]);
+  const smile = useSpring(smileRaw, { stiffness: 140, damping: 22 });
+  const mouthWidth = useTransform(smile, (v: number) => `${22 + v * 70}px`);
+  const mouthHeight = useTransform(smile, (v: number) => `${36 + v * 12}px`);
+  const mouthRadius = useTransform(
+    smile,
+    (v: number) =>
+      `${50 - v * 40}% ${50 - v * 40}% ${50 + v * 45}% ${50 + v * 45}% / ${50 - v * 35}% ${50 - v * 35}% ${50 + v * 55}% ${50 + v * 55}%`,
+  );
+  // Bounce amplitude grows from 8 → 34 px with scroll
+  const bounceAmp = useTransform(scrollY, [0, 600], [8, 34]);
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
+    >
+      <BouncingBall
+        lidScale={lidScale}
+        mouthRadius={mouthRadius}
+        mouthHeight={mouthHeight}
+        mouthWidth={mouthWidth}
+        bounceAmp={bounceAmp}
+      />
+    </div>
+  );
+}
+
+type BallProps = {
+  lidScale: MotionValue<number>;
+  mouthRadius: MotionValue<string>;
+  mouthHeight: MotionValue<string>;
+  mouthWidth: MotionValue<string>;
+  bounceAmp: MotionValue<number>;
+};
+
+function BouncingBall({ lidScale, mouthRadius, mouthHeight, mouthWidth, bounceAmp }: BallProps) {
+  // Outer wrapper: scroll-driven amplitude as a CSS var.
+  const ampPx = useTransform(bounceAmp, (v) => `${v}px`);
   return (
     <motion.div
-      aria-hidden
-      initial={{ y: 0 }}
-      animate={{ y: [0, -18, 0] }}
-      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
+      className="h-full w-full animate-[novaBounce_2.8s_ease-in-out_infinite]"
+      style={{ ["--nova-amp" as string]: ampPx }}
     >
       <div
         className="relative h-full w-full rounded-full"
         style={{
           background:
             "radial-gradient(circle at 32% 28%, oklch(0.72 0.18 275) 0%, oklch(0.48 0.26 275) 55%, oklch(0.32 0.22 275) 100%)",
-          boxShadow: "inset -40px -50px 80px oklch(0 0 0 / 0.35), 0 40px 80px oklch(0 0 0 / 0.25)",
+          boxShadow:
+            "inset -40px -50px 80px oklch(0 0 0 / 0.35), 0 40px 80px oklch(0 0 0 / 0.25)",
         }}
       >
-        {/* eyes */}
-        <div className="absolute left-[28%] top-[42%] text-[64px] leading-none text-black sm:text-[84px] lg:text-[104px]">✻</div>
-        <div className="absolute right-[28%] top-[42%] text-[64px] leading-none text-black sm:text-[84px] lg:text-[104px]">✻</div>
-        {/* mouth */}
-        <div className="absolute left-1/2 top-[68%] h-[36px] w-[22px] -translate-x-1/2 rounded-full bg-black sm:h-[46px] sm:w-[28px] lg:h-[58px] lg:w-[34px]" />
+        <Eye side="left" lidScale={lidScale} />
+        <Eye side="right" lidScale={lidScale} />
+        <motion.div
+          className="absolute left-1/2 top-[64%] -translate-x-1/2 bg-black"
+          style={{ width: mouthWidth, height: mouthHeight, borderRadius: mouthRadius }}
+        />
       </div>
     </motion.div>
+  );
+}
+
+function Eye({ side, lidScale }: { side: "left" | "right"; lidScale: MotionValue<number> }) {
+  const posClass = side === "left" ? "left-[26%]" : "right-[26%]";
+  return (
+    <div className={`absolute ${posClass} top-[38%] h-[60px] w-[60px] sm:h-[80px] sm:w-[80px] lg:h-[100px] lg:w-[100px]`}>
+      {/* open eye */}
+      <div className="absolute inset-0 flex items-center justify-center text-[60px] leading-none text-black sm:text-[80px] lg:text-[100px]">✻</div>
+      {/* lid that scales down to reveal eye */}
+      <motion.div
+        className="absolute inset-0 origin-center rounded-full"
+        style={{
+          scaleY: lidScale,
+          background:
+            "radial-gradient(circle at 32% 28%, oklch(0.72 0.18 275) 0%, oklch(0.48 0.26 275) 55%, oklch(0.32 0.22 275) 100%)",
+        }}
+      />
+    </div>
   );
 }
 

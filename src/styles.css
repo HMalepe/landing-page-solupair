@@ -208,3 +208,12 @@
   animation-duration: 350ms;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+@keyframes novaBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(calc(var(--nova-amp, 8px) * -1));
+  }
+}
