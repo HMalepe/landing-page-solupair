@@ -83,26 +83,24 @@ function Hero() {
 
         <div className="relative w-full">
           <FaceBall />
-          <div className="nova-hero-headlines">
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="nova-hero-line text-foreground"
-            >
-              <span>WE</span>
-              <span>DESIGN</span>
-            </motion.h1>
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.15 }}
-              className="nova-hero-line nova-gradient-text"
-            >
-              <span>THE</span>
-              <span>FUTURE</span>
-            </motion.h1>
-          </div>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-[1] w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter text-foreground"
+            style={{ fontSize: "clamp(4rem, 18vw, 18rem)" }}
+          >
+            WE DESIGN
+          </motion.h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
+            className="nova-gradient-text relative z-[1] w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter"
+            style={{ fontSize: "clamp(4rem, 18vw, 18rem)" }}
+          >
+            THE FUTURE
+          </motion.h1>
         </div>
 
         <p className="mt-10 max-w-xl px-4 text-center text-[11px] leading-relaxed tracking-[0.16em] text-foreground/70 sm:text-xs sm:tracking-[0.18em]">

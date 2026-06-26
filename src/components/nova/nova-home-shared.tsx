@@ -54,21 +54,6 @@ export function StaticViewportBalls() {
   );
 }
 
-export function HeroHeadlines() {
-  return (
-    <div className="nova-hero-headlines">
-      <h1 className="nova-hero-line text-foreground">
-        <span>WE</span>
-        <span>DESIGN</span>
-      </h1>
-      <h1 className="nova-hero-line nova-gradient-text">
-        <span>THE</span>
-        <span>FUTURE</span>
-      </h1>
-    </div>
-  );
-}
-
 export function HeroStatic() {
   return (
     <section className="nova-hero-bg relative z-10 min-h-screen overflow-hidden text-foreground">
@@ -109,7 +94,18 @@ export function HeroStatic() {
               }}
             />
           </div>
-          <HeroHeadlines />
+          <h1
+            className="relative z-[1] w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter text-foreground"
+            style={{ fontSize: "clamp(4rem, 18vw, 18rem)" }}
+          >
+            WE DESIGN
+          </h1>
+          <h1
+            className="nova-gradient-text relative z-[1] w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter"
+            style={{ fontSize: "clamp(4rem, 18vw, 18rem)" }}
+          >
+            THE FUTURE
+          </h1>
         </div>
 
         <p className="mt-10 max-w-xl px-4 text-center text-[11px] leading-relaxed tracking-[0.16em] text-foreground/70 sm:text-xs sm:tracking-[0.18em]">
