@@ -1,4 +1,4 @@
-import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { CONTACT_EMAIL, LEGAL_NAME, LOCATION_LABEL } from "@/lib/site";
 import project1 from "@/assets/project1.jpg";
@@ -27,85 +27,87 @@ function NovaLogo() {
   );
 }
 
+/** Slow full-height drift: top → bottom bounce → rise → top hit → repeat. */
 function FaceBall() {
-  const { scrollY } = useScroll();
-  const lidRaw = useTransform(scrollY, [0, 220], [1, 0]);
-  const lidScale = useSpring(lidRaw, { stiffness: 140, damping: 22 });
-  const smileRaw = useTransform(scrollY, [180, 520], [0, 1]);
-  const smile = useSpring(smileRaw, { stiffness: 140, damping: 22 });
-  const mouthWidth = useTransform(smile, (v: number) => `${22 + v * 70}px`);
-  const mouthHeight = useTransform(smile, (v: number) => `${36 + v * 12}px`);
-  const mouthRadius = useTransform(
-    smile,
-    (v: number) =>
-      `${50 - v * 40}% ${50 - v * 40}% ${50 + v * 45}% ${50 + v * 45}% / ${50 - v * 35}% ${50 - v * 35}% ${50 + v * 55}% ${50 + v * 55}%`,
-  );
-  const bounceAmp = useTransform(scrollY, [0, 600], [8, 34]);
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return (
+      <div aria-hidden className="nova-ball-track">
+        <div className="nova-ball-rider nova-ball-rider--static">
+          <BallSphere />
+        </div>
+      </div>
+    );
+  }
 
   return (
+    <div aria-hidden className="nova-ball-track">
+      <motion.div
+        className="nova-ball-rider"
+        animate={{
+          y: ["-44vh", "42vh", "36vh", "42vh", "-42vh", "-44vh"],
+          scaleX: [1, 1, 1.08, 0.96, 1.06, 1],
+          scaleY: [1, 1, 0.86, 1.05, 0.88, 1],
+          opacity: [0.52, 0.36, 0.44, 0.38, 0.48, 0.52],
+          filter: [
+            "blur(8px)",
+            "blur(15px)",
+            "blur(11px)",
+            "blur(13px)",
+            "blur(9px)",
+            "blur(8px)",
+          ],
+        }}
+        transition={{
+          duration: 20,
+          times: [0, 0.46, 0.5, 0.55, 0.95, 1],
+          ease: [
+            [0.65, 0.04, 0.9, 0.45],
+            [0.3, 0.05, 0.45, 0.95],
+            [0.34, 0.01, 0.25, 1],
+            [0.22, 0.61, 0.36, 1],
+            [0.65, 0.04, 0.9, 0.45],
+            [0.45, 0, 0.55, 1],
+          ],
+          repeat: Infinity,
+        }}
+      >
+        <BallSphere />
+      </motion.div>
+    </div>
+  );
+}
+
+function BallSphere() {
+  return (
     <div
-      aria-hidden
-      className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
+      className="relative h-full w-full rounded-full"
+      style={{
+        background: "var(--nova-ball-surface)",
+        boxShadow:
+          "inset -40px -50px 80px oklch(0 0 0 / 0.45), var(--solupair-glow), var(--solupair-glow-strong)",
+      }}
     >
-      <BouncingBall
-        lidScale={lidScale}
-        mouthRadius={mouthRadius}
-        mouthHeight={mouthHeight}
-        mouthWidth={mouthWidth}
-        bounceAmp={bounceAmp}
+      <Eye side="left" />
+      <Eye side="right" />
+      <div
+        className="absolute left-1/2 top-[64%] -translate-x-1/2 bg-black/90"
+        style={{ width: 28, height: 36, borderRadius: "50%" }}
       />
     </div>
   );
 }
 
-type BallProps = {
-  lidScale: MotionValue<number>;
-  mouthRadius: MotionValue<string>;
-  mouthHeight: MotionValue<string>;
-  mouthWidth: MotionValue<string>;
-  bounceAmp: MotionValue<number>;
-};
-
-function BouncingBall({ lidScale, mouthRadius, mouthHeight, mouthWidth, bounceAmp }: BallProps) {
-  const ampPx = useTransform(bounceAmp, (v) => `${v}px`);
-  return (
-    <motion.div
-      className="h-full w-full animate-[novaBounce_2.8s_ease-in-out_infinite]"
-      style={{ ["--nova-amp" as string]: ampPx }}
-    >
-      <div
-        className="relative h-full w-full rounded-full"
-        style={{
-          background: "var(--nova-ball-surface)",
-          boxShadow:
-            "inset -40px -50px 80px oklch(0 0 0 / 0.4), var(--solupair-glow), var(--solupair-glow-strong)",
-        }}
-      >
-        <Eye side="left" lidScale={lidScale} />
-        <Eye side="right" lidScale={lidScale} />
-        <motion.div
-          className="absolute left-1/2 top-[64%] -translate-x-1/2 bg-black"
-          style={{ width: mouthWidth, height: mouthHeight, borderRadius: mouthRadius }}
-        />
-      </div>
-    </motion.div>
-  );
-}
-
-function Eye({ side, lidScale }: { side: "left" | "right"; lidScale: MotionValue<number> }) {
+function Eye({ side }: { side: "left" | "right" }) {
   const posClass = side === "left" ? "left-[26%]" : "right-[26%]";
   return (
-    <div className={`absolute ${posClass} top-[38%] h-[60px] w-[60px] sm:h-[80px] sm:w-[80px] lg:h-[100px] lg:w-[100px]`}>
+    <div
+      className={`absolute ${posClass} top-[38%] h-[60px] w-[60px] sm:h-[80px] sm:w-[80px] lg:h-[100px] lg:w-[100px]`}
+    >
       <div className="absolute inset-0 flex items-center justify-center text-[60px] leading-none text-black sm:text-[80px] lg:text-[100px]">
         ✻
       </div>
-      <motion.div
-        className="absolute inset-0 origin-center rounded-full"
-        style={{
-          scaleY: lidScale,
-          background: "var(--nova-ball-surface)",
-        }}
-      />
     </div>
   );
 }
@@ -113,6 +115,7 @@ function Eye({ side, lidScale }: { side: "left" | "right"; lidScale: MotionValue
 function Hero() {
   return (
     <section className="nova-hero-bg relative min-h-screen overflow-hidden text-foreground">
+      <FaceBall />
       <header className="relative z-20 flex items-center justify-between px-6 py-6 sm:px-10 lg:px-14">
         <NovaLogo />
         <nav className="flex items-center gap-2 sm:gap-3">
@@ -131,18 +134,17 @@ function Hero() {
         </nav>
       </header>
 
-      <div className="relative flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center px-2">
-        <div className="nova-gradient-text relative z-0 mb-4 text-center text-xs font-medium tracking-[0.3em] sm:text-sm">
+      <div className="relative z-10 flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center px-2">
+        <div className="nova-gradient-text relative mb-4 text-center text-xs font-medium tracking-[0.3em] sm:text-sm">
           WEB DESIGN AGENCY
         </div>
 
         <div className="relative w-full">
-          <FaceBall />
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="relative z-0 w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter text-foreground"
+            className="relative w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter text-foreground"
             style={{ fontSize: "clamp(4rem, 18vw, 18rem)" }}
           >
             WE DESIGN
@@ -151,7 +153,7 @@ function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15 }}
-            className="nova-gradient-text relative z-0 w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter"
+            className="nova-gradient-text relative w-full whitespace-nowrap text-center font-display font-black leading-[0.85] tracking-tighter"
             style={{ fontSize: "clamp(4rem, 18vw, 18rem)" }}
           >
             THE FUTURE

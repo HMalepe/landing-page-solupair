@@ -86,6 +86,31 @@
     radial-gradient(ellipse 90% 55% at 50% -5%, oklch(0.52 0.24 288 / 0.32), transparent 58%),
     radial-gradient(ellipse 55% 45% at 88% 55%, oklch(0.62 0.26 330 / 0.22), transparent 52%),
     radial-gradient(ellipse 50% 40% at 8% 62%, oklch(0.78 0.14 192 / 0.18), transparent 50%);
+  isolation: isolate;
+}
+
+.nova-theme .nova-ball-track {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.nova-theme .nova-ball-rider {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(72vw, 440px);
+  height: min(72vw, 440px);
+  translate: -50% -50%;
+  will-change: transform, filter, opacity;
+  transform-origin: center center;
+}
+
+.nova-theme .nova-ball-rider--static {
+  filter: blur(11px);
+  opacity: 0.42;
 }
 
 .nova-theme .nova-logo-ring {
@@ -115,12 +140,9 @@
   box-shadow: var(--solupair-glow-strong);
 }
 
-@keyframes novaBounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(calc(var(--nova-amp, 8px) * -1));
+@media (prefers-reduced-motion: reduce) {
+  .nova-theme .nova-ball-rider--static {
+    filter: blur(10px);
+    opacity: 0.45;
   }
 }
