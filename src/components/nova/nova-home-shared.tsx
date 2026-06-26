@@ -27,10 +27,20 @@ export function NovaLogo() {
   );
 }
 
-export function StaticViewportBall() {
+export function StaticViewportBalls() {
   return (
-    <div aria-hidden className="nova-viewport-ball">
-      <div className="nova-viewport-ball-rider">
+    <div aria-hidden className="nova-viewport-physics-stage">
+      <div className="nova-viewport-physics-ball" style={{ transform: "translate3d(12vw, 18vh, 0)" }}>
+        <div
+          className="h-full w-full rounded-full"
+          style={{
+            background: "var(--nova-ball-surface)",
+            boxShadow:
+              "inset -40px -50px 80px oklch(0 0 0 / 0.4), var(--solupair-glow), var(--solupair-glow-strong)",
+          }}
+        />
+      </div>
+      <div className="nova-viewport-physics-ball" style={{ transform: "translate3d(58vw, 52vh, 0)" }}>
         <div
           className="h-full w-full rounded-full"
           style={{
@@ -204,7 +214,7 @@ export function Contact() {
 export function NovaHomeFallback() {
   return (
     <div className="nova-theme min-h-screen bg-background font-sans text-foreground">
-      <StaticViewportBall />
+      <StaticViewportBalls />
       <main className="relative z-[1]">
         <HeroStatic />
         <div className="nova-lower-shell relative">

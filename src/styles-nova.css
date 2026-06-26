@@ -137,7 +137,28 @@
   background: transparent;
 }
 
-/* Fixed viewport ball — projects + contact only (hidden behind opaque hero) */
+/* Fixed viewport balls — projects + contact (physics-driven, blurred) */
+.nova-theme .nova-viewport-physics-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.nova-theme .nova-viewport-physics-ball {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: min(62vw, 400px);
+  height: min(62vw, 400px);
+  filter: blur(13px);
+  opacity: 0.52;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* Legacy single-ball drift (static fallback only) */
 .nova-theme .nova-viewport-ball {
   position: fixed;
   inset: 0;

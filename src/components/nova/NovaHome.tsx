@@ -8,7 +8,7 @@ import {
 import { BallSphere } from "@/components/nova/ball-sphere";
 import { ProjectCarousel } from "@/components/nova/ProjectCarousel";
 import { ProjectsStaticGrid } from "@/components/nova/ProjectsStaticGrid";
-import { ViewportDriftBall } from "@/components/nova/ViewportDriftBall";
+import { ViewportPhysicsBalls } from "@/components/nova/ViewportPhysicsBalls";
 import { Contact, NovaLogo, projects } from "@/components/nova/nova-home-shared";
 import "@/styles-nova.css";
 
@@ -124,7 +124,7 @@ function Projects() {
 export function NovaHome() {
   return (
     <div className="nova-theme min-h-screen bg-background font-sans text-foreground">
-      <ViewportDriftBall />
+      <ViewportPhysicsBalls />
       <main className="relative z-[1]">
         <Hero />
         <div className="nova-lower-shell relative">
