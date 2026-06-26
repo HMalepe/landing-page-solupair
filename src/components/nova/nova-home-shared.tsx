@@ -201,9 +201,9 @@ export function NovaHomeFallback() {
   return (
     <div className="nova-theme min-h-screen bg-background font-sans text-foreground">
       <StaticViewportBall />
-      <main className="relative">
+      <main className="relative z-[1]">
         <HeroStatic />
-        <div className="nova-lower-shell relative z-[1]">
+        <div className="nova-lower-shell relative">
           <ProjectsStaticGrid projects={projects} />
           <Contact />
         </div>

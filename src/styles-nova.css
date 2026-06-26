@@ -111,7 +111,7 @@
 .nova-theme .nova-lower-shell {
   position: relative;
   isolation: isolate;
-  background-color: var(--section-dark);
+  background: transparent;
 }
 
 /* Fixed viewport ball — projects + contact only (hidden behind opaque hero) */
@@ -132,7 +132,7 @@
   margin-left: min(-31vw, -200px);
   margin-top: min(-31vw, -200px);
   filter: blur(13px);
-  opacity: 0.4;
+  opacity: 0.52;
   will-change: transform;
   animation: novaViewportBallDrift 19s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }

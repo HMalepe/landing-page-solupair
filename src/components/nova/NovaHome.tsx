@@ -123,9 +123,9 @@ export function NovaHome() {
   return (
     <div className="nova-theme min-h-screen bg-background font-sans text-foreground">
       <ViewportDriftBall />
-      <main className="relative">
+      <main className="relative z-[1]">
         <Hero />
-        <div className="nova-lower-shell relative z-[1]">
+        <div className="nova-lower-shell relative">
           <Projects />
           <Contact />
         </div>

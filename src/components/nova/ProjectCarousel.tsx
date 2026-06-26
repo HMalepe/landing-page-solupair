@@ -24,14 +24,19 @@ const ScrollProjectCard = memo(function ScrollProjectCard({
   stageWidth: number;
   total: number;
 }) {
-  const cardMotion = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total));
+  const width = Math.max(stageWidth, 1);
 
-  const x = useTransform(cardMotion, (m) => (m.xPercent / 100) * stageWidth);
-  const y = useTransform(cardMotion, (m) => m.yPx);
-  const scale = useTransform(cardMotion, (m) => m.scale);
-  const opacity = useTransform(cardMotion, (m) => m.opacity);
-  const zIndex = useTransform(cardMotion, (m) => m.zIndex);
-  const visibility = useTransform(cardMotion, (m) => (m.visible ? "visible" : "hidden"));
+  const x = useTransform(slideProgress, (sp) => {
+    const m = computeProjectCardMotion(index, sp, total);
+    return (m.xPercent / 100) * width;
+  });
+  const y = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total).yPx);
+  const scale = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total).scale);
+  const opacity = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total).opacity);
+  const zIndex = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total).zIndex);
+  const visibility = useTransform(slideProgress, (sp) =>
+    computeProjectCardMotion(index, sp, total).visible ? "visible" : "hidden",
+  );
 
   return (
     <motion.article
@@ -133,17 +138,16 @@ export function ProjectCarousel({ projects }: { projects: ProjectItem[] }) {
           </p>
 
           <div ref={stageRef} className="nova-projects-stage relative mx-auto mt-10 w-full max-w-5xl flex-1">
-            {stageWidth > 0 &&
-              projects.map((p, i) => (
-                <ScrollProjectCard
-                  key={p.name}
-                  project={p}
-                  index={i}
-                  slideProgress={slideProgress}
-                  stageWidth={stageWidth}
-                  total={projects.length}
-                />
-              ))}
+            {projects.map((p, i) => (
+              <ScrollProjectCard
+                key={p.name}
+                project={p}
+                index={i}
+                slideProgress={slideProgress}
+                stageWidth={stageWidth}
+                total={projects.length}
+              />
+            ))}
           </div>
 
           <ProjectScrollIndicator slideProgress={slideProgress} total={projects.length} />
