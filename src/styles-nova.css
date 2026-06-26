@@ -114,23 +114,48 @@
   background-color: var(--section-dark);
 }
 
-.nova-theme .nova-bg-ball-layer {
-  position: absolute;
+/* Fixed viewport ball — projects + contact only (hidden behind opaque hero) */
+.nova-theme .nova-viewport-ball {
+  position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
 }
 
-.nova-theme .nova-bg-ball-pin {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow: hidden;
+.nova-theme .nova-viewport-ball-rider {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(62vw, 400px);
+  height: min(62vw, 400px);
+  margin-left: min(-31vw, -200px);
+  margin-top: min(-31vw, -200px);
+  filter: blur(13px);
+  opacity: 0.4;
+  will-change: transform;
+  animation: novaViewportBallDrift 19s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 
-.nova-theme .nova-ball-rider--bg {
-  opacity: 0.42;
+@keyframes novaViewportBallDrift {
+  0% {
+    transform: translateY(-46vh) scale(1);
+  }
+  46% {
+    transform: translateY(40vh) scale(1.05, 0.9);
+  }
+  50% {
+    transform: translateY(35vh) scale(0.96, 1.04);
+  }
+  54% {
+    transform: translateY(39vh) scale(1.02, 0.97);
+  }
+  95% {
+    transform: translateY(-44vh) scale(1.04, 0.92);
+  }
+  100% {
+    transform: translateY(-46vh) scale(1);
+  }
 }
 
 .nova-theme .nova-logo-ring {
@@ -161,10 +186,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nova-theme .nova-ball-rider--bg {
+  .nova-theme .nova-viewport-ball-rider {
     animation: none !important;
+    transform: translateY(0) !important;
     filter: blur(12px) !important;
-    opacity: 0.38 !important;
+    opacity: 0.35 !important;
   }
 }
 
@@ -187,18 +213,23 @@
   top: 0;
   height: 100vh;
   overflow: hidden;
+  z-index: 1;
 }
 
 .nova-theme .nova-projects-stage {
-  perspective: 1400px;
+  perspective: 1600px;
   transform-style: preserve-3d;
   min-height: min(58vh, 560px);
+  contain: layout style;
 }
 
 .nova-theme .nova-project-card {
   transform-origin: center center;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   box-shadow:
-    0 24px 80px oklch(0 0 0 / 0.45),
-    0 0 40px oklch(0.52 0.24 288 / 0.12);
+    0 28px 90px oklch(0 0 0 / 0.5),
+    0 0 0 1px oklch(1 0 0 / 0.06),
+    0 0 48px oklch(0.52 0.24 288 / 0.15);
 }

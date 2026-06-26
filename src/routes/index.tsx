@@ -9,13 +9,15 @@ export const Route = createFileRoute("/")({
       { title: "NØVA — We Design The Future" },
       {
         name: "description",
-        content: "Digital experiences crafted with precision, motion & purpose.",
+        content:
+          "Automation and web design — web applications with admin dashboards, WhatsApp booking agents, and more from Solupair.",
       },
       { name: "author", content: "Solupair" },
       { property: "og:title", content: "NØVA — We Design The Future" },
       {
         property: "og:description",
-        content: "Digital experiences crafted with precision, motion & purpose.",
+        content:
+          "Automation and web design — web applications with admin dashboards, WhatsApp booking agents, and more from Solupair.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: absoluteUrl("/") },
@@ -23,7 +25,8 @@ export const Route = createFileRoute("/")({
       { name: "twitter:title", content: "NØVA — We Design The Future" },
       {
         name: "twitter:description",
-        content: "Digital experiences crafted with precision, motion & purpose.",
+        content:
+          "Automation and web design — web applications with admin dashboards, WhatsApp booking agents, and more from Solupair.",
       },
     ],
     links: [{ rel: "canonical", href: absoluteUrl("/") }],

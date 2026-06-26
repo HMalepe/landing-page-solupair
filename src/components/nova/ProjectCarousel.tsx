@@ -1,0 +1,193 @@
+import { memo, useLayoutEffect, useRef, useState } from "react";
+import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+import {
+  computeProjectCardMotion,
+  PROJECT_SCROLL_HEIGHT_VH,
+  PROJECT_SCROLL_SEGMENTS,
+} from "@/lib/project-carousel-motion";
+import { ProjectsHeader } from "@/components/nova/ProjectsHeader";
+
+export type ProjectItem = {
+  name: string;
+  tag: string;
+  img: string;
+};
+
+const ScrollProjectCard = memo(function ScrollProjectCard({
+  project,
+  index,
+  slideProgress,
+  stageWidth,
+  total,
+}: {
+  project: ProjectItem;
+  index: number;
+  slideProgress: MotionValue<number>;
+  stageWidth: number;
+  total: number;
+}) {
+  const x = useTransform(slideProgress, (sp) => {
+    const m = computeProjectCardMotion(index, sp, total);
+    return (m.xPercent / 100) * stageWidth;
+  });
+  const transform = useTransform(slideProgress, (sp) => {
+    const m = computeProjectCardMotion(index, sp, total);
+    return {
+      scale: m.scale,
+      opacity: m.opacity,
+      zIndex: m.zIndex,
+    };
+  });
+  const scale = useTransform(transform, (t) => t.scale);
+  const opacity = useTransform(transform, (t) => t.opacity);
+  const zIndex = useTransform(transform, (t) => t.zIndex);
+
+  return (
+    <motion.article
+      style={{ x, scale, opacity, zIndex }}
+      className="nova-project-card group absolute inset-0 overflow-hidden rounded-2xl border border-white/10"
+    >
+      <img
+        src={project.img}
+        alt={`${project.name} — ${project.tag}`}
+        loading={index === 0 ? "eager" : "lazy"}
+        decoding="async"
+        width={1024}
+        height={1024}
+        className="h-full w-full object-cover"
+        draggable={false}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/5" />
+      <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10">
+        <div className="flex items-start justify-between gap-4">
+          <span className="nova-gradient-text font-mono text-xs font-semibold tracking-[0.3em]">
+            {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </span>
+          <span className="rounded-full border border-white/20 bg-black/40 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/90 backdrop-blur-sm sm:text-xs">
+            {project.tag}
+          </span>
+        </div>
+        <div className="flex items-end justify-between gap-4">
+          <h3 className="font-display text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+            {project.name}
+          </h3>
+          <ArrowUpRight className="h-8 w-8 shrink-0 text-white/80 transition group-hover:text-[var(--solupair-cyan)]" />
+        </div>
+      </div>
+    </motion.article>
+  );
+});
+
+function ProjectScrollIndicator({
+  slideProgress,
+  total,
+}: {
+  slideProgress: MotionValue<number>;
+  total: number;
+}) {
+  const active = useTransform(slideProgress, (sp) => Math.min(total - 1, Math.max(0, Math.round(sp))));
+
+  return (
+    <div className="mt-8 flex items-center justify-center gap-2" aria-hidden>
+      {Array.from({ length: total }, (_, i) => (
+        <ProjectDot key={i} index={i} active={active} />
+      ))}
+    </div>
+  );
+}
+
+function ProjectDot({ index, active }: { index: number; active: MotionValue<number> }) {
+  const width = useTransform(active, (a) => (a === index ? 32 : 8));
+  const opacity = useTransform(active, (a) => (a === index ? 1 : 0.32));
+
+  return <motion.div style={{ width, opacity }} className="h-1.5 rounded-full bg-[var(--solupair-cyan)]" />;
+}
+
+export function ProjectCarousel({ projects }: { projects: ProjectItem[] }) {
+  const containerRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [stageWidth, setStageWidth] = useState(0);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  const rawSlide = useTransform(scrollYProgress, [0, 1], [0, PROJECT_SCROLL_SEGMENTS]);
+  const slideProgress = useSpring(rawSlide, {
+    stiffness: 85,
+    damping: 26,
+    mass: 0.55,
+    restDelta: 0.0005,
+  });
+
+  useLayoutEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+
+    const measure = () => setStageWidth(el.clientWidth);
+    measure();
+
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <section
+      id="work"
+      ref={containerRef}
+      className="nova-projects-scroll relative z-[1]"
+      style={{ height: `${PROJECT_SCROLL_HEIGHT_VH}vh` }}
+    >
+      <div className="nova-projects-pin">
+        <div className="mx-auto flex h-full max-w-7xl flex-col px-6 pb-10 pt-16 sm:px-10 lg:px-14 lg:pt-20">
+          <ProjectsHeader />
+          <p className="mt-4 text-[11px] font-medium uppercase tracking-[0.28em] text-foreground/45">
+            Scroll to explore
+          </p>
+
+          <div ref={stageRef} className="nova-projects-stage relative mx-auto mt-10 w-full max-w-5xl flex-1">
+            {stageWidth > 0 &&
+              projects.map((p, i) => (
+                <ScrollProjectCard
+                  key={p.name}
+                  project={p}
+                  index={i}
+                  slideProgress={slideProgress}
+                  stageWidth={stageWidth}
+                  total={projects.length}
+                />
+              ))}
+          </div>
+
+          <ProjectScrollIndicator slideProgress={slideProgress} total={projects.length} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function ProjectsStaticGrid({ projects }: { projects: ProjectItem[] }) {
+  return (
+    <section id="work" className="relative z-[1] px-6 py-24 sm:px-10 lg:px-14 lg:py-32">
+      <div className="mx-auto max-w-7xl">
+        <ProjectsHeader />
+        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
+          {projects.map((p) => (
+            <article key={p.name} className="relative overflow-hidden rounded-2xl border border-white/10">
+              <img src={p.img} alt={`${p.name} — ${p.tag}`} className="aspect-square w-full object-cover" />
+              <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-t from-black/70 to-transparent p-6">
+                <span className="self-end rounded-full bg-black/40 px-3 py-1 text-xs uppercase tracking-wider text-white/90">
+                  {p.tag}
+                </span>
+                <h3 className="font-display text-4xl font-black text-white">{p.name}</h3>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
