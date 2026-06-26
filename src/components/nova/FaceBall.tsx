@@ -22,6 +22,7 @@ export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDiv
   const reduceMotion = useReducedMotion();
   const ballRef = useRef<HTMLDivElement>(null);
   const simRef = useRef<HeroBallState | null>(null);
+  const simulatingRef = useRef(false);
   const rafRef = useRef<number>(0);
 
   const [dragging, setDragging] = useState(false);
@@ -61,7 +62,7 @@ export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDiv
   const fade = useSpring(fadeRaw, { stiffness: 110, damping: 26 });
   const ballOpacity = useTransform(fade, [0, 1], [1, 0.42]);
   const ballBlur = useTransform(fade, (v) => `blur(${v * 14}px)`);
-  const ballZ = useTransform(fade, [0, 1], [10, 0]);
+  const ballZ = useTransform(fade, [0, 1], [30, 12]);
 
   const setFaceEngaged = (on: boolean) => {
     animate(faceEngage, on ? 1 : 0, { duration: on ? 0.28 : 0.4, ease: "easeOut" });
@@ -70,9 +71,12 @@ export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDiv
   const stopSimulation = () => {
     cancelAnimationFrame(rafRef.current);
     simRef.current = null;
+    simulatingRef.current = false;
     setSimulating(false);
     simSquashX.set(1);
     simSquashY.set(1);
+    dragX.stop();
+    dragY.stop();
   };
 
   const startSimulation = (vx: number, vy: number) => {
@@ -82,6 +86,7 @@ export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDiv
 
     const bounds = measureHeroDragBounds(playArea, ball, dragX.get(), dragY.get());
     simRef.current = createHeroBallState(dragX.get(), dragY.get(), vx, vy);
+    simulatingRef.current = true;
     setSimulating(true);
 
     const tick = () => {
@@ -109,6 +114,11 @@ export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDiv
 
   useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
 
+  const handlePointerDown = () => {
+    stopSimulation();
+    setFaceEngaged(true);
+  };
+
   const onDragEnd = (_: unknown, info: { velocity: { x: number; y: number } }) => {
     setDragging(false);
     if (reduceMotion) {
@@ -125,12 +135,15 @@ export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDiv
   return (
     <motion.div
       ref={ballRef}
-      drag={!reduceMotion && !simulating}
+      drag={!reduceMotion}
       dragConstraints={playAreaRef}
       dragElastic={0.1}
       dragMomentum={false}
+      onPointerDownCapture={handlePointerDown}
       onDragStart={() => {
         stopSimulation();
+        dragX.stop();
+        dragY.stop();
         setDragging(true);
         setFaceEngaged(true);
       }}
@@ -139,7 +152,6 @@ export function FaceBall({ playAreaRef }: { playAreaRef: React.RefObject<HTMLDiv
       onHoverEnd={() => {
         if (!dragging) setFaceEngaged(false);
       }}
-      onPointerDown={() => setFaceEngaged(true)}
       onPointerUp={() => {
         if (!dragging) setFaceEngaged(false);
       }}
