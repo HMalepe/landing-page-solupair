@@ -83,11 +83,11 @@ export function FaceBall({ playAreaRef, headlineRef }: FaceBallProps) {
     if (!sim || !shell || !body || !shadow) return;
 
     const s = sim.getRenderState();
-    shell.style.transform = `translate3d(calc(-50% + ${s.x}px), calc(-50% + ${s.y}px), 0) rotate(${s.rotation}rad)`;
+    const deg = Math.round(((s.rotation * 180) / Math.PI) * 10) / 10;
+    shell.style.transform = `translate3d(calc(-50% + ${s.x}px), calc(-50% + ${s.y}px), 0) rotate(${deg}deg)`;
     shell.style.cursor = draggingRef.current ? "grabbing" : "grab";
-    body.style.transform = `scale(${s.squashX * s.breathScale}, ${s.squashY * s.breathScale})`;
-    body.style.filter = s.motionBlur > 0.2 ? `blur(${s.motionBlur}px)` : "none";
-    shadow.style.transform = `translateX(-50%) scale(${s.shadowScaleX}, ${s.shadowScaleY})`;
+    body.style.transform = `scale3d(${s.squashX * s.breathScale}, ${s.squashY * s.breathScale}, 1)`;
+    shadow.style.transform = `translate3d(-50%, 0, 0) scale(${s.shadowScaleX}, ${s.shadowScaleY})`;
     shadow.style.opacity = `${s.shadowOpacity}`;
   };
 
@@ -103,10 +103,10 @@ export function FaceBall({ playAreaRef, headlineRef }: FaceBallProps) {
       const sim = simRef.current;
       if (sim) {
         const last = lastFrameRef.current || now;
-        const dt = (now - last) / 1000;
+        const dt = Math.min((now - last) / 1000, 1 / 45);
         lastFrameRef.current = now;
         if (!reduceMotion) sim.step(dt);
-        else sim.step(dt * 0.4);
+        else sim.step(dt * 0.35);
         applyRender();
       }
       rafRef.current = requestAnimationFrame(tick);
@@ -160,38 +160,42 @@ export function FaceBall({ playAreaRef, headlineRef }: FaceBallProps) {
 
   return (
     <motion.div
-      ref={shellRef}
-      role="img"
-      aria-label="Drag the face ball"
-      className="nova-hero-sphere absolute left-1/2 top-1/2 touch-none select-none will-change-transform"
+      className="nova-hero-sphere-wrap absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
       style={{ opacity: ballOpacity, zIndex: ballZ }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={endPointer}
-      onPointerCancel={endPointer}
-      onHoverStart={() => setFaceEngaged(true)}
-      onHoverEnd={() => {
-        if (!draggingRef.current) setFaceEngaged(false);
-      }}
     >
       <div
-        ref={shadowRef}
-        aria-hidden
-        className="nova-hero-sphere-shadow pointer-events-none absolute left-1/2 top-[88%]"
-      />
-      <div ref={ballRef} className="relative">
+        ref={shellRef}
+        role="img"
+        aria-label="Drag the face ball"
+        className="nova-hero-sphere touch-none select-none"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endPointer}
+        onPointerCancel={endPointer}
+        onMouseEnter={() => setFaceEngaged(true)}
+        onMouseLeave={() => {
+          if (!draggingRef.current) setFaceEngaged(false);
+        }}
+      >
         <div
-          ref={bodyRef}
-          className="nova-hero-sphere-body relative h-[280px] w-[280px] sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px] will-change-transform"
-        >
-          <motion.div className="h-full w-full" style={{ filter: scrollBlur }}>
-            <BallSphere
-              lidScale={combinedLid}
-              mouthRadius={mouthRadius}
-              mouthHeight={mouthHeight}
-              mouthWidth={mouthWidth}
-            />
-          </motion.div>
+          ref={shadowRef}
+          aria-hidden
+          className="nova-hero-sphere-shadow pointer-events-none absolute left-1/2 top-[88%]"
+        />
+        <div ref={ballRef} className="relative">
+          <div
+            ref={bodyRef}
+            className="nova-hero-sphere-body relative h-[280px] w-[280px] sm:h-[360px] sm:w-[360px] lg:h-[440px] lg:w-[440px]"
+          >
+            <motion.div className="h-full w-full" style={{ filter: scrollBlur }}>
+              <BallSphere
+                lidScale={combinedLid}
+                mouthRadius={mouthRadius}
+                mouthHeight={mouthHeight}
+                mouthWidth={mouthWidth}
+              />
+            </motion.div>
+          </div>
         </div>
       </div>
     </motion.div>

@@ -89,6 +89,19 @@
   isolation: isolate;
 }
 
+.nova-theme .nova-hero-sphere-wrap {
+  transform: translateZ(0);
+}
+
+.nova-theme .nova-hero-sphere {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
 .nova-theme .nova-hero-sphere-shadow {
   width: min(48vw, 300px);
   height: min(10vw, 52px);
@@ -96,11 +109,12 @@
   background: radial-gradient(ellipse at center, oklch(0.52 0.24 288 / 0.55) 0%, transparent 72%);
   filter: blur(10px);
   transform-origin: center center;
-  will-change: transform, opacity;
 }
 
 .nova-theme .nova-hero-sphere-body {
   transform-origin: center center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .nova-theme .nova-ball-track {
@@ -146,7 +160,8 @@
   filter: blur(13px);
   opacity: 0.52;
   transform-origin: center center;
-  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Legacy single-ball drift (static fallback only) */

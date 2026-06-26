@@ -9,14 +9,16 @@ import {
   type PhysicsBall,
 } from "@/lib/viewport-ball-physics";
 
-const MEET_INTERVAL_MS = 3000;
+const MEET_INTERVAL_MS = 4500;
 
 function applyBallTransform(el: HTMLDivElement | null, ball: PhysicsBall) {
   if (!el) return;
   const d = ball.radius * 2;
+  const tx = Math.round((ball.x - ball.radius) * 2) / 2;
+  const ty = Math.round((ball.y - ball.radius) * 2) / 2;
   el.style.width = `${d}px`;
   el.style.height = `${d}px`;
-  el.style.transform = `translate3d(${ball.x - ball.radius}px, ${ball.y - ball.radius}px, 0) scale(${ball.squashX}, ${ball.squashY})`;
+  el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale3d(${ball.squashX}, ${ball.squashY}, 1)`;
 }
 
 function StaticPair() {
@@ -44,6 +46,7 @@ function PhysicsPair() {
   const ballsRef = useRef<PhysicsBall[]>([]);
   const boundsRef = useRef({ width: 0, height: 0 });
   const rafRef = useRef<number>(0);
+  const lastFrameRef = useRef(0);
 
   useEffect(() => {
     const measure = () => {
@@ -68,10 +71,14 @@ function PhysicsPair() {
       convergeBalls(ballsRef.current);
     }, MEET_INTERVAL_MS);
 
-    const tick = () => {
+    const tick = (now: number) => {
+      const last = lastFrameRef.current || now;
+      const dt = Math.min((now - last) / 1000, 1 / 45);
+      lastFrameRef.current = now;
+
       const balls = ballsRef.current;
       if (balls.length === 2) {
-        stepPhysics(balls, boundsRef.current);
+        stepPhysics(balls, boundsRef.current, dt);
         applyBallTransform(ballARef.current, balls[0]);
         applyBallTransform(ballBRef.current, balls[1]);
       }

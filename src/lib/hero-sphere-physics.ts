@@ -27,7 +27,8 @@ const MASS = 1.35;
 const DRAG_STIFFNESS = 148;
 const DRAG_DAMPING = 20;
 const REST_PAUSE_S = 3;
-const MAX_DT = 1 / 45;
+const MAX_DT = 1 / 50;
+const MAX_ANGULAR_VELOCITY = 0.52;
 
 export class HeroSphereSimulator {
   phase: SpherePhase = "floating";
@@ -127,11 +128,10 @@ export class HeroSphereSimulator {
     const heightNorm = Math.max(0, Math.min(1, (this.bounds.bottom - this.y) / Math.max(1, this.bounds.bottom - this.bounds.top)));
     const shadowScale = 0.82 + heightNorm * 0.28;
     const shadowOpacity = 0.22 + heightNorm * 0.2;
-    const motionBlur = Math.min(10, speed * 0.018);
 
     return {
-      x: this.x,
-      y: this.y,
+      x: Math.round(this.x * 2) / 2,
+      y: Math.round(this.y * 2) / 2,
       rotation: this.rotation,
       squashX: this.squashX,
       squashY: this.squashY,
@@ -139,9 +139,26 @@ export class HeroSphereSimulator {
       shadowScaleX: shadowScale * (1 + (1 - this.squashX) * 0.35),
       shadowScaleY: shadowScale * (1 + (1 - this.squashY) * 0.2),
       shadowOpacity,
-      motionBlur,
+      motionBlur: 0,
       speed,
     };
+  }
+
+  private updateRotation(dt: number) {
+    this.angularVelocity = Math.max(
+      -MAX_ANGULAR_VELOCITY,
+      Math.min(MAX_ANGULAR_VELOCITY, this.angularVelocity),
+    );
+    this.angularVelocity *= Math.exp(-4.5 * dt);
+    this.rotation += this.angularVelocity * dt;
+    if (Math.abs(this.rotation) > Math.PI * 2) {
+      this.rotation %= Math.PI * 2;
+    }
+  }
+
+  private addSpinFromMotion(dt: number) {
+    const targetOmega = (this.vx / Math.max(this.radius, 1)) * 0.2;
+    this.angularVelocity += (targetOmega - this.angularVelocity) * Math.min(1, 1.6 * dt);
   }
 
   private stepFloating(dt: number) {
@@ -153,8 +170,8 @@ export class HeroSphereSimulator {
     this.vx = 0;
     this.vy = 0;
     this.breathScale = 1 + Math.sin(t * 0.85) * 0.014;
-    this.rotation += (0.018 + Math.sin(t * 0.41) * 0.012) * dt;
-    this.angularVelocity = 0;
+    this.angularVelocity = 0.035 * Math.sin(t * 0.41);
+    this.updateRotation(dt);
   }
 
   private stepDragging(dt: number) {
@@ -164,7 +181,8 @@ export class HeroSphereSimulator {
     this.vy += ay * dt;
     this.x += this.vx * dt;
     this.y += this.vy * dt;
-    this.rotation += this.vx * 0.00035;
+    this.addSpinFromMotion(dt);
+    this.updateRotation(dt);
     this.breathScale = 1 + Math.sin(this.clock * 1.4) * 0.006;
     this.clampWalls(false);
   }
@@ -176,7 +194,8 @@ export class HeroSphereSimulator {
     this.vy *= dragFactor;
     this.x += this.vx * dt;
     this.y += this.vy * dt;
-    this.rotation += this.vx * 0.00045;
+    this.addSpinFromMotion(dt);
+    this.updateRotation(dt);
 
     this.clampWalls(true);
 
@@ -188,7 +207,10 @@ export class HeroSphereSimulator {
       this.vx *= 0.94 + Math.random() * 0.04;
       this.applySquash(0, -1, 0.55 + impact * 0.45);
       this.bounceEnergy *= 0.72 + Math.random() * 0.08;
-      this.angularVelocity = this.vx / this.radius;
+      this.angularVelocity = Math.max(
+        -MAX_ANGULAR_VELOCITY,
+        Math.min(MAX_ANGULAR_VELOCITY, (this.vx / Math.max(this.radius, 1)) * 0.55),
+      );
 
       const energy = Math.hypot(this.vx, this.vy);
       if (energy < 95 && impact < 0.35) {
@@ -203,33 +225,38 @@ export class HeroSphereSimulator {
     this.vy = 0;
     this.x += this.vx * dt;
     this.restElapsed += dt;
-    this.rotation += this.angularVelocity * dt;
-    this.angularVelocity *= Math.exp(-4 * dt);
+    this.updateRotation(dt);
     this.breathScale = 1 + Math.sin(this.clock * 0.6) * 0.004;
 
     if (this.restElapsed >= REST_PAUSE_S) {
       this.phase = "rolling";
       const toward = -Math.sign(this.x) || -1;
-      this.vx = toward * (55 + Math.random() * 35);
-      this.angularVelocity = this.vx / this.radius;
+      this.vx = toward * (38 + Math.random() * 22);
+      this.angularVelocity = Math.max(
+        -MAX_ANGULAR_VELOCITY,
+        Math.min(MAX_ANGULAR_VELOCITY, this.vx / Math.max(this.radius, 1)),
+      );
     }
   }
 
   private stepRolling(dt: number) {
     this.y = this.bounds.bottom;
     const toOrigin = -this.x;
-    const desiredVx = Math.sign(toOrigin) * Math.min(Math.abs(toOrigin) * 1.8, 110);
-    this.vx += (desiredVx - this.vx) * Math.min(1, 3.2 * dt);
-    this.vx *= Math.exp(-1.1 * dt);
+    const desiredVx = Math.sign(toOrigin) * Math.min(Math.abs(toOrigin) * 1.4, 72);
+    this.vx += (desiredVx - this.vx) * Math.min(1, 2.4 * dt);
+    this.vx *= Math.exp(-1.4 * dt);
     this.x += this.vx * dt;
-    this.angularVelocity = this.vx / this.radius;
-    this.rotation += this.angularVelocity * dt;
+    this.angularVelocity = Math.max(
+      -MAX_ANGULAR_VELOCITY,
+      Math.min(MAX_ANGULAR_VELOCITY, this.vx / Math.max(this.radius, 1)),
+    );
+    this.updateRotation(dt);
     this.breathScale = 1;
 
-    if (Math.abs(this.x) < 5 && Math.abs(this.vx) < 12) {
+    if (Math.abs(this.x) < 5 && Math.abs(this.vx) < 10) {
       this.phase = "lifting";
       this.vx = 0;
-      this.angularVelocity *= 0.4;
+      this.angularVelocity *= 0.25;
     }
   }
 
@@ -242,8 +269,8 @@ export class HeroSphereSimulator {
     this.vx += ax * dt;
     this.x += this.vx * dt;
     this.y += this.vy * dt;
-    this.rotation += this.angularVelocity * dt;
-    this.angularVelocity *= Math.exp(-2.5 * dt);
+    this.angularVelocity *= Math.exp(-3.5 * dt);
+    this.updateRotation(dt);
     this.breathScale = 1 + Math.sin(this.clock * 0.9) * 0.01;
 
     const dist = Math.hypot(this.x, this.y);
@@ -252,6 +279,7 @@ export class HeroSphereSimulator {
       this.phase = "floating";
       this.vx = 0;
       this.vy = 0;
+      this.angularVelocity = 0;
       this.restElapsed = 0;
       this.bounceEnergy = 1;
     }

@@ -13,11 +13,12 @@ export type PhysicsBounds = {
   height: number;
 };
 
-const AIR_DRAG = 0.9988;
-const WALL_RESTITUTION = 0.78;
-const BALL_RESTITUTION = 0.82;
-const MIN_SPEED = 0.28;
-const MAX_SPEED = 9.5;
+const AIR_DRAG_PER_S = 4.2;
+const WALL_RESTITUTION = 0.76;
+const BALL_RESTITUTION = 0.8;
+const MIN_SPEED = 0.12;
+const MAX_SPEED = 5.2;
+const MAX_DT = 1 / 45;
 
 function clampSpeed(ball: PhysicsBall) {
   const speed = Math.hypot(ball.vx, ball.vy);
@@ -43,9 +44,10 @@ function applySquash(ball: PhysicsBall, nx: number, ny: number, intensity: numbe
   }
 }
 
-function decaySquash(ball: PhysicsBall) {
-  ball.squashX += (1 - ball.squashX) * 0.2;
-  ball.squashY += (1 - ball.squashY) * 0.2;
+function decaySquash(ball: PhysicsBall, dt: number) {
+  const rate = 1 - Math.exp(-12 * dt);
+  ball.squashX += (1 - ball.squashX) * rate;
+  ball.squashY += (1 - ball.squashY) * rate;
 }
 
 function resolveWallCollision(ball: PhysicsBall, bounds: PhysicsBounds) {
@@ -98,7 +100,7 @@ function resolveBallCollision(a: PhysicsBall, b: PhysicsBall) {
   b.vx += impulse * nx;
   b.vy += impulse * ny;
 
-  const scatter = 1.6 + Math.random() * 2.6;
+  const scatter = 0.9 + Math.random() * 1.4;
   const angleA = Math.random() * Math.PI * 2;
   const angleB = Math.random() * Math.PI * 2;
   a.vx += Math.cos(angleA) * scatter;
@@ -116,7 +118,7 @@ export function createPhysicsBall(bounds: PhysicsBounds, radius: number): Physic
   const x = margin + Math.random() * Math.max(1, bounds.width - margin * 2);
   const y = margin + Math.random() * Math.max(1, bounds.height - margin * 2);
   const angle = Math.random() * Math.PI * 2;
-  const speed = 1.7 + Math.random() * 2.2;
+  const speed = 0.65 + Math.random() * 0.85;
 
   return {
     x,
@@ -138,7 +140,7 @@ export function convergeBalls(balls: PhysicsBall[]) {
   const dist = Math.hypot(dx, dy) || 1;
   const nx = dx / dist;
   const ny = dy / dist;
-  const rush = 4.8 + Math.random() * 2.8;
+  const rush = 1.8 + Math.random() * 1.1;
 
   a.vx += nx * rush;
   a.vy += ny * rush;
@@ -146,14 +148,17 @@ export function convergeBalls(balls: PhysicsBall[]) {
   b.vy -= ny * rush;
 }
 
-export function stepPhysics(balls: PhysicsBall[], bounds: PhysicsBounds) {
+export function stepPhysics(balls: PhysicsBall[], bounds: PhysicsBounds, dt: number) {
+  const stepDt = Math.min(Math.max(dt, 0), MAX_DT);
+  const dragFactor = Math.exp(-AIR_DRAG_PER_S * stepDt);
+
   for (const ball of balls) {
-    ball.x += ball.vx;
-    ball.y += ball.vy;
-    ball.vx *= AIR_DRAG;
-    ball.vy *= AIR_DRAG;
+    ball.x += ball.vx * stepDt * 60;
+    ball.y += ball.vy * stepDt * 60;
+    ball.vx *= dragFactor;
+    ball.vy *= dragFactor;
     resolveWallCollision(ball, bounds);
-    decaySquash(ball);
+    decaySquash(ball, stepDt);
     clampSpeed(ball);
   }
 
