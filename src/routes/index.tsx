@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Instagram, Twitter, Linkedin, Dribbble } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import project1 from "@/assets/project1.jpg";
 import project2 from "@/assets/project2.jpg";
 import project3 from "@/assets/project3.jpg";
@@ -225,18 +225,12 @@ function Contact() {
               Follow Us
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
-              {[
-                { icon: Instagram, label: "Instagram" },
-                { icon: Twitter, label: "Twitter" },
-                { icon: Linkedin, label: "LinkedIn" },
-                { icon: Dribbble, label: "Dribbble" },
-              ].map(({ icon: Icon, label }) => (
+              {["Instagram", "Twitter", "LinkedIn", "Dribbble"].map((label) => (
                 <a
                   key={label}
                   href="#"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-foreground transition hover:border-primary hover:text-primary"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-foreground transition hover:border-primary hover:text-primary"
                 >
-                  <Icon className="h-4 w-4" />
                   {label}
                 </a>
               ))}
