@@ -108,8 +108,28 @@
   transform-origin: center center;
 }
 
-.nova-theme .nova-ball-rider--static {
-  filter: blur(11px);
+.nova-theme .nova-lower-shell {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--section-dark);
+}
+
+.nova-theme .nova-bg-ball-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.nova-theme .nova-bg-ball-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.nova-theme .nova-ball-rider--bg {
   opacity: 0.42;
 }
 
@@ -141,8 +161,44 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nova-theme .nova-ball-rider--static {
-    filter: blur(10px);
-    opacity: 0.45;
+  .nova-theme .nova-ball-rider--bg {
+    animation: none !important;
+    filter: blur(12px) !important;
+    opacity: 0.38 !important;
   }
+}
+
+@keyframes novaBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(calc(var(--nova-amp, 8px) * -1));
+  }
+}
+
+.nova-theme .nova-projects-scroll {
+  position: relative;
+}
+
+.nova-theme .nova-projects-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.nova-theme .nova-projects-stage {
+  perspective: 1400px;
+  transform-style: preserve-3d;
+  min-height: min(58vh, 560px);
+}
+
+.nova-theme .nova-project-card {
+  transform-origin: center center;
+  will-change: transform, opacity, filter;
+  box-shadow:
+    0 24px 80px oklch(0 0 0 / 0.45),
+    0 0 40px oklch(0.52 0.24 288 / 0.12);
 }
