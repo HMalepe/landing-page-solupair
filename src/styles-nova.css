@@ -1,0 +1,126 @@
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+/* Solupair SP mesh — cyan → violet → magenta (matches dashboard + logo) */
+.nova-theme {
+  --solupair-cyan: oklch(0.78 0.14 192);
+  --solupair-violet: oklch(0.52 0.24 288);
+  --solupair-magenta: oklch(0.62 0.26 330);
+  --solupair-gradient: linear-gradient(
+    135deg,
+    var(--solupair-cyan) 0%,
+    var(--solupair-violet) 46%,
+    var(--solupair-magenta) 100%
+  );
+  --solupair-gradient-horizontal: linear-gradient(
+    90deg,
+    var(--solupair-cyan) 0%,
+    var(--solupair-violet) 50%,
+    var(--solupair-magenta) 100%
+  );
+  --solupair-gradient-soft: linear-gradient(
+    135deg,
+    oklch(0.78 0.14 192 / 0.18) 0%,
+    oklch(0.52 0.24 288 / 0.14) 50%,
+    oklch(0.62 0.26 330 / 0.12) 100%
+  );
+  --solupair-glow: 0 0 48px -8px oklch(0.52 0.24 288 / 0.45);
+  --solupair-glow-strong: 0 0 72px -6px oklch(0.62 0.26 330 / 0.5);
+  --nova-ball-surface: radial-gradient(
+    circle at 32% 28%,
+    var(--solupair-cyan) 0%,
+    var(--solupair-violet) 52%,
+    var(--solupair-magenta) 100%
+  );
+
+  --radius: 0.875rem;
+  --background: oklch(0.06 0.012 288);
+  --foreground: oklch(0.98 0.005 280);
+  --card: oklch(0.1 0.018 288);
+  --card-foreground: oklch(0.98 0.005 280);
+  --primary: var(--solupair-cyan);
+  --primary-foreground: oklch(0.08 0.015 288);
+  --secondary: oklch(0.14 0.02 288);
+  --secondary-foreground: oklch(0.98 0.005 280);
+  --muted: oklch(0.14 0.02 288);
+  --muted-foreground: oklch(0.68 0.03 285);
+  --accent: var(--solupair-magenta);
+  --accent-foreground: oklch(0.98 0.005 280);
+  --border: oklch(1 0 0 / 0.12);
+  --input: oklch(1 0 0 / 0.1);
+  --ring: var(--solupair-violet);
+  --section-dark: oklch(0.04 0.01 288);
+
+  --font-display: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-accent: var(--accent);
+
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+.nova-theme .font-display {
+  font-family: var(--font-display);
+}
+
+.nova-theme .nova-gradient-text {
+  background-image: var(--solupair-gradient-horizontal);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.nova-theme .nova-hero-bg {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 90% 55% at 50% -5%, oklch(0.52 0.24 288 / 0.32), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 88% 55%, oklch(0.62 0.26 330 / 0.22), transparent 52%),
+    radial-gradient(ellipse 50% 40% at 8% 62%, oklch(0.78 0.14 192 / 0.18), transparent 50%);
+}
+
+.nova-theme .nova-logo-ring {
+  border-color: var(--solupair-cyan);
+  box-shadow: 0 0 12px oklch(0.78 0.14 192 / 0.5);
+}
+
+.nova-theme .nova-nav-pill:hover {
+  border-color: var(--solupair-violet);
+  color: var(--solupair-cyan);
+  box-shadow: 0 0 20px oklch(0.52 0.24 288 / 0.25);
+}
+
+.nova-theme .nova-cta-btn {
+  border-color: var(--solupair-cyan);
+  color: var(--solupair-cyan);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.nova-theme .nova-cta-btn:hover {
+  background: var(--solupair-gradient);
+  border-color: transparent;
+  color: var(--primary-foreground);
+  box-shadow: var(--solupair-glow-strong);
+}
+
+@keyframes novaBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(calc(var(--nova-amp, 8px) * -1));
+  }
+}
