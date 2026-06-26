@@ -89,6 +89,29 @@
   isolation: isolate;
 }
 
+.nova-theme .nova-hero-headlines {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
+}
+
+.nova-theme .nova-hero-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: clamp(2.5rem, 14vw, 11rem);
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.25rem, 14.5vw, 15.5rem);
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+
 .nova-theme .nova-ball-track {
   position: absolute;
   inset: 0;
