@@ -24,14 +24,14 @@ const ScrollProjectCard = memo(function ScrollProjectCard({
   stageWidth: number;
   total: number;
 }) {
-  const motion = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total));
+  const cardMotion = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total));
 
-  const x = useTransform(motion, (m) => (m.xPercent / 100) * stageWidth);
-  const y = useTransform(motion, (m) => m.yPx);
-  const scale = useTransform(motion, (m) => m.scale);
-  const opacity = useTransform(motion, (m) => m.opacity);
-  const zIndex = useTransform(motion, (m) => m.zIndex);
-  const visibility = useTransform(motion, (m) => (m.visible ? "visible" : "hidden"));
+  const x = useTransform(cardMotion, (m) => (m.xPercent / 100) * stageWidth);
+  const y = useTransform(cardMotion, (m) => m.yPx);
+  const scale = useTransform(cardMotion, (m) => m.scale);
+  const opacity = useTransform(cardMotion, (m) => m.opacity);
+  const zIndex = useTransform(cardMotion, (m) => m.zIndex);
+  const visibility = useTransform(cardMotion, (m) => (m.visible ? "visible" : "hidden"));
 
   return (
     <motion.article
