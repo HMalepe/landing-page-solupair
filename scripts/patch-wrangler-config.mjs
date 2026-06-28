@@ -1,4 +1,4 @@
-import { copyFileSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const serverDir = join(process.cwd(), ".output/server");
