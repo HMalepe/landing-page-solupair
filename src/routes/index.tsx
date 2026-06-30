@@ -42,7 +42,7 @@ function SolupairLogo() {
     <a
       href="https://solupair.co.za"
       className="inline-flex shrink-0 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3 lg:gap-5"
-      aria-label="Solupair — Digital solutions that push"
+      aria-label="Solupair"
     >
       <img
         src={solupairLogo}
@@ -52,7 +52,7 @@ function SolupairLogo() {
       />
       <img
         src={solupairWordmark}
-        alt="Solupair — Digital solutions that push"
+        alt="Solupair"
         className="h-[3.25rem] w-auto max-w-[min(52vw,14rem)] object-contain object-left sm:h-[4rem] sm:max-w-[min(48vw,17rem)] lg:h-[4.75rem] lg:max-w-none"
       />
     </a>
@@ -65,7 +65,7 @@ function Hero() {
   return (
     <section
       ref={heroGroundRef}
-      className="safe-area-x relative flex max-h-[100dvh] min-h-[min(100dvh,52rem)] flex-col overflow-hidden bg-background text-foreground sm:min-h-[min(100dvh,54rem)] lg:min-h-[min(100dvh,56rem)]"
+      className="safe-area-x relative flex max-h-[100dvh] min-h-[min(100dvh,52rem)] flex-col overflow-x-clip overflow-y-hidden bg-background text-foreground sm:min-h-[min(100dvh,54rem)] lg:min-h-[min(100dvh,56rem)]"
     >
       <HeroFaceBall groundRef={heroGroundRef} />
       <header className="safe-area-top relative z-20 flex shrink-0 items-start justify-between gap-3 px-4 py-2 sm:items-center sm:px-10 sm:py-3 lg:px-14">
