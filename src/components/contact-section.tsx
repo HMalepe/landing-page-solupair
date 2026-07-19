@@ -14,7 +14,7 @@ export function ContactSection() {
       id="contact"
       data-scroll-snap="contact"
       aria-labelledby="contact-heading"
-      className={`contact-section safe-area-x section-surface snap-section-compact relative isolate flex flex-col justify-start overflow-x-visible px-4 pt-10 pb-14 sm:px-10 sm:pt-12 sm:pb-20 lg:px-14 lg:pt-14 lg:pb-24${sectionInView ? " contact-in-view" : ""}`}
+      className={`contact-section safe-area-x section-surface snap-section-compact relative isolate flex flex-col justify-start overflow-x-visible px-4 pt-10 pb-8 sm:px-10 sm:pt-12 sm:pb-10 lg:px-14 lg:pt-14 lg:pb-12${sectionInView ? " contact-in-view" : ""}`}
     >
       <div className="contact-helix-anchor" aria-hidden>
         <ContactHelixBackground />
@@ -122,24 +122,24 @@ export function ContactSection() {
           </form>
         </div>
 
-        <div className="safe-area-bottom contact-footer mt-10 flex flex-col items-start justify-between gap-3 border-t border-subtle pt-6 text-[10px] uppercase tracking-[0.18em] text-text-dim sm:mt-14 sm:flex-row sm:items-center sm:gap-4 sm:text-[11px] sm:tracking-[0.2em] lg:mt-16">
-          <div>© 2026 Solupair Pty Ltd. All rights reserved.</div>
-          <div className="flex gap-6">
+        <div className="safe-area-bottom contact-footer">
+          <p className="contact-footer-copy">© 2026 Solupair Pty Ltd. All rights reserved.</p>
+          <nav className="contact-footer-nav" aria-label="Legal">
             <a
               href="#"
-              className="contact-footer-link touch-target transition hover:text-brand-cyan"
+              className="contact-footer-link"
               onClick={(e) => e.preventDefault()}
             >
               Privacy
             </a>
             <a
               href="#"
-              className="contact-footer-link touch-target transition hover:text-brand-cyan"
+              className="contact-footer-link"
               onClick={(e) => e.preventDefault()}
             >
               Terms
             </a>
-          </div>
+          </nav>
         </div>
       </div>
     </section>

@@ -53,7 +53,7 @@ export function FinalCtaSection() {
           >
             <span>Start with a quick message</span>
           </a>
-          <a href="mailto:info@solupair.co.za" className="final-cta-email touch-target">
+          <a href="mailto:info@solupair.co.za" className="final-cta-email">
             Or email info@solupair.co.za
           </a>
         </div>

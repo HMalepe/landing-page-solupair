@@ -23,14 +23,14 @@ function SolupairLogo() {
         decoding="async"
         className="site-logo-mark w-auto shrink-0 object-contain object-left"
       />
-      <div className="site-logo-wordmark-wrap site-logo-wordmark-wrap--desktop overflow-hidden">
+      <div className="site-logo-wordmark-wrap site-logo-wordmark-wrap--desktop">
         <img
           src={solupairWordmark}
           alt="Solupair"
           width={1600}
-          height={153}
+          height={220}
           decoding="async"
-          className="site-logo-wordmark h-full w-auto object-contain object-left object-top"
+          className="site-logo-wordmark h-full w-auto object-contain object-left object-center"
         />
       </div>
     </Link>

@@ -426,10 +426,12 @@
   }
 
   .contact-footer {
-    font-size: 0.625rem;
-    letter-spacing: 0.14em;
-    line-height: 1.5;
-    padding-bottom: 0.25rem;
+    margin-top: 0.85rem;
+    padding-top: 0.5rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    padding-bottom: 0;
   }
 
   .contact-helix-anchor {

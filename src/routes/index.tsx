@@ -18,7 +18,7 @@ function Hero() {
       id="hero"
       data-scroll-snap="hero"
       ref={heroGroundRef}
-      className="hero-section safe-area-x snap-section-panel relative flex h-[100dvh] max-h-[100dvh] flex-col overflow-x-clip overflow-y-hidden max-md:h-[50dvh] max-md:max-h-[52dvh] max-md:min-h-[46dvh]"
+      className="hero-section safe-area-x snap-section-panel relative flex min-h-[100dvh] h-[100dvh] max-h-[100dvh] flex-col overflow-x-clip overflow-y-clip max-md:h-[50dvh] max-md:max-h-[52dvh] max-md:min-h-[46dvh]"
     >
       <div className="hero-bg" aria-hidden>
         <div className="hero-bg-base" />
