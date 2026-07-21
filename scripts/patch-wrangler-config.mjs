@@ -1,8 +1,16 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const serverDir = join(process.cwd(), ".output/server");
 const configPath = join(serverDir, "wrangler.json");
+
+if (!existsSync(configPath)) {
+  console.log(
+    "Skipping wrangler patch — .output/server/wrangler.json not found (non-Cloudflare build).",
+  );
+  process.exit(0);
+}
+
 const config = JSON.parse(readFileSync(configPath, "utf8"));
 
 const today = new Date().toISOString().slice(0, 10);
