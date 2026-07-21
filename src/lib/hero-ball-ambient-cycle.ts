@@ -7,7 +7,7 @@ export const AMBIENT_PHYSICS: BasketballConfig = {
   wallRestitution: 0.77,
   airFriction: 0.999,
   floorFriction: 0.94,
-  maxSpeed: 2000,
+  maxSpeed: 4200,
   sleepSpeed: 8,
 };
 
@@ -33,7 +33,7 @@ export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, 
 
 /**
  * Loft from the current floor contact — never teleport.
- * Softer than a throw; more like a prepared bounce.
+ * Horizontal speed is tuned to reach the far wall before the next settle.
  */
 export function ambientRespawnImpulse(
   bounds: PhysicsBounds,
@@ -44,11 +44,13 @@ export function ambientRespawnImpulse(
   const mid = (bounds.minX + bounds.maxX) * 0.5;
   const towardRight = fromX <= mid;
   const sign = towardRight ? 1 : -1;
-  const loft = 0.92 + Math.random() * 0.16;
+  const loft = 0.96 + Math.random() * 0.12;
+  // Cover well over a full span in one flight so walls get kissed every rally.
+  const wallSeek = Math.max(1100, spanX * 2.15);
 
   return {
-    vx: sign * Math.max(640, spanX * 1.28) * loft,
-    vy: -Math.max(380, spanY * 0.52) * loft,
+    vx: sign * wallSeek * loft,
+    vy: -Math.max(560, spanY * 0.78) * loft,
   };
 }
 

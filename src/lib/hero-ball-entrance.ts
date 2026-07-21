@@ -17,7 +17,7 @@ export const HERO_BALL_PHYSICS: BasketballConfig = {
   wallRestitution: 0.78,
   airFriction: 0.9988,
   floorFriction: 0.93,
-  maxSpeed: 2200,
+  maxSpeed: 4200,
   sleepSpeed: 9,
 };
 
@@ -26,7 +26,7 @@ export const ENTRANCE_PHYSICS: BasketballConfig = {
   restitution: 0.8,
   wallRestitution: 0.82,
   gravity: 1680,
-  maxSpeed: 2100,
+  maxSpeed: 4200,
   sleepSpeed: 8,
 };
 
@@ -41,7 +41,7 @@ export function getHeroBallDiameter(width: number, height: number, preferred: nu
   return Math.min(preferred, Math.max(minByRoom, Math.min(maxByRoom, preferred)));
 }
 
-/** Opening loft — deliberate, not frantic; first wall kiss lands mid-hero. */
+/** Opening loft — starts pinned to the left edge, drives hard into the far wall. */
 export function getEntranceInitialState(
   width: number,
   height: number,
@@ -53,9 +53,9 @@ export function getEntranceInitialState(
 
   return {
     x: bounds.minX,
-    y: bounds.minY + spanY * 0.32,
-    vx: Math.max(760, spanX * 1.35),
-    vy: -Math.max(320, spanY * 0.36),
+    y: bounds.minY + spanY * 0.28,
+    vx: Math.max(1200, spanX * 2.05),
+    vy: -Math.max(420, spanY * 0.48),
   };
 }
 

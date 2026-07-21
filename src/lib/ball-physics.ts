@@ -420,8 +420,8 @@ export function getViewportBallBounds(radius: number, topInset = 8): PhysicsBoun
 }
 
 /**
- * Hero / section-local bounds from the actual #hero box.
- * Center of the ball travels so the disc can visibly kiss all four edges.
+ * Hero / section-local bounds from the actual playfield box.
+ * Center travels so the disc kisses all four edges (1px overshoot reads flush under clip).
  */
 export function getSectionBallBounds(
   width: number,
@@ -429,11 +429,12 @@ export function getSectionBallBounds(
   radius: number,
   edgeInset = 0,
 ): PhysicsBounds {
-  const inset = Math.max(0, edgeInset);
-  const minX = radius + inset;
-  const maxX = Math.max(minX, width - radius - inset);
-  const minY = radius + inset;
-  const maxY = Math.max(minY, height - radius - inset);
+  // Negative inset = overshoot into the clip edge so the disc visually kisses.
+  const kiss = edgeInset === 0 ? -1 : edgeInset;
+  const minX = Math.max(0, radius + kiss);
+  const maxX = Math.max(minX, width - radius - kiss);
+  const minY = Math.max(0, radius + kiss);
+  const maxY = Math.max(minY, height - radius - kiss);
 
   return { minX, maxX, minY, maxY };
 }
