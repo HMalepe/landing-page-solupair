@@ -6,6 +6,11 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// Vercel CI sets VERCEL=1. Cloudflare Actions set NITRO_PRESET=cloudflare_module.
+const nitroPreset =
+  process.env.NITRO_PRESET ||
+  (process.env.VERCEL ? "vercel" : "vercel");
+
 export default defineConfig({
-  nitro: { preset: "vercel" },
+  nitro: { preset: nitroPreset },
 });

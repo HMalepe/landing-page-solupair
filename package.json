@@ -9,7 +9,7 @@
     "generate:favicon": "node scripts/generate-favicon.mjs",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "cf:build": "vite build && node scripts/patch-wrangler-config.mjs",
+    "cf:build": "node scripts/cf-build.mjs",
     "cf:deploy": "wrangler deploy --config .output/server/wrangler.json",
     "deploy": "npm run cf:build && npm run cf:deploy",
     "preview": "vite preview",

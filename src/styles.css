@@ -2951,9 +2951,9 @@
 .projects-embla__slide-inner {
   width: 100%;
   height: auto;
-  aspect-ratio: 16 / 10;
-  min-height: 18rem;
-  max-height: min(52vh, 28rem);
+  aspect-ratio: 4 / 3;
+  min-height: 22rem;
+  max-height: min(62vh, 36rem);
   overflow: hidden;
   border-radius: inherit;
   isolation: isolate;
@@ -2969,9 +2969,9 @@
 
 @media (max-width: 767px) {
   .projects-embla__slide-inner {
-    aspect-ratio: 4 / 3;
-    min-height: 17.5rem;
-    max-height: min(58vh, 24rem);
+    aspect-ratio: 5 / 4;
+    min-height: 19rem;
+    max-height: min(64vh, 28rem);
   }
 
   .projects-showcase-mockup {
@@ -2987,13 +2987,13 @@
 /* Mid-range (640–1023): keep a taller frame so previews stay readable. */
 @media (min-width: 640px) and (max-width: 1023px) {
   .project-showcase-card {
-    --projects-caption-band: clamp(6.5rem, 20%, 8.5rem);
+    --projects-caption-band: clamp(6rem, 16%, 8rem);
   }
 
   .projects-embla__slide-inner {
-    aspect-ratio: 3 / 2;
-    min-height: 18rem;
-    max-height: min(48vh, 26rem);
+    aspect-ratio: 4 / 3;
+    min-height: 20rem;
+    max-height: min(58vh, 32rem);
   }
 
   .projects-embla__slide-inner > * {
@@ -3004,9 +3004,9 @@
 
 @media (min-width: 1024px) {
   .projects-embla__slide-inner {
-    aspect-ratio: 16 / 10;
-    min-height: 20rem;
-    max-height: min(54vh, 30rem);
+    aspect-ratio: 4 / 3;
+    min-height: 24rem;
+    max-height: min(66vh, 40rem);
   }
 
   .projects-showcase-arrow {

@@ -259,10 +259,10 @@
   }
 
   .projects-embla__slide-inner {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 5 / 4;
     height: auto;
-    min-height: 17.5rem;
-    max-height: min(58vh, 24rem);
+    min-height: 19rem;
+    max-height: min(64vh, 28rem);
   }
 
   .projects-embla__slide-inner > * {
@@ -550,10 +550,10 @@
   }
 
   .projects-embla__slide-inner {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 5 / 4;
     height: auto;
-    min-height: 15.5rem;
-    max-height: min(50vh, 20rem);
+    min-height: 16.5rem;
+    max-height: min(56vh, 24rem);
   }
 
   .projects-section {

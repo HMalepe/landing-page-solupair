@@ -14,6 +14,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # Force Nitro Cloudflare output (.output/server) instead of Vercel (.vercel/output).
+      NITRO_PRESET: cloudflare_module
 
     steps:
       - name: Checkout
@@ -28,14 +31,17 @@ jobs:
       - name: Install dependencies
         run: npm install --no-fund --no-audit
 
-      - name: Build
-        run: npm run build
+      - name: Build for Cloudflare
+        run: npm run cf:build
 
       - name: Clear Wrangler deploy metadata
         run: rm -rf .wrangler
 
-      - name: Patch Wrangler config for solupair.co.za
-        run: node scripts/patch-wrangler-config.mjs
+      - name: Verify Cloudflare output
+        run: |
+          test -f .output/server/wrangler.json
+          test -d .output/public
+          ls -la .output/server | head
 
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v3
