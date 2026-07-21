@@ -14,7 +14,6 @@ import {
   AMBIENT_CYCLE,
   AMBIENT_PHYSICS,
   ambientRespawnImpulse,
-  BALL_POSITION_SPRING,
   pickAmbientSpawn,
 } from "@/lib/hero-ball-ambient-cycle";
 import {
@@ -93,13 +92,40 @@ export function HeroFaceBall({
 
   const posX = useMotionValue(0);
   const posY = useMotionValue(0);
-  const displayX = useSpring(posX, BALL_POSITION_SPRING);
-  const displayY = useSpring(posY, BALL_POSITION_SPRING);
+  // Direct position — spring lag made the ball look stuck mid-hero.
+  const displayX = posX;
+  const displayY = posY;
   const entranceSmile = useMotionValue(prefersReducedMotion ? 1 : 0);
   const ballPresence = useMotionValue(1);
   const squashValue = useMotionValue(1);
-  const squashX = useSpring(useTransform(squashValue, (v) => 2 - v), { stiffness: 420, damping: 28 });
-  const squashY = useSpring(squashValue, { stiffness: 420, damping: 28 });
+  const squashAxis = useMotionValue(0); // 0 = vertical impact, 1 = horizontal
+  const squashX = useSpring(
+    useTransform([squashValue, squashAxis], ([v, axis]) => {
+      const amount = Number(v);
+      const a = Number(axis);
+      // Horizontal hit → compress X, stretch Y; vertical hit → opposite.
+      return a > 0.5 ? amount : 2 - amount;
+    }),
+    { stiffness: 520, damping: 22 },
+  );
+  const squashY = useSpring(
+    useTransform([squashValue, squashAxis], ([v, axis]) => {
+      const amount = Number(v);
+      const a = Number(axis);
+      return a > 0.5 ? 2 - amount : amount;
+    }),
+    { stiffness: 520, damping: 22 },
+  );
+  const floorProximity = useMotionValue(0.55);
+  const contactShadowScale = useSpring(
+    useTransform(floorProximity, [0, 1], [0.55, 1.35]),
+    { stiffness: 180, damping: 28 },
+  );
+  const contactShadowOpacity = useSpring(
+    useTransform(floorProximity, [0, 1], [0.12, 0.55]),
+    { stiffness: 180, damping: 28 },
+  );
+  const contactShadowScaleY = useTransform(contactShadowScale, (v) => 0.55 + Number(v) * 0.2);
 
   const stateRef = useRef<PhysicsBallState>({ x: 0, y: 0, vx: 0, vy: 0 });
   const draggingRef = useRef(false);
@@ -114,25 +140,13 @@ export function HeroFaceBall({
       return { width: 0, height: 0, bounds: getSectionBallBounds(0, 0, radiusRef.current) };
     }
 
-    const width = ground.clientWidth;
-    const height = ground.clientHeight;
-    const bounds = getSectionBallBounds(width, height, radiusRef.current);
+    // Prefer layout box; fall back to viewport rect for edge-true travel.
+    const rect = ground.getBoundingClientRect();
+    const width = Math.max(ground.clientWidth, Math.round(rect.width));
+    const height = Math.max(ground.clientHeight, Math.round(rect.height));
+    const bounds = getSectionBallBounds(width, height, radiusRef.current, 0);
 
-    if (!isMobileHeroLayout()) {
-      return { width, height, bounds };
-    }
-
-    // Keep the hero ball above the copy on phone, with room to move.
-    const ceiling = height * 0.52;
-    return {
-      width,
-      height,
-      bounds: {
-        ...bounds,
-        minY: Math.min(bounds.minY, height * 0.08),
-        maxY: Math.min(bounds.maxY, ceiling),
-      },
-    };
+    return { width, height, bounds };
   }, [groundRef]);
 
   useEffect(() => {
@@ -284,19 +298,18 @@ export function HeroFaceBall({
         rollAngleRef.current += rollDeltaFromMotion(dx, dy, radiusRef.current);
         setRollAngle(rollAngleRef.current);
 
-        const hitRightWall =
-          prev.x < bounds.maxX - 2 && result.x >= bounds.maxX - 2 && prev.vx > 0;
-        const hitLeftWall =
-          prev.x > bounds.minX + 2 && result.x <= bounds.minX + 2 && prev.vx < 0;
-        const hitFloor =
-          prev.y < bounds.maxY - 2 && result.y >= bounds.maxY - 2 && prev.vy > 0;
+        const hitHorizontal = result.hitLeft || result.hitRight;
+        const hitVertical = result.hitTop || result.hitBottom;
 
-        if (hitRightWall || hitLeftWall || hitFloor) {
-          const impact = Math.min(1, Math.hypot(prev.vx, prev.vy) / 2000);
-          squashValue.set(1 - impact * 0.1);
+        if (hitHorizontal || hitVertical) {
+          const impact = Math.min(1, Math.hypot(prev.vx, prev.vy) / 1800);
+          squashAxis.set(hitHorizontal && !hitVertical ? 1 : hitHorizontal ? 0.65 : 0);
+          squashValue.set(1 - Math.min(0.18, 0.1 + impact * 0.08));
         } else {
-          squashValue.set(squashValue.get() + (1 - squashValue.get()) * 0.16);
+          squashValue.set(squashValue.get() + (1 - squashValue.get()) * 0.18);
         }
+
+        floorProximity.set(result.floorProximity);
 
         const elapsed = (now - startTime) / maxDuration;
         setFaceHint(faceHintFromRoll(rollAngleRef.current, false));
@@ -331,7 +344,9 @@ export function HeroFaceBall({
     readSectionBounds,
     settleEntrance,
     setPhaseSafe,
+    squashAxis,
     squashValue,
+    floorProximity,
   ]);
 
   useEffect(() => {
@@ -368,6 +383,18 @@ export function HeroFaceBall({
         setRollAngle(rollAngleRef.current);
       }
 
+      const hitHorizontal = result.hitLeft || result.hitRight;
+      const hitVertical = result.hitTop || result.hitBottom;
+      if (!drag && (hitHorizontal || hitVertical)) {
+        const impact = Math.min(1, Math.hypot(result.vx, result.vy) / 1600);
+        squashAxis.set(hitHorizontal && !hitVertical ? 1 : hitHorizontal ? 0.65 : 0);
+        squashValue.set(1 - Math.min(0.18, 0.1 + impact * 0.08));
+      } else if (!drag) {
+        squashValue.set(squashValue.get() + (1 - squashValue.get()) * 0.2);
+      }
+
+      floorProximity.set(result.floorProximity);
+
       prevX = result.x;
       prevY = result.y;
       stateRef.current = result;
@@ -398,12 +425,15 @@ export function HeroFaceBall({
     return () => cancelAnimationFrame(raf);
   }, [
     beginFadeOut,
+    floorProximity,
     interruptCycle,
     posX,
     posY,
     prefersReducedMotion,
     readSectionBounds,
     setPhaseSafe,
+    squashAxis,
+    squashValue,
   ]);
 
   useEffect(() => {
@@ -458,7 +488,10 @@ export function HeroFaceBall({
     ([blur]) => Math.min(10, Number(blur)),
   );
   const cinematicFilter = useMotionTemplate`blur(${cinematicBlurPx}px) brightness(${presenceBrightness}) saturate(${presenceSaturate})`;
-  const shadowOpacity = useTransform(cinematicOpacity, (value) => Number(value) * 0.68);
+  const shadowOpacity = useTransform(
+    [cinematicOpacity, contactShadowOpacity],
+    ([presence, contact]) => Number(presence) * Number(contact),
+  );
   const glowOpacity = useTransform(cinematicOpacity, (value) => Number(value) * 0.5);
 
   const mouthWidth = useTransform(smile, (v: number) => `${22 + v * 70}px`);
@@ -559,16 +592,16 @@ export function HeroFaceBall({
   }, [phase, prefersReducedMotion, readSectionBounds]);
 
   useEffect(() => {
-    return () => {
-      stopFade();
-      clearDormantTimer();
-    };
-  }, [clearDormantTimer, stopFade]);
+    const ground = groundRef.current;
+    if (!ground) return;
 
-  useEffect(() => {
-    const onResize = () => {
-      if (phaseRef.current === "entering" || phaseRef.current === "ambient") return;
-      const { bounds } = readSectionBounds();
+    const syncBounds = () => {
+      const { bounds, width, height } = readSectionBounds();
+      if (width <= 0 || height <= 0) return;
+
+      const max = Math.min(MAX_DIAMETER, Math.min(width, height) * 0.72 || MAX_DIAMETER);
+      setDiameter((prev) => clamp(prev, MIN_DIAMETER, max));
+
       const s = stateRef.current;
       const nx = clamp(s.x, bounds.minX, bounds.maxX);
       const ny = clamp(s.y, bounds.minY, bounds.maxY);
@@ -579,9 +612,25 @@ export function HeroFaceBall({
       }
     };
 
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [posX, posY, readSectionBounds]);
+    const ro = new ResizeObserver(() => syncBounds());
+    ro.observe(ground);
+    window.addEventListener("resize", syncBounds);
+    window.visualViewport?.addEventListener("resize", syncBounds);
+    syncBounds();
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", syncBounds);
+      window.visualViewport?.removeEventListener("resize", syncBounds);
+    };
+  }, [groundRef, posX, posY, readSectionBounds]);
+
+  useEffect(() => {
+    return () => {
+      stopFade();
+      clearDormantTimer();
+    };
+  }, [clearDormantTimer, stopFade]);
 
   const handlePointerEnter = () => {
     isHoveringRef.current = true;
@@ -710,19 +759,21 @@ export function HeroFaceBall({
 
       <motion.div
         aria-hidden
-        className={`pointer-events-none absolute left-0 top-0 ${ballLayerZ}`}
+        className={`hero-ball-contact-shadow pointer-events-none absolute left-0 top-0 ${ballLayerZ}`}
         style={{
-          width: diameter * 0.72,
-          height: diameter * 0.14,
+          width: diameter * 0.78,
+          height: diameter * 0.16,
           x: displayX,
           y: displayY,
           translateX: "-50%",
-          translateY: radius * 0.92,
+          translateY: radius * 0.95,
           borderRadius: "50%",
-          background: "radial-gradient(ellipse, oklch(0 0 0 / 0.28) 0%, oklch(0 0 0 / 0) 72%)",
-          filter: "blur(10px)",
+          background: "radial-gradient(ellipse, oklch(0 0 0 / 0.42) 0%, oklch(0 0 0 / 0) 72%)",
+          filter: "blur(12px)",
           opacity: shadowOpacity,
-          scale: cinematicScale,
+          scaleX: contactShadowScale,
+          scaleY: contactShadowScaleY,
+          willChange: "transform, opacity",
         }}
       />
 
@@ -749,8 +800,8 @@ export function HeroFaceBall({
           }
           style={{
             ...ballStyle,
-            scaleX: phase === "entering" ? squashX : 1,
-            scaleY: phase === "entering" ? squashY : 1,
+            scaleX: squashX,
+            scaleY: squashY,
             willChange: "transform",
           }}
           {...pointerHandlers}

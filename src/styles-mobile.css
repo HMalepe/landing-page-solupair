@@ -17,6 +17,28 @@
     scroll-snap-type: y proximity;
   }
 
+  .snap-section-panel,
+  .projects-section.snap-section-flow,
+  .final-cta.snap-section-anchor {
+    position: relative;
+    top: auto;
+    border-radius: 0;
+    box-shadow: none;
+    margin-top: 0;
+    animation: none;
+    filter: none;
+    transform: none;
+    min-height: 100dvh;
+    height: auto;
+    max-height: none;
+  }
+
+  .contact-section.snap-section-compact {
+    border-radius: 0;
+    box-shadow: none;
+    margin-top: 0;
+  }
+
   /* ── Header: mark + compact wordmark + nav ── */
   .site-header-inner {
     align-items: center;

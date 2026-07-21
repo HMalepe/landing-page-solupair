@@ -7,24 +7,24 @@ import {
 /** Hero ball is 30% smaller than the original sizing for wider travel room. */
 export const HERO_BALL_SIZE_SCALE = 0.7;
 
-/** Slower ping-pong feel — high bounce, gentle gravity, long rallies across the hero. */
+/** Bounce physics — gravity + 0.78–0.85 restitution, settles after energy loss. */
 export const HERO_BALL_PHYSICS: BasketballConfig = {
-  gravity: 1850,
-  restitution: 0.88,
-  wallRestitution: 0.9,
-  airFriction: 0.9976,
-  floorFriction: 0.94,
-  maxSpeed: 2600,
-  sleepSpeed: 9,
+  gravity: 2100,
+  restitution: 0.8,
+  wallRestitution: 0.82,
+  airFriction: 0.9972,
+  floorFriction: 0.9,
+  maxSpeed: 2800,
+  sleepSpeed: 11,
 };
 
-/** Entrance uses the same family of tuning, slightly livelier on first wall hit. */
+/** Entrance — lively first rally that still reaches every edge. */
 export const ENTRANCE_PHYSICS: BasketballConfig = {
   ...HERO_BALL_PHYSICS,
-  restitution: 0.86,
-  wallRestitution: 0.91,
-  gravity: 1920,
-  maxSpeed: 2400,
+  restitution: 0.82,
+  wallRestitution: 0.84,
+  gravity: 2050,
+  maxSpeed: 2600,
   sleepSpeed: 10,
 };
 
@@ -42,12 +42,12 @@ export function getEntranceInitialState(
   const spanY = bounds.maxY - bounds.minY;
 
   const vx =
-    width < 400 ? 980 : width < 640 ? 1150 : width < 1024 ? 1420 : 1680;
-  const vy = -Math.min(185, spanY * 0.1);
+    width < 400 ? 1180 : width < 640 ? 1420 : width < 1024 ? 1680 : 1980;
+  const vy = -Math.min(420, spanY * 0.28);
 
   return {
-    x: bounds.minX + radius * 0.08,
-    y: bounds.minY + spanY * 0.22,
+    x: bounds.minX + radius * 0.02,
+    y: bounds.minY + spanY * 0.18,
     vx,
     vy,
   };

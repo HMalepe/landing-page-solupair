@@ -234,7 +234,15 @@ export function stepBallPhysics(
   return { x, y, vx, vy };
 }
 
-export type BasketballStepResult = PhysicsBallState & { sleeping: boolean };
+export type BasketballStepResult = PhysicsBallState & {
+  sleeping: boolean;
+  hitLeft: boolean;
+  hitRight: boolean;
+  hitTop: boolean;
+  hitBottom: boolean;
+  /** 0 at ceiling, 1 on the floor — drives contact shadow. */
+  floorProximity: number;
+};
 
 function resolveWallCollisions(
   x: number,
@@ -243,35 +251,53 @@ function resolveWallCollisions(
   vy: number,
   bounds: PhysicsBounds,
   config: BasketballConfig,
-): { x: number; y: number; vx: number; vy: number; onFloor: boolean } {
+): {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  onFloor: boolean;
+  hitLeft: boolean;
+  hitRight: boolean;
+  hitTop: boolean;
+  hitBottom: boolean;
+} {
   let px = x;
   let py = y;
   let pvx = vx;
   let pvy = vy;
   let onFloor = false;
+  let hitLeft = false;
+  let hitRight = false;
+  let hitTop = false;
+  let hitBottom = false;
 
   if (px < bounds.minX) {
     px = bounds.minX;
     pvx = Math.abs(pvx) * config.wallRestitution;
+    hitLeft = true;
   } else if (px > bounds.maxX) {
     px = bounds.maxX;
     pvx = -Math.abs(pvx) * config.wallRestitution;
+    hitRight = true;
   }
 
   if (py < bounds.minY) {
     py = bounds.minY;
     pvy = Math.abs(pvy) * config.wallRestitution;
+    hitTop = true;
   } else if (py > bounds.maxY) {
     py = bounds.maxY;
     pvy = -Math.abs(pvy) * config.restitution;
     pvx *= config.floorFriction;
     onFloor = true;
+    hitBottom = true;
     if (Math.abs(pvy) < config.sleepSpeed * 1.5) {
       pvy = 0;
     }
   }
 
-  return { x: px, y: py, vx: pvx, vy: pvy, onFloor };
+  return { x: px, y: py, vx: pvx, vy: pvy, onFloor, hitLeft, hitRight, hitTop, hitBottom };
 }
 
 /** Section basketball — gravity, four-wall bounce, friction, sleep on floor. */
@@ -284,6 +310,10 @@ export function stepBasketballPhysics(
 ): BasketballStepResult {
   const dt = clamp(dtMs / 1000, 0.001, 0.032);
   let { x, y, vx, vy } = state;
+  const spanY = Math.max(1, bounds.maxY - bounds.minY);
+
+  const floorProximity = (py: number) =>
+    clamp((py - bounds.minY) / spanY, 0, 1);
 
   if (options.isDragging && options.dragX !== undefined && options.dragY !== undefined) {
     const prevX = x;
@@ -291,13 +321,28 @@ export function stepBasketballPhysics(
     x = clamp(options.dragX, bounds.minX, bounds.maxX);
     y = clamp(options.dragY, bounds.minY, bounds.maxY);
     const dragVel = clampSpeed((x - prevX) / dt, (y - prevY) / dt, config.maxSpeed);
-    return { x, y, vx: dragVel.vx, vy: dragVel.vy, sleeping: false };
+    return {
+      x,
+      y,
+      vx: dragVel.vx,
+      vy: dragVel.vy,
+      sleeping: false,
+      hitLeft: false,
+      hitRight: false,
+      hitTop: false,
+      hitBottom: false,
+      floorProximity: floorProximity(y),
+    };
   }
 
   const travel = Math.hypot(vx, vy) * dt;
   const substeps = Math.min(14, Math.max(1, Math.ceil(travel / 10)));
   const subDt = dt / substeps;
   let onFloor = false;
+  let hitLeft = false;
+  let hitRight = false;
+  let hitTop = false;
+  let hitBottom = false;
 
   for (let i = 0; i < substeps; i += 1) {
     vy += config.gravity * subDt;
@@ -317,6 +362,10 @@ export function stepBasketballPhysics(
     vx = resolved.vx;
     vy = resolved.vy;
     onFloor = onFloor || resolved.onFloor;
+    hitLeft = hitLeft || resolved.hitLeft;
+    hitRight = hitRight || resolved.hitRight;
+    hitTop = hitTop || resolved.hitTop;
+    hitBottom = hitBottom || resolved.hitBottom;
   }
 
   const sleeping =
@@ -325,10 +374,32 @@ export function stepBasketballPhysics(
     Math.abs(vy) < config.sleepSpeed;
 
   if (sleeping) {
-    return { x, y: bounds.maxY, vx: 0, vy: 0, sleeping: true };
+    return {
+      x,
+      y: bounds.maxY,
+      vx: 0,
+      vy: 0,
+      sleeping: true,
+      hitLeft,
+      hitRight,
+      hitTop,
+      hitBottom,
+      floorProximity: 1,
+    };
   }
 
-  return { x, y, vx, vy, sleeping: false };
+  return {
+    x,
+    y,
+    vx,
+    vy,
+    sleeping: false,
+    hitLeft,
+    hitRight,
+    hitTop,
+    hitBottom,
+    floorProximity: floorProximity(y),
+  };
 }
 
 export function getViewportBallBounds(radius: number, topInset = 8): PhysicsBounds {
@@ -348,21 +419,23 @@ export function getViewportBallBounds(radius: number, topInset = 8): PhysicsBoun
   };
 }
 
-/** Hero / section-local bounds — floor is the bottom of the blue hero panel. */
+/**
+ * Hero / section-local bounds from the actual #hero box.
+ * Center of the ball travels so the disc can visibly kiss all four edges.
+ */
 export function getSectionBallBounds(
   width: number,
   height: number,
   radius: number,
-  topInset = 4,
+  edgeInset = 0,
 ): PhysicsBounds {
-  const pad = Math.max(4, radius * 0.05);
+  const inset = Math.max(0, edgeInset);
+  const minX = radius + inset;
+  const maxX = Math.max(minX, width - radius - inset);
+  const minY = radius + inset;
+  const maxY = Math.max(minY, height - radius - inset);
 
-  return {
-    minX: radius + pad,
-    maxX: Math.max(radius + pad, width - radius - pad),
-    minY: radius + topInset,
-    maxY: Math.max(radius + topInset, height - radius - Math.max(4, pad * 0.5)),
-  };
+  return { minX, maxX, minY, maxY };
 }
 
 export function clientToSectionLocal(

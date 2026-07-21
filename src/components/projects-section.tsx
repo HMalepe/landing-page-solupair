@@ -167,16 +167,16 @@ export function ProjectsSection() {
                   ref={sliderRef}
                   slides={projects}
                   onSelect={syncCarousel}
-                  className="relative z-0"
+                  className="projects-showcase-mockup relative z-[0]"
                 />
 
                 <div
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent"
+                  className="projects-showcase-scrim pointer-events-none absolute inset-0"
                   aria-hidden
                 />
 
                 <div
-                  className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] hidden flex-col justify-end bg-gradient-to-t from-black/95 via-black/70 to-transparent p-2 pt-8 sm:flex sm:p-4 sm:pt-10 lg:p-5 lg:pt-12 projects-card-overlay--desktop"
+                  className="projects-card-overlay--desktop pointer-events-none absolute inset-x-0 bottom-0 hidden flex-col justify-end sm:flex"
                 >
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div
@@ -187,17 +187,17 @@ export function ProjectsSection() {
                       exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
                       transition={{ duration: 0.5, ease: REVEAL_EASE }}
                     >
-                      <div className="mb-1 flex items-center justify-between gap-2 sm:mb-2 sm:gap-3">
-                        <div className="font-mono text-[10px] tracking-[0.18em] text-text-soft sm:text-sm sm:tracking-[0.2em]">
+                      <div className="projects-card-overlay__meta mb-1 flex items-center justify-between gap-2 sm:mb-2 sm:gap-3">
+                        <div className="projects-card-overlay__counter font-mono text-[10px] tracking-[0.18em] text-text-soft sm:text-sm sm:tracking-[0.2em]">
                           {String(carousel.index + 1).padStart(2, "0")} /{" "}
                           {String(projects.length).padStart(2, "0")}
                         </div>
-                        <span className="max-w-[56%] truncate rounded-full border border-glass bg-glass-bg px-2 py-0.5 text-[8px] font-medium uppercase tracking-[0.14em] text-foreground backdrop-blur sm:max-w-none sm:px-3 sm:py-1 sm:text-xs sm:tracking-[0.18em]">
+                        <span className="projects-card-overlay__tag max-w-[min(52%,14rem)] truncate rounded-full border border-glass bg-glass-bg px-2 py-0.5 text-[8px] font-medium uppercase tracking-[0.14em] text-foreground backdrop-blur sm:max-w-[min(48%,16rem)] sm:px-3 sm:py-1 sm:text-xs sm:tracking-[0.18em]">
                           {project.tag}
                         </span>
                       </div>
 
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+                      <div className="projects-card-overlay__copy flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
                         <h3 className="project-showcase-title min-w-0 font-display font-black tracking-tight text-foreground">
                           {project.name}
                         </h3>
