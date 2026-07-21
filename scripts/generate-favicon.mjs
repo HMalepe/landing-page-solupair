@@ -1,18 +1,13 @@
-import { writeFileSync } from "node:fs";
-import { join } from "node:path";
-import { fileURLToPath } from "node:url";
-import pngToIco from "png-to-ico";
-import sharp from "sharp";
+import sharp from 'sharp';
+import { writeFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const root = join(fileURLToPath(new URL(".", import.meta.url)), "..");
-const logoPath = join(root, "src/assets/solupair-logo.png");
-const publicDir = join(root, "public");
-
-const SUPER_SAMPLE = 512;
-/** Logo occupies 85% of icon box — ~15% smaller than a full-bleed mark. */
-const MARK_SCALE = 0.85;
-
-let transparentMarkPromise;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..');
+const source = join(root, 'public', 'solupair-icon.png');
+const WORK_SIZE = 128;
+const MARK_SCALE = 0.9;
 
 function removeDarkBackground(data, channels) {
   for (let i = 0; i < data.length; i += channels) {
@@ -82,100 +77,121 @@ function cleanDarkHalos(data, channels, width, height) {
   }
 }
 
-async function getTransparentMark() {
-  if (transparentMarkPromise) return transparentMarkPromise;
+async function embolden(input, spread) {
+  const meta = await sharp(input).metadata();
+  const pad = spread;
+  const width = meta.width + pad * 2;
+  const height = meta.height + pad * 2;
 
-  transparentMarkPromise = (async () => {
-    const { data, info } = await sharp(logoPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-    removeDarkBackground(data, 4);
-    cleanDarkHalos(data, 4, info.width, info.height);
-
-    return sharp(data, {
-      raw: { width: info.width, height: info.height, channels: 4 },
-    })
-      .trim({ threshold: 8 })
-      .png()
-      .toBuffer();
-  })();
-
-  return transparentMarkPromise;
-}
-
-async function polishSmallIcon(buffer, size) {
-  const { data, info } = await sharp(buffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  cleanDarkHalos(data, 4, info.width, info.height);
-
-  return sharp(data, {
-    raw: { width: info.width, height: info.height, channels: 4 },
-  })
-    .sharpen({
-      sigma: size <= 16 ? 0.55 : 0.42,
-      m1: 1.15,
-      m2: 0.22,
-    })
-    .png()
-    .toBuffer();
-}
-
-/** Transparent favicon raster — supersampled SP mark, no black plate. */
-async function renderFaviconPng(size) {
-  const trimmed = await getTransparentMark();
-  const inner = Math.max(1, Math.round(size * MARK_SCALE));
-  const isSmall = size <= 48;
-  const superInner = Math.max(Math.round(inner * 8), isSmall ? SUPER_SAMPLE : inner * 4);
-
-  let hiRes = sharp(trimmed).resize(superInner, superInner, {
-    fit: "contain",
-    background: { r: 0, g: 0, b: 0, alpha: 0 },
-    kernel: sharp.kernel.lanczos3,
-  });
-
-  if (isSmall) {
-    hiRes = hiRes.modulate({ brightness: 1.12, saturation: 1.35 });
+  const layers = [];
+  for (let dx = -spread; dx <= spread; dx++) {
+    for (let dy = -spread; dy <= spread; dy++) {
+      if (dx === 0 && dy === 0) continue;
+      layers.push({
+        input,
+        left: pad + dx,
+        top: pad + dy,
+        blend: 'lighten',
+      });
+    }
   }
+  layers.push({ input, left: pad, top: pad });
 
-  const hiResBuffer = await hiRes.png().toBuffer();
-
-  let logoBuffer = await sharp(hiResBuffer)
-    .resize(inner, inner, { kernel: sharp.kernel.lanczos3 })
-    .png()
-    .toBuffer();
-
-  if (isSmall) {
-    logoBuffer = await polishSmallIcon(logoBuffer, size);
-  }
-
-  return sharp({
+  const bold = await sharp({
     create: {
-      width: size,
-      height: size,
+      width,
+      height,
       channels: 4,
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     },
   })
-    .composite([{ input: logoBuffer, gravity: "center" }])
-    .png({ compressionLevel: 9, effort: 10 })
+    .composite(layers)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  cleanDarkHalos(bold.data, bold.info.channels, width, height);
+
+  return sharp(bold.data, {
+    raw: { width, height, channels: bold.info.channels },
+  })
+    .png()
     .toBuffer();
 }
 
-const outputs = [
-  { file: "favicon-16.png", size: 16 },
-  { file: "favicon-32.png", size: 32 },
-  { file: "favicon-48.png", size: 48 },
-  { file: "apple-touch-icon.png", size: 180 },
-];
+async function makeMarkIcon(size) {
+  const logo = await sharp(source).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { data, info } = logo;
+  const { width, height, channels } = info;
 
-const icoSizes = [16, 32, 48];
-const icoBuffers = await Promise.all(icoSizes.map((size) => renderFaviconPng(size)));
+  removeDarkBackground(data, channels);
+  cleanDarkHalos(data, channels, width, height);
 
-for (const { file, size } of outputs) {
-  const png = await renderFaviconPng(size);
-  const outPath = join(publicDir, file);
-  writeFileSync(outPath, png);
-  console.log(`Wrote ${outPath} (${png.length} bytes)`);
+  const transparentLogo = await sharp(data, {
+    raw: { width, height, channels },
+  })
+    .png()
+    .toBuffer();
+
+  const trimmed = await sharp(transparentLogo).trim({ threshold: 1 }).png().toBuffer();
+
+  const maxDim = Math.round(WORK_SIZE * MARK_SCALE);
+
+  const scaled = await sharp(trimmed)
+    .resize(maxDim, maxDim, {
+      fit: 'inside',
+      kernel: sharp.kernel.lanczos3,
+    })
+    .modulate({ brightness: 1.2, saturation: 1.45 })
+    .png()
+    .toBuffer();
+
+  const scaledMeta = await sharp(scaled).metadata();
+  const left = Math.round((WORK_SIZE - scaledMeta.width) / 2);
+  const top = Math.round((WORK_SIZE - scaledMeta.height) / 2);
+
+  const filled = await sharp({
+    create: {
+      width: WORK_SIZE,
+      height: WORK_SIZE,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite([{ input: scaled, left, top }])
+    .png()
+    .toBuffer();
+
+  const bold = await embolden(filled, 2);
+
+  const extracted = await sharp(bold)
+    .extract({
+      left: 2,
+      top: 2,
+      width: WORK_SIZE,
+      height: WORK_SIZE,
+    })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  cleanDarkHalos(extracted.data, extracted.info.channels, WORK_SIZE, WORK_SIZE);
+
+  return sharp(extracted.data, {
+    raw: { width: WORK_SIZE, height: WORK_SIZE, channels: extracted.info.channels },
+  })
+    .resize(size, size, { kernel: sharp.kernel.lanczos3 })
+    .png()
+    .toBuffer();
 }
 
-const ico = await pngToIco(icoBuffers);
-const icoPath = join(publicDir, "favicon.ico");
-writeFileSync(icoPath, ico);
-console.log(`Wrote ${icoPath} (${ico.length} bytes)`);
+const icon32 = await makeMarkIcon(32);
+const icon48 = await makeMarkIcon(48);
+const icon180 = await makeMarkIcon(180);
+
+writeFileSync(join(root, 'public', 'favicon-32x32.png'), icon32);
+writeFileSync(join(root, 'public', 'favicon-48x48.png'), icon48);
+writeFileSync(join(root, 'public', 'apple-touch-icon.png'), icon180);
+await sharp(icon32).toFile(join(root, 'public', 'favicon.ico'));
+
+console.log('Generated public favicons: favicon.ico, favicon-32x32.png, favicon-48x48.png, apple-touch-icon.png');

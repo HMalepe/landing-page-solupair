@@ -1,0 +1,6 @@
+project_id = "hgutaauyvjswwjajijft"
+[functions.article-quick-take]
+verify_jwt = false
+
+[functions.article-chat]
+verify_jwt = false
