@@ -21,6 +21,7 @@ import {
   faceHintFromRoll,
   getEntranceInitialState,
   getEntranceMaxDurationMs,
+  getHeroBallDiameter,
   HERO_BALL_PHYSICS,
   HERO_BALL_SIZE_SCALE,
   rollDeltaFromMotion,
@@ -39,8 +40,11 @@ import {
 type Phase = "entering" | "ambient" | "simulating";
 type CyclePhase = "live" | "fading-out" | "dormant" | "fading-in";
 
-const MIN_DIAMETER = Math.round(120 * HERO_BALL_SIZE_SCALE);
-const MAX_DIAMETER = Math.round(880 * HERO_BALL_SIZE_SCALE);
+const MIN_DIAMETER = Math.round(100 * HERO_BALL_SIZE_SCALE);
+const MAX_DIAMETER = Math.round(560 * HERO_BALL_SIZE_SCALE);
+/** Impact squash: compress impact axis to 85%, stretch perpendicular to 115%. */
+const IMPACT_SQUASH = 0.85;
+const SQUASH_SPRING = { stiffness: 480, damping: 14, mass: 0.55 } as const;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -51,16 +55,16 @@ function isMobileHeroLayout() {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
-function getDefaultDiameter() {
-  if (typeof window === "undefined") return Math.round(240 * HERO_BALL_SIZE_SCALE);
+function getPreferredDiameter() {
+  if (typeof window === "undefined") return Math.round(220 * HERO_BALL_SIZE_SCALE);
   if (window.matchMedia("(min-width: 1024px)").matches) {
-    return Math.round(440 * HERO_BALL_SIZE_SCALE);
+    return Math.round(320 * HERO_BALL_SIZE_SCALE);
   }
   if (window.matchMedia("(min-width: 768px)").matches) {
-    return Math.round(360 * HERO_BALL_SIZE_SCALE);
+    return Math.round(280 * HERO_BALL_SIZE_SCALE);
   }
   if (isMobileHeroLayout()) {
-    return Math.round(200 * HERO_BALL_SIZE_SCALE);
+    return Math.round(180 * HERO_BALL_SIZE_SCALE);
   }
   return Math.round(200 * HERO_BALL_SIZE_SCALE);
 }
@@ -80,7 +84,7 @@ export function HeroFaceBall({
   const [phase, setPhase] = useState<Phase>(prefersReducedMotion ? "ambient" : "entering");
   const phaseRef = useRef<Phase>(prefersReducedMotion ? "ambient" : "entering");
   const cycleRef = useRef<CyclePhase>("live");
-  const [diameter, setDiameter] = useState(getDefaultDiameter);
+  const [diameter, setDiameter] = useState(() => getPreferredDiameter());
   const [faceReveal, setFaceReveal] = useState(prefersReducedMotion ? 1 : 0);
   const [faceHint, setFaceHint] = useState(0);
   const [rollAngle, setRollAngle] = useState(0);
@@ -92,7 +96,6 @@ export function HeroFaceBall({
 
   const posX = useMotionValue(0);
   const posY = useMotionValue(0);
-  // Direct position — spring lag made the ball look stuck mid-hero.
   const displayX = posX;
   const displayY = posY;
   const entranceSmile = useMotionValue(prefersReducedMotion ? 1 : 0);
@@ -106,7 +109,7 @@ export function HeroFaceBall({
       // Horizontal hit → compress X, stretch Y; vertical hit → opposite.
       return a > 0.5 ? amount : 2 - amount;
     }),
-    { stiffness: 520, damping: 22 },
+    SQUASH_SPRING,
   );
   const squashY = useSpring(
     useTransform([squashValue, squashAxis], ([v, axis]) => {
@@ -114,7 +117,7 @@ export function HeroFaceBall({
       const a = Number(axis);
       return a > 0.5 ? 2 - amount : amount;
     }),
-    { stiffness: 520, damping: 22 },
+    SQUASH_SPRING,
   );
   const floorProximity = useMotionValue(0.55);
   const contactShadowScale = useSpring(
@@ -140,14 +143,31 @@ export function HeroFaceBall({
       return { width: 0, height: 0, bounds: getSectionBallBounds(0, 0, radiusRef.current) };
     }
 
-    // Prefer layout box; fall back to viewport rect for edge-true travel.
-    const rect = ground.getBoundingClientRect();
-    const width = Math.max(ground.clientWidth, Math.round(rect.width));
-    const height = Math.max(ground.clientHeight, Math.round(rect.height));
+    // Layout box only — ignore transformed getBoundingClientRect (sticky/scale scroll).
+    const width = ground.clientWidth || Math.round(ground.getBoundingClientRect().width);
+    const height = ground.clientHeight || Math.round(ground.getBoundingClientRect().height);
     const bounds = getSectionBallBounds(width, height, radiusRef.current, 0);
 
     return { width, height, bounds };
   }, [groundRef]);
+
+  const fitDiameter = useCallback((preferred: number) => {
+    const { width, height } = readSectionBounds();
+    if (width <= 0 || height <= 0) return clamp(preferred, MIN_DIAMETER, MAX_DIAMETER);
+    return clamp(getHeroBallDiameter(width, height, preferred), MIN_DIAMETER, MAX_DIAMETER);
+  }, [readSectionBounds]);
+
+  const applyImpactSquash = useCallback(
+    (horizontal: boolean, alsoVertical: boolean) => {
+      if (horizontal && alsoVertical) squashAxis.set(0.55);
+      else squashAxis.set(horizontal ? 1 : 0);
+      squashValue.set(IMPACT_SQUASH);
+      window.setTimeout(() => {
+        squashValue.set(1);
+      }, 120);
+    },
+    [squashAxis, squashValue],
+  );
 
   useEffect(() => {
     radiusRef.current = diameter / 2;
@@ -178,6 +198,25 @@ export function HeroFaceBall({
     ballPresence.set(1);
   }, [ballPresence, clearDormantTimer, stopFade]);
 
+  const kickAmbientRally = useCallback(() => {
+    const { bounds } = readSectionBounds();
+    if (bounds.maxX <= bounds.minX) return;
+
+    const fromLeft = Math.random() > 0.5;
+    const spawn = pickAmbientSpawn(bounds);
+    // Prefer edge spawn matching impulse direction.
+    const x = fromLeft ? bounds.minX : bounds.maxX;
+    const impulse = ambientRespawnImpulse(bounds, fromLeft);
+
+    stateRef.current = { x, y: spawn.y, ...impulse };
+    posX.set(x);
+    posY.set(spawn.y);
+    restSinceRef.current = null;
+    cycleRef.current = "live";
+    ballPresence.set(1);
+    setPhaseSafe("ambient");
+  }, [ballPresence, posX, posY, readSectionBounds, setPhaseSafe]);
+
   const beginFadeOut = useCallback(() => {
     if (cycleRef.current !== "live" || phaseRef.current === "simulating") return;
 
@@ -193,17 +232,12 @@ export function HeroFaceBall({
       if (cycleRef.current !== "fading-out") return;
 
       cycleRef.current = "dormant";
-      const { width, bounds } = readSectionBounds();
-      const spawn = pickAmbientSpawn(bounds, width);
-      stateRef.current = { x: spawn.x, y: spawn.y, vx: 0, vy: 0 };
-      posX.set(spawn.x);
-      posY.set(spawn.y);
-
       clearDormantTimer();
       dormantTimerRef.current = setTimeout(() => {
         if (cycleRef.current !== "dormant") return;
 
         cycleRef.current = "fading-in";
+        kickAmbientRally();
         fadeControlsRef.current = animate(ballPresence, 1, {
           duration: AMBIENT_CYCLE.fadeInMs / 1000,
           ease: [0.22, 1, 0.36, 1],
@@ -211,28 +245,17 @@ export function HeroFaceBall({
 
         void fadeControlsRef.current.then(() => {
           if (cycleRef.current !== "fading-in") return;
-
           cycleRef.current = "live";
-          restSinceRef.current = null;
-          const impulse = ambientRespawnImpulse(width);
-          const current = stateRef.current;
-          stateRef.current = { ...current, ...impulse };
-          setPhaseSafe("ambient");
         });
       }, AMBIENT_CYCLE.dormantMs);
     });
-  }, [ballPresence, clearDormantTimer, posX, posY, readSectionBounds, setPhaseSafe]);
+  }, [ballPresence, clearDormantTimer, kickAmbientRally]);
 
   const settleEntrance = useCallback(() => {
-    const baseDiameter = getDefaultDiameter();
-    setDiameter(baseDiameter);
-    radiusRef.current = baseDiameter / 2;
+    const nextDiameter = fitDiameter(getPreferredDiameter());
+    setDiameter(nextDiameter);
+    radiusRef.current = nextDiameter / 2;
     squashValue.set(1);
-
-    const s = stateRef.current;
-    stateRef.current = { x: s.x, y: s.y, vx: 0, vy: 0 };
-    posX.set(s.x);
-    posY.set(s.y);
 
     setFaceReveal(1);
     setFaceHint(0);
@@ -242,9 +265,8 @@ export function HeroFaceBall({
     });
 
     interruptCycle();
-    setPhaseSafe("ambient");
-    restSinceRef.current = performance.now();
-  }, [entranceSmile, interruptCycle, posX, posY, setPhaseSafe, squashValue]);
+    kickAmbientRally();
+  }, [entranceSmile, fitDiameter, interruptCycle, kickAmbientRally, squashValue]);
 
   useEffect(() => {
     if (prefersReducedMotion || entranceStartedRef.current) return;
@@ -255,7 +277,7 @@ export function HeroFaceBall({
     let last = performance.now();
     const startTime = performance.now();
     const maxDuration = getEntranceMaxDurationMs(isPhone);
-    const baseDiameter = getDefaultDiameter();
+    const preferred = getPreferredDiameter();
 
     const boot = () => {
       const { width, height } = readSectionBounds();
@@ -264,7 +286,8 @@ export function HeroFaceBall({
         return;
       }
 
-      const entranceDiameter = baseDiameter * 0.9;
+      const baseDiameter = fitDiameter(preferred);
+      const entranceDiameter = baseDiameter * 0.92;
       setDiameter(entranceDiameter);
       radiusRef.current = entranceDiameter / 2;
 
@@ -300,20 +323,17 @@ export function HeroFaceBall({
 
         const hitHorizontal = result.hitLeft || result.hitRight;
         const hitVertical = result.hitTop || result.hitBottom;
-
         if (hitHorizontal || hitVertical) {
-          const impact = Math.min(1, Math.hypot(prev.vx, prev.vy) / 1800);
-          squashAxis.set(hitHorizontal && !hitVertical ? 1 : hitHorizontal ? 0.65 : 0);
-          squashValue.set(1 - Math.min(0.18, 0.1 + impact * 0.08));
-        } else {
-          squashValue.set(squashValue.get() + (1 - squashValue.get()) * 0.18);
+          applyImpactSquash(hitHorizontal, hitVertical);
         }
 
         floorProximity.set(result.floorProximity);
 
         const elapsed = (now - startTime) / maxDuration;
         setFaceHint(faceHintFromRoll(rollAngleRef.current, false));
-        setDiameter(baseDiameter * (0.9 + Math.min(1, elapsed) * 0.1));
+        const nextDiameter = baseDiameter * (0.92 + Math.min(1, elapsed) * 0.08);
+        setDiameter(nextDiameter);
+        radiusRef.current = nextDiameter / 2;
 
         stateRef.current = result;
         posX.set(result.x);
@@ -337,6 +357,9 @@ export function HeroFaceBall({
       cancelAnimationFrame(raf);
     };
   }, [
+    applyImpactSquash,
+    fitDiameter,
+    floorProximity,
     isPhone,
     posX,
     posY,
@@ -344,9 +367,6 @@ export function HeroFaceBall({
     readSectionBounds,
     settleEntrance,
     setPhaseSafe,
-    squashAxis,
-    squashValue,
-    floorProximity,
   ]);
 
   useEffect(() => {
@@ -368,7 +388,7 @@ export function HeroFaceBall({
       const dt = Math.min(now - last, 24);
       last = now;
 
-      const { width, bounds } = readSectionBounds();
+      const { bounds } = readSectionBounds();
       const drag = phase === "simulating" && draggingRef.current ? pointerRef.current : null;
       const config = phase === "ambient" ? AMBIENT_PHYSICS : HERO_BALL_PHYSICS;
 
@@ -386,11 +406,7 @@ export function HeroFaceBall({
       const hitHorizontal = result.hitLeft || result.hitRight;
       const hitVertical = result.hitTop || result.hitBottom;
       if (!drag && (hitHorizontal || hitVertical)) {
-        const impact = Math.min(1, Math.hypot(result.vx, result.vy) / 1600);
-        squashAxis.set(hitHorizontal && !hitVertical ? 1 : hitHorizontal ? 0.65 : 0);
-        squashValue.set(1 - Math.min(0.18, 0.1 + impact * 0.08));
-      } else if (!drag) {
-        squashValue.set(squashValue.get() + (1 - squashValue.get()) * 0.2);
+        applyImpactSquash(hitHorizontal, hitVertical);
       }
 
       floorProximity.set(result.floorProximity);
@@ -403,8 +419,7 @@ export function HeroFaceBall({
 
       if (phase === "simulating" && result.sleeping) {
         interruptCycle();
-        setPhaseSafe("ambient");
-        restSinceRef.current = now;
+        kickAmbientRally();
         return;
       }
 
@@ -412,8 +427,10 @@ export function HeroFaceBall({
         if (result.sleeping) {
           if (!restSinceRef.current) {
             restSinceRef.current = now;
-          } else if (now - restSinceRef.current >= AMBIENT_CYCLE.restBeforeFadeMs) {
-            beginFadeOut();
+          } else if (now - restSinceRef.current >= AMBIENT_CYCLE.restBeforeKickMs) {
+            // Hard re-kick for continuous edge travel — fade is a rare alternate path.
+            if (Math.random() < 0.18) beginFadeOut();
+            else kickAmbientRally();
           }
         } else {
           restSinceRef.current = null;
@@ -424,16 +441,15 @@ export function HeroFaceBall({
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [
+    applyImpactSquash,
     beginFadeOut,
     floorProximity,
     interruptCycle,
+    kickAmbientRally,
     posX,
     posY,
     prefersReducedMotion,
     readSectionBounds,
-    setPhaseSafe,
-    squashAxis,
-    squashValue,
   ]);
 
   useEffect(() => {
@@ -576,32 +592,30 @@ export function HeroFaceBall({
       event.preventDefault();
 
       const { width, height } = readSectionBounds();
-      const max = Math.min(
-        MAX_DIAMETER,
-        Math.min(width, height) * 0.85 || MAX_DIAMETER,
-      );
+      const max = fitDiameter(Math.min(MAX_DIAMETER, Math.min(width, height) * 0.5 || MAX_DIAMETER));
 
       setDiameter((prev) => {
         const next = clamp(prev + -event.deltaY * 0.35, MIN_DIAMETER, max);
+        radiusRef.current = next / 2;
         return next;
       });
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, [phase, prefersReducedMotion, readSectionBounds]);
+  }, [fitDiameter, phase, prefersReducedMotion, readSectionBounds]);
 
   useEffect(() => {
     const ground = groundRef.current;
     if (!ground) return;
 
     const syncBounds = () => {
-      const { bounds, width, height } = readSectionBounds();
-      if (width <= 0 || height <= 0) return;
+      const preferred = getPreferredDiameter();
+      const next = fitDiameter(preferred);
+      setDiameter(next);
+      radiusRef.current = next / 2;
 
-      const max = Math.min(MAX_DIAMETER, Math.min(width, height) * 0.72 || MAX_DIAMETER);
-      setDiameter((prev) => clamp(prev, MIN_DIAMETER, max));
-
+      const { bounds } = readSectionBounds();
       const s = stateRef.current;
       const nx = clamp(s.x, bounds.minX, bounds.maxX);
       const ny = clamp(s.y, bounds.minY, bounds.maxY);
@@ -623,7 +637,7 @@ export function HeroFaceBall({
       window.removeEventListener("resize", syncBounds);
       window.visualViewport?.removeEventListener("resize", syncBounds);
     };
-  }, [groundRef, posX, posY, readSectionBounds]);
+  }, [fitDiameter, groundRef, posX, posY, readSectionBounds]);
 
   useEffect(() => {
     return () => {
@@ -726,9 +740,13 @@ export function HeroFaceBall({
     return (
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 z-[8] -translate-x-1/2 top-[14%] md:top-auto md:bottom-[10%]"
+        className="hero-ball-reduced-motion pointer-events-none absolute left-1/2 z-[8] -translate-x-1/2 top-[18%] md:top-auto md:bottom-[12%]"
         style={ballStyle}
       >
+        <div
+          className="hero-ball-ambient-glow pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{ width: diameter * 1.35, height: diameter * 1.35, opacity: 0.45 }}
+        />
         <div
           className="relative h-full w-full rounded-full"
           style={{ background: BALL_SURFACE, boxShadow: BALL_SHADOW }}

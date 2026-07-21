@@ -1,46 +1,48 @@
 import type { BasketballConfig, PhysicsBallState, PhysicsBounds } from "@/lib/ball-physics";
 
-/** Ambient rallies — still full-edge travel, settles, then re-launches. */
+/** Ambient rallies — full-edge travel, settle, then hard re-kick (no long idle). */
 export const AMBIENT_PHYSICS: BasketballConfig = {
-  gravity: 1950,
+  gravity: 2050,
   restitution: 0.78,
   wallRestitution: 0.8,
-  airFriction: 0.9978,
-  floorFriction: 0.88,
-  maxSpeed: 2200,
-  sleepSpeed: 10,
+  airFriction: 0.9974,
+  floorFriction: 0.86,
+  maxSpeed: 2800,
+  sleepSpeed: 12,
 };
 
 export const AMBIENT_CYCLE = {
-  restBeforeFadeMs: 900,
-  fadeOutMs: 2200,
-  dormantMs: 1200,
-  fadeInMs: 2400,
+  /** Brief pause on the floor before the next wall-to-wall launch. */
+  restBeforeKickMs: 480,
+  fadeOutMs: 900,
+  dormantMs: 400,
+  fadeInMs: 700,
 } as const;
 
-export function pickAmbientSpawn(bounds: PhysicsBounds, width: number): Pick<PhysicsBallState, "x" | "y"> {
-  const spanX = bounds.maxX - bounds.minX;
-  const spanY = bounds.maxY - bounds.minY;
+export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, "x" | "y"> {
+  const spanX = Math.max(1, bounds.maxX - bounds.minX);
+  const spanY = Math.max(1, bounds.maxY - bounds.minY);
   const fromLeft = Math.random() > 0.5;
 
   return {
-    x: fromLeft
-      ? bounds.minX + spanX * (0.02 + Math.random() * 0.12)
-      : bounds.maxX - spanX * (0.02 + Math.random() * 0.12),
-    y: bounds.minY + spanY * (0.12 + Math.random() * 0.28),
+    x: fromLeft ? bounds.minX : bounds.maxX,
+    y: bounds.minY + spanY * (0.08 + Math.random() * 0.35),
   };
 }
 
-export function ambientRespawnImpulse(width: number): Pick<PhysicsBallState, "vx" | "vy"> {
-  const lateral = width < 640 ? 720 : width < 1024 ? 980 : 1240;
-  const sign = Math.random() > 0.5 ? 1 : -1;
+/** Impulse sized to cross the full hero width/height before energy drains. */
+export function ambientRespawnImpulse(
+  bounds: PhysicsBounds,
+  fromLeft: boolean,
+): Pick<PhysicsBallState, "vx" | "vy"> {
+  const spanX = Math.max(1, bounds.maxX - bounds.minX);
+  const spanY = Math.max(1, bounds.maxY - bounds.minY);
+  const sign = fromLeft ? 1 : -1;
 
   return {
-    vx: sign * lateral * (0.7 + Math.random() * 0.35),
-    vy: -(320 + Math.random() * 280),
+    vx: sign * Math.max(1100, spanX * 2.1) * (0.85 + Math.random() * 0.3),
+    vy: -Math.max(480, spanY * 0.65) * (0.8 + Math.random() * 0.35),
   };
 }
 
 export const BALL_PRESENCE_SPRING = { stiffness: 120, damping: 28, mass: 0.9 } as const;
-/** Near-direct tracking so physics reads as real bounce, not springy lag. */
-export const BALL_POSITION_SPRING = { stiffness: 1200, damping: 48, mass: 0.35 } as const;
