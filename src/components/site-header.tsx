@@ -40,7 +40,7 @@ function SolupairLogo() {
 export function SiteHeader({ sticky = false }: SiteHeaderProps) {
   return (
     <header
-      className={`site-header safe-area-top relative z-50 w-full overflow-x-clip${sticky ? " site-header--sticky" : ""}`}
+      className={`site-header safe-area-top relative z-50 w-full${sticky ? " site-header--sticky" : ""}`}
     >
       <div className="site-header-bar">
         <div className="site-header-inner">

@@ -504,7 +504,8 @@
 /* ── Site header / navigation ── */
 .site-header {
   width: 100%;
-  overflow-x: clip;
+  /* Do not use overflow-x: clip here — it forces overflow-y to clip and chops the logo. */
+  overflow: visible;
   margin-bottom: clamp(0.75rem, 2.5vh, 1.5rem);
 }
 
@@ -514,6 +515,7 @@
   box-shadow: 0 1px 0 color-mix(in srgb, var(--text-main) 4%, transparent) inset;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  overflow: visible;
 }
 
 .site-header-inner {
@@ -525,7 +527,8 @@
   min-width: 0;
   max-width: 80rem;
   margin-inline: auto;
-  padding: 0.9rem 1.1rem;
+  padding: 0.95rem 1.1rem 1.05rem;
+  overflow: visible;
 }
 
 @media (min-width: 640px) {
@@ -535,7 +538,7 @@
 
   .site-header-inner {
     gap: 1.75rem;
-    padding: 1.15rem 2rem;
+    padding: 1.2rem 2rem 1.3rem;
   }
 }
 
@@ -545,7 +548,7 @@
   }
 
   .site-header-inner {
-    padding: 1.25rem 2.5rem;
+    padding: 1.3rem 2.5rem 1.4rem;
   }
 }
 
@@ -559,6 +562,10 @@
   min-width: 0;
   flex: 1 1 auto;
   max-width: calc(100% - 11.5rem);
+  align-items: center;
+  overflow: visible;
+  /* Lift slightly so SP mark + smiley O clear the header rule. */
+  transform: translateY(-0.12rem);
   transition: opacity var(--nav-duration) var(--nav-ease);
 }
 
@@ -568,6 +575,11 @@
 
 .site-logo-mark {
   height: clamp(2.65rem, 10vw, 4rem);
+  width: auto;
+  overflow: visible;
+  /* Asset paints to the canvas edge — keep a hair of room for the stroke. */
+  padding-block: 0.08rem;
+  box-sizing: content-box;
   filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.28));
   transition: filter var(--nav-duration) var(--nav-ease);
 }
@@ -577,16 +589,21 @@
 }
 
 .site-logo-wordmark-wrap {
-  height: clamp(1.45rem, 5.2vw, 2.35rem);
+  height: clamp(1.65rem, 5.6vw, 2.55rem);
   display: flex;
   align-items: center;
   overflow: visible;
+  padding-block: 0.1rem;
+  box-sizing: content-box;
 }
 
 .site-logo-wordmark {
   max-width: min(42vw, 12.5rem);
   height: 100%;
   width: auto;
+  overflow: visible;
+  object-fit: contain;
+  object-position: left center;
 }
 
 @media (min-width: 640px) {
@@ -764,11 +781,11 @@
   }
 
   .site-logo-mark {
-    height: 2.3rem;
+    height: 2.4rem;
   }
 
   .site-logo-wordmark-wrap {
-    height: 1.25rem;
+    height: 1.4rem;
   }
 
   .site-logo-wordmark {
@@ -4434,11 +4451,11 @@
 
 @media (max-width: 379px) {
   .site-logo-mark {
-    height: 2.5rem;
+    height: 2.55rem;
   }
 
   .site-logo-wordmark-wrap {
-    height: 1.35rem;
+    height: 1.45rem;
   }
 }
 
@@ -4782,7 +4799,7 @@ body {
   }
 
   .site-logo-wordmark-wrap {
-    height: clamp(1.2rem, 5vw, 1.45rem);
+    height: clamp(1.35rem, 5.4vw, 1.6rem);
   }
 
   .site-logo-wordmark {
