@@ -41,7 +41,7 @@ type CyclePhase = "live" | "fading-out" | "dormant" | "fading-in";
 
 const MIN_DIAMETER = Math.round(100 * HERO_BALL_SIZE_SCALE);
 const MAX_DIAMETER = Math.round(480 * HERO_BALL_SIZE_SCALE);
-const IMPACT_SQUASH = 0.88;
+const IMPACT_SQUASH = 0.82;
 /** Expensive rubber — soft attack, gentle overshoot, quick settle. */
 const SQUASH_SPRING = { stiffness: 320, damping: 18, mass: 0.85 } as const;
 const SHADOW_SPRING = { stiffness: 120, damping: 28, mass: 0.9 } as const;
@@ -168,16 +168,28 @@ export function HeroFaceBall({
   const lastHitAtRef = useRef(0);
 
   const readSectionBounds = useCallback(() => {
-    const ground = playfieldRef.current ?? groundRef.current;
-    if (!ground) {
-      return { width: 0, height: 0, bounds: getSectionBallBounds(0, 0, radiusRef.current) };
+    const playfield = playfieldRef.current;
+    const ground = groundRef.current;
+
+    // Prefer the dedicated full-bleed playfield. Fall back to the hero box, then the window.
+    // Never use padded content width (logo/nav column) — those are not the walls.
+    let width = 0;
+    let height = 0;
+
+    if (playfield) {
+      width = playfield.clientWidth || playfield.offsetWidth;
+      height = playfield.clientHeight || playfield.offsetHeight;
+    }
+    if ((!width || !height) && ground) {
+      width = ground.clientWidth || ground.offsetWidth;
+      height = ground.clientHeight || ground.offsetHeight;
+    }
+    if ((!width || !height) && typeof window !== "undefined") {
+      width = window.innerWidth;
+      height = window.innerHeight;
     }
 
-    // Full-bleed playfield box — ignore transformed getBoundingClientRect (sticky/scale scroll).
-    const width = ground.clientWidth || Math.round(ground.offsetWidth);
-    const height = ground.clientHeight || Math.round(ground.offsetHeight);
     const bounds = getSectionBallBounds(width, height, radiusRef.current, 0);
-
     return { width, height, bounds };
   }, [groundRef]);
 
@@ -531,7 +543,7 @@ export function HeroFaceBall({
           if (!restSinceRef.current) {
             restSinceRef.current = now;
           } else if (now - restSinceRef.current >= AMBIENT_CYCLE.restBeforeKickMs) {
-            if (Math.random() < 0.1) beginFadeOut();
+            if (Math.random() < 0.32) beginFadeOut();
             else kickAmbientRally();
           }
         } else {
@@ -592,9 +604,9 @@ export function HeroFaceBall({
   const scrollPresence = useSpring(scrollPresenceRaw, { stiffness: 70, damping: 24 });
 
   const presenceOpacity = useTransform(ballPresence, [0, 0.06, 1], [0, 0.08, 1]);
-  const presenceBlur = useTransform(ballPresence, [0, 0.35, 1], [6, 2.5, 0]);
-  const presenceBrightness = useTransform(ballPresence, [0, 0.2, 0.55, 1], [0.18, 0.42, 0.72, 1]);
-  const presenceSaturate = useTransform(ballPresence, [0, 0.25, 1], [0.25, 0.62, 1]);
+  const presenceBlur = useTransform(ballPresence, [0, 0.2, 0.55, 1], [14, 7, 2.2, 0]);
+  const presenceBrightness = useTransform(ballPresence, [0, 0.2, 0.55, 1], [0.12, 0.38, 0.72, 1]);
+  const presenceSaturate = useTransform(ballPresence, [0, 0.25, 1], [0.18, 0.55, 1]);
 
   const cinematicOpacity = useTransform(
     [scrollPresence, presenceOpacity],
@@ -604,7 +616,7 @@ export function HeroFaceBall({
   const motionBlurPx = useTransform(speedNorm, [0, 1], [0, 1.6]);
   const cinematicBlurPx = useTransform(
     [presenceBlur, motionBlurPx],
-    ([presence, motion]) => Math.min(8, Number(presence) + Number(motion)),
+    ([presence, motion]) => Math.min(16, Number(presence) + Number(motion)),
   );
   const cinematicFilter = useMotionTemplate`blur(${cinematicBlurPx}px) brightness(${presenceBrightness}) saturate(${presenceSaturate})`;
   const shadowOpacity = useTransform(
@@ -899,7 +911,7 @@ export function HeroFaceBall({
   return (
     <div
       ref={playfieldRef}
-      className="hero-ball-playfield pointer-events-none absolute inset-0 z-[8] overflow-hidden"
+      className="hero-ball-playfield pointer-events-none absolute inset-0 z-[8] h-full w-full overflow-hidden"
     >
       <motion.div
         aria-hidden

@@ -16,9 +16,9 @@ export const AMBIENT_CYCLE = {
   restBeforeKickMs: 980,
   /** Wind-up squash before loft. */
   anticipationMs: 160,
-  fadeOutMs: 1200,
-  dormantMs: 560,
-  fadeInMs: 1000,
+  fadeOutMs: 1680,
+  dormantMs: 640,
+  fadeInMs: 1100,
 } as const;
 
 export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, "x" | "y"> {

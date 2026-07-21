@@ -329,6 +329,15 @@
   will-change: transform, opacity;
 }
 
+.hero-ball-playfield {
+  /* True screen walls — sized to the unpadded hero, not the logo/nav column. */
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  contain: paint;
+}
+
 .hero-ball-contact-shadow {
   pointer-events: none;
   mix-blend-mode: multiply;

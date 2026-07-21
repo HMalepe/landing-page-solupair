@@ -49,7 +49,7 @@ function Hero() {
       id="hero"
       data-scroll-snap="hero"
       ref={heroGroundRef}
-      className="hero-section safe-area-x snap-section-panel relative flex min-h-[100dvh] h-[100dvh] max-h-[100dvh] flex-col overflow-x-clip overflow-y-clip"
+      className="hero-section snap-section-panel relative flex h-[100dvh] max-h-[100dvh] min-h-[100dvh] w-full flex-col overflow-x-clip overflow-y-clip"
     >
       <div className="hero-bg" aria-hidden>
         <div className="hero-bg-base" />
@@ -100,13 +100,14 @@ function Hero() {
         <div className="hero-bg-grain" />
       </div>
 
+      {/* Full-bleed walls — outside safe-area padding so logo/nav inset is NOT the playfield. */}
       <HeroFaceBall groundRef={heroGroundRef} />
 
-      <div className="hero-reveal hero-reveal--header relative z-20 shrink-0">
+      <div className="hero-reveal hero-reveal--header relative z-20 w-full shrink-0 safe-area-x">
         <SiteHeader />
       </div>
 
-      <div className="hero-content relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-start md:z-10 md:flex-1 md:justify-center">
+      <div className="hero-content relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-start safe-area-x md:z-10 md:flex-1 md:justify-center">
         <div className="hero-copy-stack w-full min-w-0">
           <div className="hero-reveal hero-reveal--eyebrow flex justify-center">
             <p className="hero-eyebrow">

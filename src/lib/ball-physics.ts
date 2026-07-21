@@ -420,8 +420,8 @@ export function getViewportBallBounds(radius: number, topInset = 8): PhysicsBoun
 }
 
 /**
- * Hero / section-local bounds from the actual playfield box.
- * Center travels so the disc kisses all four edges (1px overshoot reads flush under clip).
+ * True viewport / playfield walls.
+ * Center travels so the disc presses flush to every screen edge (tiny overshoot under clip).
  */
 export function getSectionBallBounds(
   width: number,
@@ -429,8 +429,8 @@ export function getSectionBallBounds(
   radius: number,
   edgeInset = 0,
 ): PhysicsBounds {
-  // Negative inset = overshoot into the clip edge so the disc visually kisses.
-  const kiss = edgeInset === 0 ? -1 : edgeInset;
+  // Default: 2px overshoot so anti-aliasing still reads as a hard kiss.
+  const kiss = edgeInset === 0 ? -2 : edgeInset;
   const minX = Math.max(0, radius + kiss);
   const maxX = Math.max(minX, width - radius - kiss);
   const minY = Math.max(0, radius + kiss);
