@@ -40,8 +40,8 @@ function AmbientBlurBall({ size, drift, bounds, className }: AmbientBallProps) {
 export function ViewportPhysicsBalls({ variant }: { variant: "projects" | "contact" }) {
   const { isPhone, isDesktop, prefersReducedMotion } = useDeviceProfile();
 
-  const size = isDesktop ? 240 : 180;
-  const travel = isDesktop ? 72 : 52;
+  const size = isDesktop ? 240 : isPhone ? 140 : 180;
+  const travel = isDesktop ? 72 : isPhone ? 36 : 52;
 
   const bounds = useMemo(
     () => ({
@@ -56,7 +56,8 @@ export function ViewportPhysicsBalls({ variant }: { variant: "projects" | "conta
   const config = useMemo(() => {
     if (variant === "projects") {
       return {
-        className: "left-[2%] top-[8%] opacity-50 sm:left-[4%] sm:top-[10%] sm:opacity-55",
+        className:
+          "left-[2%] top-[8%] opacity-40 sm:left-[4%] sm:top-[10%] sm:opacity-55",
         drift: {
           amplitudeX: travel * 0.9,
           amplitudeY: travel * 0.75,
@@ -69,7 +70,8 @@ export function ViewportPhysicsBalls({ variant }: { variant: "projects" | "conta
     }
 
     return {
-      className: "right-[2%] top-[6%] opacity-45 sm:right-[6%] sm:top-[8%] sm:opacity-50",
+      className:
+        "right-[2%] top-[6%] opacity-36 sm:right-[6%] sm:top-[8%] sm:opacity-50",
       drift: {
         amplitudeX: travel * 0.85,
         amplitudeY: travel * 0.7,
@@ -81,7 +83,7 @@ export function ViewportPhysicsBalls({ variant }: { variant: "projects" | "conta
     };
   }, [travel, variant]);
 
-  if (isPhone || prefersReducedMotion) return null;
+  if (prefersReducedMotion) return null;
 
   return (
     <AmbientBlurBall size={size} drift={config.drift} bounds={bounds} className={config.className} />

@@ -123,7 +123,7 @@ export function ProjectsSection() {
               className="projects-hint projects-hint--mobile"
               {...revealProps(reduceMotion, sectionInView, 0.1)}
             >
-              Swipe the showcase or tap a card below.
+              Swipe, tap arrows, dots or cards below to browse builds.
             </motion.p>
           </div>
           <motion.p
@@ -148,7 +148,7 @@ export function ProjectsSection() {
               <div className="project-showcase-card relative overflow-hidden rounded-2xl border sm:rounded-3xl">
                 <button
                   type="button"
-                  className="projects-showcase-arrow projects-showcase-arrow--prev projects-showcase-arrow--desktop touch-target"
+                  className="projects-showcase-arrow projects-showcase-arrow--prev touch-target"
                   aria-label="Previous project"
                   onClick={scrollPrev}
                 >
@@ -156,7 +156,7 @@ export function ProjectsSection() {
                 </button>
                 <button
                   type="button"
-                  className="projects-showcase-arrow projects-showcase-arrow--next projects-showcase-arrow--desktop touch-target"
+                  className="projects-showcase-arrow projects-showcase-arrow--next touch-target"
                   aria-label="Next project"
                   onClick={scrollNext}
                 >

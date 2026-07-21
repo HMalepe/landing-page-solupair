@@ -1735,7 +1735,7 @@
   .what-we-build-heading {
     font-size: clamp(1.5rem, 6.6vw, 2rem);
     max-width: 15ch;
-    line-height: 0.95;
+    line-height: 1.05;
   }
 
   .what-we-build-lead {
@@ -2900,8 +2900,8 @@
 
 @media (max-width: 767px) {
   .projects-embla__slide-inner {
-    height: clamp(128px, 24vh, 210px);
-    max-height: 210px;
+    height: clamp(16rem, 52vw, 19.5rem);
+    max-height: 19.5rem;
   }
 }
 
@@ -3581,7 +3581,7 @@
 
 .final-cta-question {
   font-size: clamp(1.85rem, 7vw, 3.75rem);
-  line-height: 0.95;
+  line-height: 1.05;
   max-width: 16ch;
 }
 
@@ -4413,7 +4413,7 @@ body {
   .who-for-heading,
   .pricing-direction-heading {
     font-size: clamp(1.5rem, 6.6vw, 2.1rem);
-    line-height: 0.95;
+    line-height: 1.05;
     max-width: 15ch;
   }
 
@@ -4516,13 +4516,15 @@ body {
   }
 
   .projects-heading {
-    font-size: clamp(1.35rem, 6.2vw, 1.9rem);
-    line-height: 0.94;
+    font-size: clamp(1.55rem, 6.8vw, 2rem);
+    line-height: 1.02;
   }
 
   .projects-showcase-arrow {
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
   }
 
   .projects-showcase-arrow--prev {
@@ -4538,8 +4540,8 @@ body {
   }
 
   .projects-dot-button {
-    min-width: 2rem;
-    min-height: 2rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
   }
 
   .projects-dot {
@@ -4621,7 +4623,7 @@ body {
 
   .contact-heading {
     font-size: clamp(1.65rem, 8.2vw, 2.5rem);
-    line-height: 0.95;
+    line-height: 1.05;
   }
 
   .contact-lead {
