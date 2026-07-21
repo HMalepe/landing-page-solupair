@@ -309,28 +309,30 @@
   border-radius: 50%;
   background:
     radial-gradient(
-      circle at 40% 36%,
-      color-mix(in srgb, var(--brand-cyan) 32%, transparent) 0%,
-      transparent 48%
+      circle at 38% 34%,
+      color-mix(in srgb, var(--brand-cyan) 36%, transparent) 0%,
+      transparent 46%
     ),
     radial-gradient(
-      circle at 62% 64%,
-      color-mix(in srgb, var(--glow-purple) 30%, transparent) 0%,
-      transparent 54%
+      circle at 64% 66%,
+      color-mix(in srgb, var(--glow-purple) 28%, transparent) 0%,
+      transparent 52%
     ),
     radial-gradient(
-      circle at 50% 50%,
-      color-mix(in srgb, var(--brand-pink) 12%, transparent) 0%,
-      transparent 62%
+      circle at 50% 48%,
+      color-mix(in srgb, var(--brand-pink) 14%, transparent) 0%,
+      transparent 60%
     );
-  filter: blur(36px) saturate(1.08);
+  filter: blur(40px) saturate(1.12);
   mix-blend-mode: screen;
+  opacity: 0.9;
   will-change: transform, opacity;
 }
 
 .hero-ball-contact-shadow {
   pointer-events: none;
   mix-blend-mode: multiply;
+  opacity: 0.95;
   will-change: transform, opacity, filter;
 }
 

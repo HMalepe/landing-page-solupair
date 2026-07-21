@@ -5,43 +5,43 @@ import {
 } from "@/lib/ball-physics";
 
 /** Sized for clear edge travel without dominating the hero. */
-export const HERO_BALL_SIZE_SCALE = 0.52;
+export const HERO_BALL_SIZE_SCALE = 0.5;
 
 /**
- * Tuned like a soft rubber orb in vacuum-ish air:
- * long parabolic arcs, crisp wall kisses, graceful energy loss.
+ * Senior-tuned rubber orb:
+ * floaty parabolic arcs, soft wall kisses, elegant energy bleed.
  */
 export const HERO_BALL_PHYSICS: BasketballConfig = {
-  gravity: 1980,
-  restitution: 0.79,
-  wallRestitution: 0.81,
-  airFriction: 0.9982,
-  floorFriction: 0.9,
-  maxSpeed: 2600,
-  sleepSpeed: 11,
+  gravity: 1760,
+  restitution: 0.76,
+  wallRestitution: 0.78,
+  airFriction: 0.9988,
+  floorFriction: 0.93,
+  maxSpeed: 2200,
+  sleepSpeed: 9,
 };
 
 export const ENTRANCE_PHYSICS: BasketballConfig = {
   ...HERO_BALL_PHYSICS,
-  restitution: 0.83,
-  wallRestitution: 0.86,
-  gravity: 1880,
-  maxSpeed: 2400,
-  sleepSpeed: 10,
+  restitution: 0.8,
+  wallRestitution: 0.82,
+  gravity: 1680,
+  maxSpeed: 2100,
+  sleepSpeed: 8,
 };
 
 export function getEntranceMaxDurationMs(isPhone: boolean) {
-  return isPhone ? 9_000 : 11_000;
+  return isPhone ? 8_500 : 10_500;
 }
 
 export function getHeroBallDiameter(width: number, height: number, preferred: number) {
   const minAxis = Math.max(1, Math.min(width, height));
-  const maxByRoom = Math.round(minAxis * 0.4);
+  const maxByRoom = Math.round(minAxis * 0.38);
   const minByRoom = Math.round(minAxis * 0.2);
   return Math.min(preferred, Math.max(minByRoom, Math.min(maxByRoom, preferred)));
 }
 
-/** Soft loft from the left edge — first bounce should kiss the far wall. */
+/** Opening loft — deliberate, not frantic; first wall kiss lands mid-hero. */
 export function getEntranceInitialState(
   width: number,
   height: number,
@@ -53,9 +53,9 @@ export function getEntranceInitialState(
 
   return {
     x: bounds.minX,
-    y: bounds.minY + spanY * 0.28,
-    vx: Math.max(980, spanX * 1.65),
-    vy: -Math.max(380, spanY * 0.42),
+    y: bounds.minY + spanY * 0.32,
+    vx: Math.max(760, spanX * 1.35),
+    vy: -Math.max(320, spanY * 0.36),
   };
 }
 
@@ -67,5 +67,5 @@ export function rollDeltaFromMotion(dx: number, dy: number, radius: number) {
 export function faceHintFromRoll(rollAngle: number, settled: boolean) {
   if (settled) return 0;
   const facing = Math.max(0, Math.cos(rollAngle * 0.9));
-  return Math.min(0.28, (1 - facing) * 0.34);
+  return Math.min(0.24, (1 - facing) * 0.3);
 }

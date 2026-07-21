@@ -1,21 +1,24 @@
 import type { BasketballConfig, PhysicsBallState, PhysicsBounds } from "@/lib/ball-physics";
 
-/** Ambient: silk arcs, settle, then loft again from where it rests. */
+/** Ambient: long silk arcs, calm settle, then a prepared loft. */
 export const AMBIENT_PHYSICS: BasketballConfig = {
-  gravity: 1920,
-  restitution: 0.77,
-  wallRestitution: 0.8,
-  airFriction: 0.9984,
-  floorFriction: 0.91,
-  maxSpeed: 2300,
-  sleepSpeed: 10,
+  gravity: 1720,
+  restitution: 0.74,
+  wallRestitution: 0.77,
+  airFriction: 0.999,
+  floorFriction: 0.94,
+  maxSpeed: 2000,
+  sleepSpeed: 8,
 };
 
 export const AMBIENT_CYCLE = {
-  restBeforeKickMs: 720,
-  fadeOutMs: 1100,
-  dormantMs: 500,
-  fadeInMs: 900,
+  /** Hold on the floor long enough to read the settle. */
+  restBeforeKickMs: 980,
+  /** Wind-up squash before loft. */
+  anticipationMs: 160,
+  fadeOutMs: 1200,
+  dormantMs: 560,
+  fadeInMs: 1000,
 } as const;
 
 export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, "x" | "y"> {
@@ -23,14 +26,14 @@ export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, 
   const spanY = Math.max(1, bounds.maxY - bounds.minY);
 
   return {
-    x: bounds.minX + spanX * (0.18 + Math.random() * 0.64),
-    y: bounds.minY + spanY * (0.12 + Math.random() * 0.3),
+    x: bounds.minX + spanX * (0.22 + Math.random() * 0.56),
+    y: bounds.minY + spanY * (0.14 + Math.random() * 0.28),
   };
 }
 
 /**
  * Loft from the current floor contact — never teleport.
- * Direction aims toward the farther side wall for a full-court feel.
+ * Softer than a throw; more like a prepared bounce.
  */
 export function ambientRespawnImpulse(
   bounds: PhysicsBounds,
@@ -41,11 +44,11 @@ export function ambientRespawnImpulse(
   const mid = (bounds.minX + bounds.maxX) * 0.5;
   const towardRight = fromX <= mid;
   const sign = towardRight ? 1 : -1;
-  const loft = 0.88 + Math.random() * 0.22;
+  const loft = 0.92 + Math.random() * 0.16;
 
   return {
-    vx: sign * Math.max(820, spanX * 1.55) * loft,
-    vy: -Math.max(420, spanY * 0.58) * loft,
+    vx: sign * Math.max(640, spanX * 1.28) * loft,
+    vy: -Math.max(380, spanY * 0.52) * loft,
   };
 }
 

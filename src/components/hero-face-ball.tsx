@@ -40,11 +40,12 @@ type Phase = "entering" | "ambient" | "simulating";
 type CyclePhase = "live" | "fading-out" | "dormant" | "fading-in";
 
 const MIN_DIAMETER = Math.round(100 * HERO_BALL_SIZE_SCALE);
-const MAX_DIAMETER = Math.round(520 * HERO_BALL_SIZE_SCALE);
-const IMPACT_SQUASH = 0.86;
-/** Soft overshoot spring — reads as expensive rubber, not a CSS pop. */
-const SQUASH_SPRING = { stiffness: 380, damping: 16, mass: 0.7 } as const;
-const SHADOW_SPRING = { stiffness: 140, damping: 26, mass: 0.8 } as const;
+const MAX_DIAMETER = Math.round(480 * HERO_BALL_SIZE_SCALE);
+const IMPACT_SQUASH = 0.88;
+/** Expensive rubber — soft attack, gentle overshoot, quick settle. */
+const SQUASH_SPRING = { stiffness: 320, damping: 18, mass: 0.85 } as const;
+const SHADOW_SPRING = { stiffness: 120, damping: 28, mass: 0.9 } as const;
+const TRAIL_SPRING = { stiffness: 90, damping: 22, mass: 0.95 } as const;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -123,24 +124,35 @@ export function HeroFaceBall({
   const speedNorm = useMotionValue(0);
   const airStretchX = useMotionValue(1);
   const airStretchY = useMotionValue(1);
+  const glowTrailX = useSpring(posX, TRAIL_SPRING);
+  const glowTrailY = useSpring(posY, TRAIL_SPRING);
+  const shadowLagX = useSpring(posX, { stiffness: 160, damping: 30, mass: 0.85 });
   const contactShadowScale = useSpring(
-    useTransform(floorProximity, [0, 1], [0.48, 1.42]),
+    useTransform(floorProximity, [0, 1], [0.42, 1.48]),
     SHADOW_SPRING,
   );
   const contactShadowOpacity = useSpring(
-    useTransform(floorProximity, [0, 1], [0.08, 0.58]),
+    useTransform(floorProximity, [0, 1], [0.06, 0.62]),
     SHADOW_SPRING,
   );
-  const contactShadowScaleY = useTransform(contactShadowScale, (v) => 0.5 + Number(v) * 0.22);
-  const contactShadowBlur = useTransform(floorProximity, [0, 1], [18, 9]);
+  const contactShadowScaleY = useTransform(contactShadowScale, (v) => 0.48 + Number(v) * 0.24);
+  const contactShadowBlur = useTransform(floorProximity, [0, 1], [22, 8]);
+  const settleBreath = useMotionValue(1);
+  const settleBreathSpring = useSpring(settleBreath, { stiffness: 90, damping: 14, mass: 1 });
 
   const composedScaleX = useSpring(
-    useTransform([squashX, airStretchX], ([sq, air]) => Number(sq) * Number(air)),
-    { stiffness: 260, damping: 28, mass: 0.55 },
+    useTransform(
+      [squashX, airStretchX, settleBreathSpring],
+      ([sq, air, breath]) => Number(sq) * Number(air) * Number(breath),
+    ),
+    { stiffness: 220, damping: 26, mass: 0.65 },
   );
   const composedScaleY = useSpring(
-    useTransform([squashY, airStretchY], ([sq, air]) => Number(sq) * Number(air)),
-    { stiffness: 260, damping: 28, mass: 0.55 },
+    useTransform(
+      [squashY, airStretchY, settleBreathSpring],
+      ([sq, air, breath]) => Number(sq) * Number(air) * (2 - Number(breath)),
+    ),
+    { stiffness: 220, damping: 26, mass: 0.65 },
   );
 
   const stateRef = useRef<PhysicsBallState>({ x: 0, y: 0, vx: 0, vy: 0 });
@@ -202,10 +214,10 @@ export function HeroFaceBall({
         return;
       }
       const speed = Math.hypot(vx, vy);
-      const t = clamp(speed / 1600, 0, 1);
-      // Subtle flight stretch along velocity — never fight the impact squash.
-      const along = 1 + t * 0.06;
-      const across = 1 - t * 0.045;
+      const t = clamp(speed / 1400, 0, 1);
+      // Whisper of flight stretch — expensive, not cartoon.
+      const along = 1 + t * 0.045;
+      const across = 1 - t * 0.032;
       if (Math.abs(vx) >= Math.abs(vy)) {
         airStretchX.set(along);
         airStretchY.set(across);
@@ -245,7 +257,8 @@ export function HeroFaceBall({
     cycleRef.current = "live";
     restSinceRef.current = null;
     ballPresence.set(1);
-  }, [ballPresence, clearDormantTimer, stopFade]);
+    settleBreath.set(1);
+  }, [ballPresence, clearDormantTimer, settleBreath, stopFade]);
 
   const kickAmbientRally = useCallback(() => {
     const { bounds } = readSectionBounds();
@@ -254,16 +267,25 @@ export function HeroFaceBall({
     const current = stateRef.current;
     const x = clamp(current.x, bounds.minX, bounds.maxX);
     const y = bounds.maxY;
-    const impulse = ambientRespawnImpulse(bounds, x);
 
-    stateRef.current = { x, y, ...impulse };
-    posX.set(x);
-    posY.set(y);
-    restSinceRef.current = null;
-    cycleRef.current = "live";
-    ballPresence.set(1);
-    setPhaseSafe("ambient");
-  }, [ballPresence, posX, posY, readSectionBounds, setPhaseSafe]);
+    // Anticipation: compress into the floor, then loft.
+    settleBreath.set(0.9);
+    squashAxis.set(0);
+    squashValue.set(0.9);
+
+    window.setTimeout(() => {
+      const impulse = ambientRespawnImpulse(bounds, x);
+      settleBreath.set(1);
+      squashValue.set(1);
+      stateRef.current = { x, y, ...impulse };
+      posX.set(x);
+      posY.set(y);
+      restSinceRef.current = null;
+      cycleRef.current = "live";
+      ballPresence.set(1);
+      setPhaseSafe("ambient");
+    }, AMBIENT_CYCLE.anticipationMs);
+  }, [ballPresence, posX, posY, readSectionBounds, setPhaseSafe, settleBreath, squashAxis, squashValue]);
 
   const beginFadeOut = useCallback(() => {
     if (cycleRef.current !== "live" || phaseRef.current === "simulating") return;
@@ -483,13 +505,15 @@ export function HeroFaceBall({
 
       if (phase === "ambient") {
         if (result.sleeping) {
+          settleBreath.set(0.96);
           if (!restSinceRef.current) {
             restSinceRef.current = now;
           } else if (now - restSinceRef.current >= AMBIENT_CYCLE.restBeforeKickMs) {
-            if (Math.random() < 0.12) beginFadeOut();
+            if (Math.random() < 0.1) beginFadeOut();
             else kickAmbientRally();
           }
         } else {
+          settleBreath.set(1);
           restSinceRef.current = null;
         }
       }
@@ -509,6 +533,7 @@ export function HeroFaceBall({
     posY,
     prefersReducedMotion,
     readSectionBounds,
+    settleBreath,
     speedNorm,
     syncFlightDeform,
   ]);
@@ -560,10 +585,10 @@ export function HeroFaceBall({
     [scrollScale, presenceScale],
     ([scroll, presence]) => Number(scroll) * Number(presence),
   );
-  const motionBlurPx = useTransform(speedNorm, [0, 1], [0, 2.4]);
+  const motionBlurPx = useTransform(speedNorm, [0, 1], [0, 1.6]);
   const cinematicBlurPx = useTransform(
     [presenceBlur, motionBlurPx],
-    ([presence, motion]) => Math.min(10, Number(presence) + Number(motion)),
+    ([presence, motion]) => Math.min(8, Number(presence) + Number(motion)),
   );
   const cinematicFilter = useMotionTemplate`blur(${cinematicBlurPx}px) brightness(${presenceBrightness}) saturate(${presenceSaturate})`;
   const shadowOpacity = useTransform(
@@ -573,11 +598,11 @@ export function HeroFaceBall({
   const glowOpacity = useTransform(
     [cinematicOpacity, speedNorm, floorProximity],
     ([presence, speed, floor]) =>
-      Number(presence) * (0.38 + Number(speed) * 0.22 + (1 - Number(floor)) * 0.12),
+      Number(presence) * (0.34 + Number(speed) * 0.18 + (1 - Number(floor)) * 0.14),
   );
   const glowScale = useTransform(
     [cinematicScale, speedNorm],
-    ([scale, speed]) => Number(scale) * (1 + Number(speed) * 0.08),
+    ([scale, speed]) => Number(scale) * (1.02 + Number(speed) * 0.06),
   );
   const shadowFilter = useMotionTemplate`blur(${contactShadowBlur}px)`;
 
@@ -836,10 +861,10 @@ export function HeroFaceBall({
         aria-hidden
         className={`hero-ball-ambient-glow pointer-events-none absolute left-0 top-0 ${ballLayerZ}`}
         style={{
-          width: diameter * 1.42,
-          height: diameter * 1.42,
-          x: displayX,
-          y: displayY,
+          width: diameter * 1.5,
+          height: diameter * 1.5,
+          x: glowTrailX,
+          y: glowTrailY,
           translateX: "-50%",
           translateY: "-50%",
           opacity: glowOpacity,
@@ -852,15 +877,15 @@ export function HeroFaceBall({
         aria-hidden
         className={`hero-ball-contact-shadow pointer-events-none absolute left-0 top-0 ${ballLayerZ}`}
         style={{
-          width: diameter * 0.82,
-          height: diameter * 0.15,
-          x: displayX,
+          width: diameter * 0.84,
+          height: diameter * 0.14,
+          x: shadowLagX,
           y: displayY,
           translateX: "-50%",
-          translateY: radius * 0.98,
+          translateY: radius * 1.02,
           borderRadius: "50%",
           background:
-            "radial-gradient(ellipse at center, oklch(0 0 0 / 0.5) 0%, oklch(0 0 0 / 0.18) 42%, oklch(0 0 0 / 0) 74%)",
+            "radial-gradient(ellipse at center, oklch(0 0 0 / 0.55) 0%, oklch(0 0 0 / 0.2) 40%, oklch(0 0 0 / 0) 72%)",
           filter: shadowFilter,
           opacity: shadowOpacity,
           scaleX: contactShadowScale,
