@@ -171,13 +171,11 @@ export function ProjectsSection() {
                 />
 
                 <div
-                  className="projects-showcase-scrim pointer-events-none absolute inset-0"
+                  className="projects-showcase-scrim"
                   aria-hidden
                 />
 
-                <div
-                  className="projects-card-overlay--desktop pointer-events-none absolute inset-x-0 bottom-0 hidden flex-col justify-end sm:flex"
-                >
+                <div className="projects-card-overlay--desktop flex-col justify-end">
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                       key={project.id}
@@ -187,12 +185,12 @@ export function ProjectsSection() {
                       exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
                       transition={{ duration: 0.5, ease: REVEAL_EASE }}
                     >
-                      <div className="projects-card-overlay__meta mb-1 flex items-center justify-between gap-2 sm:mb-2 sm:gap-3">
+                      <div className="projects-card-overlay__meta mb-1 flex items-center justify-between gap-2 sm:mb-2">
                         <div className="projects-card-overlay__counter font-mono text-[10px] tracking-[0.18em] text-text-soft sm:text-sm sm:tracking-[0.2em]">
                           {String(carousel.index + 1).padStart(2, "0")} /{" "}
                           {String(projects.length).padStart(2, "0")}
                         </div>
-                        <span className="projects-card-overlay__tag max-w-[min(52%,14rem)] truncate rounded-full border border-glass bg-glass-bg px-2 py-0.5 text-[8px] font-medium uppercase tracking-[0.14em] text-foreground backdrop-blur sm:max-w-[min(48%,16rem)] sm:px-3 sm:py-1 sm:text-xs sm:tracking-[0.18em]">
+                        <span className="projects-card-overlay__tag rounded-full border border-glass bg-glass-bg px-2 py-0.5 text-[8px] font-medium uppercase tracking-[0.14em] text-foreground backdrop-blur sm:px-3 sm:py-1 sm:text-xs sm:tracking-[0.18em]">
                           {project.tag}
                         </span>
                       </div>
