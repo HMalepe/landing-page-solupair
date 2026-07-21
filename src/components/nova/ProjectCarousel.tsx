@@ -1,159 +1,202 @@
-import { memo, useLayoutEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import {
-  computeProjectCardMotion,
-  PROJECT_SCROLL_HEIGHT_VH,
-  PROJECT_SCROLL_SEGMENTS,
-} from "@/lib/project-carousel-motion";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { ProjectsHeader } from "@/components/nova/ProjectsHeader";
 import type { ProjectItem } from "@/components/nova/ProjectsStaticGrid";
 
-export type { ProjectItem } from "@/components/nova/ProjectsStaticGrid";
+const ACCENT: Record<ProjectItem["accent"], string> = {
+  teal: "var(--solupair-cyan)",
+  violet: "var(--solupair-violet)",
+  magenta: "var(--solupair-magenta)",
+};
 
-const ScrollProjectCard = memo(function ScrollProjectCard({
-  project,
-  index,
-  slideProgress,
-  stageWidth,
-  total,
-}: {
-  project: ProjectItem;
-  index: number;
-  slideProgress: MotionValue<number>;
-  stageWidth: number;
-  total: number;
-}) {
-  const width = Math.max(stageWidth, 1);
-
-  const x = useTransform(slideProgress, (sp) => {
-    const m = computeProjectCardMotion(index, sp, total);
-    return (m.xPercent / 100) * width;
-  });
-  const y = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total).yPx);
-  const scale = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total).scale);
-  const opacity = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total).opacity);
-  const zIndex = useTransform(slideProgress, (sp) => computeProjectCardMotion(index, sp, total).zIndex);
-  const visibility = useTransform(slideProgress, (sp) =>
-    computeProjectCardMotion(index, sp, total).visible ? "visible" : "hidden",
-  );
-
+function BrowserChrome({ children }: { children: ReactNode }) {
   return (
-    <motion.article
-      style={{ x, y, scale, opacity, zIndex, visibility }}
-      className="nova-project-card group absolute inset-0 overflow-hidden rounded-2xl border border-white/10"
-    >
-      <img
-        src={project.img}
-        alt={`${project.name} — ${project.tag}`}
-        loading={index === 0 ? "eager" : "lazy"}
-        decoding="async"
-        width={1024}
-        height={1024}
-        className="h-full w-full object-cover"
-        draggable={false}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/5" />
-      <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10">
-        <div className="flex items-start justify-between gap-4">
-          <span className="nova-gradient-text font-mono text-xs font-semibold tracking-[0.3em]">
-            {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-          </span>
-          <span className="rounded-full border border-white/20 bg-black/40 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/90 backdrop-blur-sm sm:text-xs">
-            {project.tag}
-          </span>
-        </div>
-        <div className="flex items-end justify-between gap-4">
-          <h3 className="font-display text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
-            {project.name}
-          </h3>
-          <ArrowUpRight className="h-8 w-8 shrink-0 text-white/80 transition group-hover:text-[var(--solupair-cyan)]" />
+    <div className="nova-project-chrome flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-white/12 bg-[#0a0a12] shadow-[0_28px_90px_oklch(0_0_0_/_0.55)]">
+      <div className="flex shrink-0 items-center gap-2 border-b border-white/8 bg-white/[0.03] px-4 py-3">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+        <div className="ml-3 flex-1 truncate rounded-full bg-white/[0.06] px-3 py-1 text-center text-[10px] tracking-wide text-white/35 sm:text-[11px]">
+          solupair.co.za / builds
         </div>
       </div>
-    </motion.article>
-  );
-});
-
-function ProjectScrollIndicator({
-  slideProgress,
-  total,
-}: {
-  slideProgress: MotionValue<number>;
-  total: number;
-}) {
-  const active = useTransform(slideProgress, (sp) => Math.min(total - 1, Math.max(0, Math.round(sp))));
-
-  return (
-    <div className="mt-8 flex items-center justify-center gap-2" aria-hidden>
-      {Array.from({ length: total }, (_, i) => (
-        <ProjectDot key={i} index={i} active={active} />
-      ))}
+      <div className="relative min-h-0 flex-1 overflow-hidden">{children}</div>
     </div>
   );
 }
 
-function ProjectDot({ index, active }: { index: number; active: MotionValue<number> }) {
-  const width = useTransform(active, (a) => (a === index ? 32 : 8));
-  const opacity = useTransform(active, (a) => (a === index ? 1 : 0.32));
-
-  return <motion.div style={{ width, opacity }} className="h-1.5 rounded-full bg-[var(--solupair-cyan)]" />;
+function PreviewSlide({ project, index, total }: { project: ProjectItem; index: number; total: number }) {
+  return (
+    <BrowserChrome>
+      <img
+        src={project.img}
+        alt={`${project.name} — ${project.tag}`}
+        className="h-full w-full object-cover object-top"
+        draggable={false}
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-black/10" />
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between sm:p-8 lg:p-10">
+        <div className="max-w-xl">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className="font-mono text-[11px] font-semibold tracking-[0.28em] text-white/55">
+              {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+            </span>
+            <span
+              className="rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/90 backdrop-blur-sm"
+              style={{ borderColor: `${ACCENT[project.accent]}66`, background: `${ACCENT[project.accent]}22` }}
+            >
+              {project.tag}
+            </span>
+          </div>
+          <h3 className="font-display text-3xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+            {project.name}
+          </h3>
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-white/70 sm:text-base">{project.summary}</p>
+        </div>
+        <div className="flex flex-wrap gap-2 sm:justify-end">
+          {project.href ? (
+            <a
+              href={project.href}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white backdrop-blur-sm transition hover:border-white/40 hover:bg-white/15"
+            >
+              Open live build
+            </a>
+          ) : null}
+          <a
+            href="#contact"
+            className="nova-cta-btn inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em]"
+          >
+            Discuss this build <ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </div>
+    </BrowserChrome>
+  );
 }
 
 export function ProjectCarousel({ projects }: { projects: ProjectItem[] }) {
-  const containerRef = useRef<HTMLElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const [stageWidth, setStageWidth] = useState(0);
+  const reduceMotion = useReducedMotion();
+  const [active, setActive] = useState(0);
+  const total = projects.length;
+  const project = projects[active] ?? projects[0];
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
+  const go = useCallback(
+    (next: number) => {
+      if (!total) return;
+      setActive(((next % total) + total) % total);
+    },
+    [total],
+  );
 
-  const slideProgress = useTransform(scrollYProgress, [0, 1], [0, PROJECT_SCROLL_SEGMENTS]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") go(active + 1);
+      if (e.key === "ArrowLeft") go(active - 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [active, go]);
 
-  useLayoutEffect(() => {
-    const el = stageRef.current;
-    if (!el) return;
-
-    const measure = () => setStageWidth(el.clientWidth);
-    measure();
-
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+  if (!project) return null;
 
   return (
-    <section
-      id="work"
-      ref={containerRef}
-      className="nova-projects-scroll relative z-[1]"
-      style={{ height: `${PROJECT_SCROLL_HEIGHT_VH}vh` }}
-    >
-      <div className="nova-projects-pin">
-        <div className="mx-auto flex h-full max-w-7xl flex-col px-6 pb-10 pt-16 sm:px-10 lg:px-14 lg:pt-20">
-          <ProjectsHeader />
-          <p className="mt-4 max-w-2xl text-[11px] font-medium uppercase tracking-[0.28em] text-foreground/45">
-            Scroll to explore digital experiences that push the boundaries of web design &amp; automation.
+    <section id="work" className="relative z-[1] px-6 py-20 sm:px-10 lg:px-14 lg:py-28">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <ProjectsHeader />
+            <p className="mt-4 max-w-xl text-[11px] font-medium uppercase tracking-[0.24em] text-foreground/45">
+              Swipe, use the arrows, dots or cards below to browse builds.
+            </p>
+          </div>
+          <p className="max-w-sm text-sm leading-relaxed text-foreground/60 lg:text-right">
+            Live dashboards, booking flows and automation tools built to reduce admin, missed bookings and messy
+            operations.
           </p>
+        </div>
 
-          <div ref={stageRef} className="nova-projects-stage relative mx-auto mt-10 w-full max-w-5xl flex-1">
-            {projects.map((p, i) => (
-              <ScrollProjectCard
-                key={p.name}
-                project={p}
-                index={i}
-                slideProgress={slideProgress}
-                stageWidth={stageWidth}
-                total={projects.length}
-              />
-            ))}
+        <div className="relative mt-10">
+          <div className="nova-projects-stage relative mx-auto w-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={project.name}
+                initial={reduceMotion ? false : { opacity: 0, y: 18, scale: 0.985 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -12, scale: 0.99 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full"
+              >
+                <PreviewSlide project={project} index={active} total={total} />
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          <ProjectScrollIndicator slideProgress={slideProgress} total={projects.length} />
+          <button
+            type="button"
+            aria-label="Previous project"
+            onClick={() => go(active - 1)}
+            className="absolute left-2 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur-md transition hover:border-white/35 hover:bg-black/70 sm:left-4 sm:flex lg:-left-5"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            aria-label="Next project"
+            onClick={() => go(active + 1)}
+            className="absolute right-2 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur-md transition hover:border-white/35 hover:bg-black/70 sm:right-4 sm:flex lg:-right-5"
+          >
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="mt-6 flex items-center justify-center gap-2" aria-hidden>
+          {projects.map((p, i) => (
+            <button
+              key={p.name}
+              type="button"
+              aria-label={`Show ${p.name}`}
+              onClick={() => setActive(i)}
+              className="h-1.5 rounded-full transition-all"
+              style={{
+                width: i === active ? 32 : 8,
+                opacity: i === active ? 1 : 0.32,
+                background: ACCENT[p.accent],
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
+          {projects.map((p, i) => {
+            const selected = i === active;
+            return (
+              <button
+                key={p.name}
+                type="button"
+                onClick={() => setActive(i)}
+                className="rounded-2xl border p-5 text-left transition"
+                style={{
+                  borderColor: selected ? `${ACCENT[p.accent]}88` : "rgba(255,255,255,0.1)",
+                  background: selected ? `${ACCENT[p.accent]}14` : "rgba(255,255,255,0.02)",
+                  boxShadow: selected ? `0 0 0 1px ${ACCENT[p.accent]}33` : undefined,
+                }}
+              >
+                <span
+                  className="inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em]"
+                  style={{ color: ACCENT[p.accent], background: `${ACCENT[p.accent]}22` }}
+                >
+                  {p.tag}
+                </span>
+                <h4 className="mt-3 font-display text-xl font-bold tracking-tight text-foreground">{p.name}</h4>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/60">{p.summary}</p>
+              </button>
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
-

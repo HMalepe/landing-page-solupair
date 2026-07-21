@@ -83,7 +83,7 @@ export function FaceBall({ playAreaRef, headlineRef }: FaceBallProps) {
     if (!sim || !shell || !body || !shadow) return;
 
     const s = sim.getRenderState();
-    const deg = Math.round(((s.rotation * 180) / Math.PI) * 10) / 10;
+    const deg = (s.rotation * 180) / Math.PI;
     shell.style.transform = `translate3d(calc(-50% + ${s.x}px), calc(-50% + ${s.y}px), 0) rotate(${deg}deg)`;
     shell.style.cursor = draggingRef.current ? "grabbing" : "grab";
     body.style.transform = `scale3d(${s.squashX * s.breathScale}, ${s.squashY * s.breathScale}, 1)`;
@@ -103,11 +103,13 @@ export function FaceBall({ playAreaRef, headlineRef }: FaceBallProps) {
       const sim = simRef.current;
       if (sim) {
         const last = lastFrameRef.current || now;
-        const dt = Math.min((now - last) / 1000, 1 / 45);
+        const dt = Math.min((now - last) / 1000, 1 / 30);
         lastFrameRef.current = now;
-        if (!reduceMotion) sim.step(dt);
-        else sim.step(dt * 0.35);
-        applyRender();
+        if (dt > 0) {
+          if (!reduceMotion) sim.step(dt);
+          else sim.step(dt * 0.35);
+          applyRender();
+        }
       }
       rafRef.current = requestAnimationFrame(tick);
     };

@@ -97,6 +97,7 @@
   position: absolute;
   left: 50%;
   top: 50%;
+  will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transform-style: preserve-3d;
@@ -160,6 +161,7 @@
   filter: blur(13px);
   opacity: 0.52;
   transform-origin: center center;
+  will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
@@ -267,11 +269,22 @@
 }
 
 .nova-theme .nova-projects-stage {
-  perspective: 1600px;
-  transform-style: preserve-3d;
-  min-height: min(58vh, 560px);
+  min-height: min(72vh, 720px);
+  height: min(72vh, 720px);
   overflow: hidden;
   contain: layout style paint;
+}
+
+.nova-theme .nova-project-chrome {
+  min-height: inherit;
+  height: 100%;
+}
+
+@media (max-width: 640px) {
+  .nova-theme .nova-projects-stage {
+    min-height: min(58vh, 480px);
+    height: min(58vh, 480px);
+  }
 }
 
 .nova-theme .nova-project-card {
@@ -283,4 +296,131 @@
     0 28px 90px oklch(0 0 0 / 0.5),
     0 0 0 1px oklch(1 0 0 / 0.06),
     0 0 48px oklch(0.52 0.24 288 / 0.15);
+}
+
+/* Cinematic pitch — blockbuster question → solution */
+.nova-theme .nova-cinema {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, oklch(0.52 0.24 288 / 0.18), transparent 60%),
+    radial-gradient(ellipse 45% 40% at 15% 80%, oklch(0.78 0.14 192 / 0.1), transparent 55%),
+    radial-gradient(ellipse 40% 35% at 85% 75%, oklch(0.62 0.26 330 / 0.1), transparent 50%),
+    var(--background);
+}
+
+.nova-theme .nova-cinema-vignette {
+  background: radial-gradient(ellipse 75% 70% at 50% 45%, transparent 35%, oklch(0 0 0 / 0.55) 100%);
+}
+
+.nova-theme .nova-cinema-grain {
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+.nova-theme .nova-cinema-flare {
+  background:
+    linear-gradient(105deg, transparent 40%, oklch(1 0 0 / 0.03) 49%, oklch(1 0 0 / 0.06) 50%, oklch(1 0 0 / 0.03) 51%, transparent 60%);
+  animation: novaCinemaFlare 9s ease-in-out infinite;
+}
+
+@keyframes novaCinemaFlare {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateX(-8%);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translateX(8%);
+  }
+}
+
+.nova-theme .nova-cinema-cursor {
+  display: inline-block;
+  width: 0.08em;
+  height: 0.85em;
+  margin-left: 0.08em;
+  vertical-align: -0.05em;
+  background: var(--solupair-cyan);
+  box-shadow: 0 0 12px oklch(0.78 0.14 192 / 0.55);
+  animation: novaCinemaBlink 0.85s steps(1) infinite;
+}
+
+@keyframes novaCinemaBlink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.nova-theme .nova-cinema-hero-word {
+  background-image: var(--solupair-gradient-horizontal);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 22px oklch(0.62 0.26 330 / 0.28));
+}
+
+.nova-theme .nova-cinema-cta {
+  isolation: isolate;
+}
+
+.nova-theme .nova-cinema-cta > span:last-child {
+  background-image: var(--solupair-gradient-horizontal);
+  box-shadow: 0 12px 40px oklch(0.52 0.24 288 / 0.35);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.nova-theme .nova-cinema-cta:hover > span:last-child {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 16px 48px oklch(0.62 0.26 330 / 0.4);
+}
+
+.nova-theme .nova-cinema-cta-glow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 999px;
+  background: var(--solupair-gradient-horizontal);
+  opacity: 0.28;
+  filter: blur(18px);
+  z-index: 0;
+  transition: opacity 0.25s ease;
+}
+
+.nova-theme .nova-cinema-cta:hover .nova-cinema-cta-glow {
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nova-theme .nova-cinema-flare,
+  .nova-theme .nova-cinema-cursor {
+    animation: none !important;
+  }
+
+  .nova-theme .nova-cinema-cursor {
+    opacity: 0 !important;
+  }
+}
+
+/* Contact double-helix particle ribbon */
+.nova-theme .nova-contact-helix {
+  z-index: 0;
+  opacity: 0.92;
+  mix-blend-mode: screen;
+}
+
+.nova-theme .nova-contact-helix-fade {
+  background: linear-gradient(
+    90deg,
+    var(--background) 0%,
+    transparent 12%,
+    transparent 88%,
+    var(--background) 100%
+  );
 }

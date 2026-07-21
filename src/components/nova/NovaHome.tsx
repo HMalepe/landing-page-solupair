@@ -5,6 +5,7 @@ import { ProjectCarousel } from "@/components/nova/ProjectCarousel";
 import { ProjectsStaticGrid } from "@/components/nova/ProjectsStaticGrid";
 import { ViewportPhysicsBalls } from "@/components/nova/ViewportPhysicsBalls";
 import { Contact, NovaLogo, projects } from "@/components/nova/nova-home-shared";
+import { CinematicPitch } from "@/components/nova/CinematicPitch";
 import "@/styles-nova.css";
 
 function Hero() {
@@ -33,7 +34,7 @@ function Hero() {
 
       <div
         ref={playAreaRef}
-        className="relative flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center px-2"
+        className="relative flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center px-0"
       >
         <div className="nova-gradient-text relative z-0 mb-4 text-center text-xs font-medium tracking-[0.28em] sm:text-sm">
           AUTOMATION &amp; WEB DESIGN
@@ -85,6 +86,7 @@ export function NovaHome() {
         <Hero />
         <div className="nova-lower-shell relative">
           <Projects />
+          <CinematicPitch />
           <Contact />
         </div>
       </main>

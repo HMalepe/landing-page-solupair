@@ -1,17 +1,37 @@
 import { ArrowUpRight } from "lucide-react";
-import project1 from "@/assets/project1.jpg";
-import project2 from "@/assets/project2.jpg";
-import project3 from "@/assets/project3.jpg";
-import project4 from "@/assets/project4.jpg";
+import expirydeskImg from "@/assets/projects/expirydesk.jpg";
+import dashboardImg from "@/assets/projects/dashboard.jpg";
+import whatsappImg from "@/assets/projects/whatsapp.jpg";
 import { CONTACT_EMAIL, LEGAL_NAME, LOCATION_LABEL } from "@/lib/site";
 import { ProjectsStaticGrid } from "@/components/nova/ProjectsStaticGrid";
+import { CinematicPitch } from "@/components/nova/CinematicPitch";
+import { ContactHelix } from "@/components/nova/ContactHelix";
 import type { ProjectItem } from "@/components/nova/ProjectsStaticGrid";
 
 export const projects: ProjectItem[] = [
-  { name: "Lumina", tag: "Interactive Dashboard", img: project1 },
-  { name: "Chroma", tag: "3D Brand Identity", img: project2 },
-  { name: "Forma", tag: "Product Showcase", img: project3 },
-  { name: "Flux", tag: "Motion Platform", img: project4 },
+  {
+    name: "ExpiryDesk PRO",
+    tag: "Inventory intelligence",
+    summary: "Track short-dated stock, write-offs and recovered value before losses happen.",
+    img: expirydeskImg,
+    href: "https://expirydesk.co.za",
+    accent: "teal",
+  },
+  {
+    name: "Live Pulse Dashboard",
+    tag: "Business visibility",
+    summary: "See bookings, revenue, staff activity and business health in one clean live view.",
+    img: dashboardImg,
+    href: "https://dashboard.solupair.co.za",
+    accent: "violet",
+  },
+  {
+    name: "WhatsApp Booking Agent",
+    tag: "Customer automation",
+    summary: "Let customers book, reschedule, ask FAQs and receive reminders automatically.",
+    img: whatsappImg,
+    accent: "magenta",
+  },
 ];
 
 export function NovaLogo() {
@@ -118,19 +138,16 @@ export function HeroStatic() {
 
 export function Contact() {
   return (
-    <section id="contact" className="relative z-[1] min-h-screen px-6 py-24 sm:px-10 lg:px-14 lg:py-32">
-      <div className="mx-auto max-w-7xl border-t border-white/10 pt-16">
+    <section id="contact" className="relative z-[1] overflow-hidden px-6 pb-24 pt-8 sm:px-10 lg:px-14 lg:pb-32">
+      <ContactHelix />
+      <div id="contact-form" className="relative z-[1] mx-auto max-w-7xl scroll-mt-24 border-t border-white/10 pt-16">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
           <div>
-            <h2
-              className="font-display font-black uppercase leading-[0.9] tracking-tighter text-foreground"
-              style={{ fontSize: "clamp(2.5rem, 8vw, 7rem)" }}
-            >
+            <h3 className="font-display text-3xl font-black tracking-tight text-foreground sm:text-4xl">
               Let&apos;s Talk
-            </h2>
-            <p className="mt-6 max-w-md text-xs uppercase tracking-[0.18em] text-foreground/70 sm:text-sm">
-              Got a project in mind? We&apos;d love to hear about it. Drop us a line and let&apos;s create something
-              extraordinary.
+            </h3>
+            <p className="mt-4 max-w-md text-xs uppercase tracking-[0.18em] text-foreground/70 sm:text-sm">
+              Tell us what you need. We&apos;ll reply with the best next step, rough scope and starting price range.
             </p>
 
             <form onSubmit={(e) => e.preventDefault()} className="mt-10 max-w-md space-y-6">
@@ -152,8 +169,11 @@ export function Contact() {
                 type="submit"
                 className="nova-cta-btn inline-flex items-center gap-2 rounded-full border px-6 py-3 text-xs font-bold uppercase tracking-[0.2em]"
               >
-                Send Message <ArrowUpRight className="h-4 w-4" />
+                Send project request <ArrowUpRight className="h-4 w-4" />
               </button>
+              <p className="text-[11px] leading-relaxed text-foreground/45">
+                No spam — we reply within 1–2 business days with scope and a starting price range.
+              </p>
             </form>
           </div>
 
@@ -215,6 +235,7 @@ export function NovaHomeFallback() {
         <HeroStatic />
         <div className="nova-lower-shell relative">
           <ProjectsStaticGrid projects={projects} />
+          <CinematicPitch />
           <Contact />
         </div>
       </main>
