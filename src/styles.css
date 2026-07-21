@@ -3807,10 +3807,56 @@
   gap: 0;
 }
 
+.final-cta-vignette {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 42%, transparent 20%, color-mix(in srgb, var(--bg-deep) 55%, transparent) 100%),
+    linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--bg-deep) 28%, transparent) 100%);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.final-cta-kicker {
+  margin-bottom: clamp(1rem, 2.4vh, 1.5rem);
+  font-size: 0.625rem;
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-soft) 78%, transparent);
+}
+
+@media (min-width: 640px) {
+  .final-cta-kicker {
+    font-size: 0.6875rem;
+  }
+}
+
+.final-cta-cursor {
+  display: inline-block;
+  width: 0.08em;
+  height: 0.86em;
+  margin-left: 0.08em;
+  vertical-align: -0.06em;
+  background: linear-gradient(180deg, var(--brand-cyan), var(--brand-pink));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--glow-cyan) 55%, transparent);
+  animation: final-cta-cursor-blink 0.85s steps(1, end) infinite;
+}
+
+@keyframes final-cta-cursor-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
 .final-cta-question {
   font-size: clamp(1.85rem, 7vw, 3.75rem);
   line-height: 1.05;
-  max-width: 16ch;
+  max-width: 18ch;
+  min-height: 1.15em;
 }
 
 @media (min-width: 640px) {
@@ -3829,10 +3875,11 @@
 .final-cta-answer {
   margin-top: clamp(0.85rem, 2vh, 1.25rem);
   font-size: clamp(1.35rem, 5.2vw, 2.75rem);
-  line-height: 1.02;
+  line-height: 1.08;
   letter-spacing: -0.02em;
   color: var(--text-main);
-  max-width: 22ch;
+  max-width: 24ch;
+  min-height: 2.3em;
 }
 
 @media (min-width: 640px) {
@@ -3920,35 +3967,11 @@
   border-radius: 0.125rem;
 }
 
-@keyframes final-cta-reveal {
-  from {
+@media (prefers-reduced-motion: reduce) {
+  .final-cta-cursor {
+    animation: none;
     opacity: 0;
-    transform: translate3d(0, 16px, 0);
   }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-.final-cta-reveal {
-  opacity: 0;
-}
-
-.final-cta-in-view .final-cta-reveal--question {
-  animation: final-cta-reveal 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.04s forwards;
-}
-
-.final-cta-in-view .final-cta-reveal--answer {
-  animation: final-cta-reveal 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.14s forwards;
-}
-
-.final-cta-in-view .final-cta-reveal--support {
-  animation: final-cta-reveal 0.76s cubic-bezier(0.22, 1, 0.36, 1) 0.26s forwards;
-}
-
-.final-cta-in-view .final-cta-reveal--actions {
-  animation: final-cta-reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
 }
 
 .contact-form-input {
@@ -4688,10 +4711,9 @@ body {
     transform: none;
   }
 
-  .final-cta-reveal {
-    opacity: 1;
-    animation: none !important;
-    transform: none !important;
+  .final-cta-cursor {
+    animation: none;
+    opacity: 0;
   }
 
   .contact-helix-fallback {
