@@ -309,17 +309,49 @@
   border-radius: 50%;
   background:
     radial-gradient(
-      circle at 42% 38%,
-      color-mix(in srgb, var(--brand-cyan) 24%, transparent) 0%,
-      transparent 52%
+      circle at 40% 36%,
+      color-mix(in srgb, var(--brand-cyan) 32%, transparent) 0%,
+      transparent 48%
     ),
     radial-gradient(
-      circle at 58% 62%,
-      color-mix(in srgb, var(--glow-purple) 28%, transparent) 0%,
-      transparent 58%
+      circle at 62% 64%,
+      color-mix(in srgb, var(--glow-purple) 30%, transparent) 0%,
+      transparent 54%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      color-mix(in srgb, var(--brand-pink) 12%, transparent) 0%,
+      transparent 62%
     );
-  filter: blur(32px);
+  filter: blur(36px) saturate(1.08);
+  mix-blend-mode: screen;
   will-change: transform, opacity;
+}
+
+.hero-ball-contact-shadow {
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  will-change: transform, opacity, filter;
+}
+
+.hero-ball-reduced-motion {
+  animation: hero-ball-soft-float 5.5s ease-in-out infinite;
+}
+
+@keyframes hero-ball-soft-float {
+  0%,
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  50% {
+    transform: translate3d(-50%, -10px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-ball-reduced-motion {
+    animation: none;
+  }
 }
 
 @keyframes hero-glow-drift {
