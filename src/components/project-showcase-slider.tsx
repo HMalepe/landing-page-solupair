@@ -6,6 +6,7 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState,
   type ComponentType,
 } from "react";
@@ -41,18 +42,24 @@ type SliderEngineProps = ProjectShowcaseSliderProps & {
   useFade: boolean;
 };
 
+const WHEEL_THRESHOLD = 18;
+const WHEEL_COOLDOWN_MS = 420;
+
 const ProjectShowcaseSliderEngine = forwardRef<ShowcaseSliderHandle, SliderEngineProps>(
   function ProjectShowcaseSliderEngine({ slides, onSelect, className, useFade }, ref) {
     const { prefersReducedMotion } = useDeviceProfile();
     const plugins = useMemo(() => (useFade ? [Fade()] : []), [useFade]);
+    const wheelLockRef = useRef(false);
 
     const [emblaRef, emblaApi] = useEmblaCarousel(
       {
         loop: true,
         align: "start",
         containScroll: "trimSnaps",
-        duration: useFade ? 0 : prefersReducedMotion ? 0 : 24,
+        duration: useFade ? 0 : prefersReducedMotion ? 0 : 22,
         watchDrag: true,
+        dragFree: false,
+        skipSnaps: false,
       },
       plugins,
     );
@@ -97,6 +104,33 @@ const ProjectShowcaseSliderEngine = forwardRef<ShowcaseSliderHandle, SliderEngin
         emblaApi.off("reInit", syncCarouselState);
       };
     }, [emblaApi, syncCarouselState]);
+
+    // Trackpad / mouse-wheel horizontal swipe → next/prev (Embla ignores wheel by default).
+    useEffect(() => {
+      if (!emblaApi) return;
+      const root = emblaApi.rootNode();
+
+      const onWheel = (event: WheelEvent) => {
+        const absX = Math.abs(event.deltaX);
+        const absY = Math.abs(event.deltaY);
+        if (absX < WHEEL_THRESHOLD || absX <= absY) return;
+
+        event.preventDefault();
+        if (wheelLockRef.current) return;
+
+        wheelLockRef.current = true;
+        // Swipe left (fingers/content move left) → next project.
+        if (event.deltaX > 0) emblaApi.scrollNext();
+        else emblaApi.scrollPrev();
+
+        window.setTimeout(() => {
+          wheelLockRef.current = false;
+        }, WHEEL_COOLDOWN_MS);
+      };
+
+      root.addEventListener("wheel", onWheel, { passive: false });
+      return () => root.removeEventListener("wheel", onWheel);
+    }, [emblaApi]);
 
     useImperativeHandle(
       ref,
@@ -151,6 +185,7 @@ const ProjectShowcaseSliderEngine = forwardRef<ShowcaseSliderHandle, SliderEngin
 export const ProjectShowcaseSlider = forwardRef<ShowcaseSliderHandle, ProjectShowcaseSliderProps>(
   function ProjectShowcaseSlider(props, ref) {
     const { prefersReducedMotion, isMobileLanding } = useDeviceProfile();
+    // Mobile: scroll-snap swipe. Desktop: fade crossfade (drag + trackpad still work).
     const useFade = !prefersReducedMotion && !isMobileLanding;
 
     return (

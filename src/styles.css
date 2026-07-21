@@ -2901,12 +2901,14 @@
 
 .projects-embla__container {
   display: flex;
-  touch-action: pan-y pinch-zoom;
+  /* Horizontal carousel — allow Embla/touchpad to own left-right swipes. */
+  touch-action: pan-x pinch-zoom;
 }
 
 .projects-embla--fade .projects-embla__container {
   display: grid;
   grid-template-columns: 100%;
+  touch-action: pan-x pinch-zoom;
 }
 
 .projects-embla--fade .projects-embla__slide {
@@ -2922,8 +2924,10 @@
 
 .projects-embla__slide-inner {
   width: 100%;
-  height: clamp(160px, 28vh, 300px);
-  max-height: 300px;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  min-height: 18rem;
+  max-height: min(52vh, 28rem);
   overflow: hidden;
   border-radius: inherit;
   isolation: isolate;
@@ -2939,8 +2943,9 @@
 
 @media (max-width: 767px) {
   .projects-embla__slide-inner {
-    height: clamp(16rem, 52vw, 19.5rem);
-    max-height: 19.5rem;
+    aspect-ratio: 4 / 3;
+    min-height: 17.5rem;
+    max-height: min(58vh, 24rem);
   }
 
   .projects-showcase-mockup {
@@ -2953,38 +2958,29 @@
   }
 }
 
-/* Mid-range (640–1023 / especially ~838): crop + scale so mockup chrome stays above caption. */
+/* Mid-range (640–1023): keep a taller frame so previews stay readable. */
 @media (min-width: 640px) and (max-width: 1023px) {
   .project-showcase-card {
-    --projects-caption-band: clamp(7.25rem, 28%, 10rem);
+    --projects-caption-band: clamp(6.5rem, 20%, 8.5rem);
   }
 
   .projects-embla__slide-inner {
-    height: clamp(14.5rem, 34vw, 19.5rem);
-    max-height: 19.5rem;
+    aspect-ratio: 3 / 2;
+    min-height: 18rem;
+    max-height: min(48vh, 26rem);
   }
 
   .projects-embla__slide-inner > * {
-    transform: scale(0.88);
+    transform: none;
     transform-origin: top center;
-  }
-}
-
-@media (min-width: 838px) and (max-width: 900px) {
-  .projects-embla__slide-inner {
-    height: 16.75rem;
-    max-height: 16.75rem;
-  }
-
-  .projects-embla__slide-inner > * {
-    transform: scale(0.84);
   }
 }
 
 @media (min-width: 1024px) {
   .projects-embla__slide-inner {
-    height: clamp(180px, 28vh, 320px);
-    max-height: 320px;
+    aspect-ratio: 16 / 10;
+    min-height: 20rem;
+    max-height: min(54vh, 30rem);
   }
 
   .projects-showcase-arrow {
@@ -3164,7 +3160,7 @@
 
 .project-showcase-card {
   /* Caption safe-zone — mockup never paints into this band on desktop. */
-  --projects-caption-band: clamp(6.75rem, 22%, 9.5rem);
+  --projects-caption-band: clamp(5.75rem, 16%, 8rem);
 }
 
 .projects-showcase-mockup {
