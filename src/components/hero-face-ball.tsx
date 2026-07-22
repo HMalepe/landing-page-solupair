@@ -13,7 +13,7 @@ import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   AMBIENT_CYCLE,
   AMBIENT_PHYSICS,
-  ambientSoftEntranceImpulse,
+  ambientNextLoftImpulse,
   pickAmbientSpawn,
 } from "@/lib/hero-ball-ambient-cycle";
 import {
@@ -263,29 +263,42 @@ export function HeroFaceBall({
     if (bounds.maxX <= bounds.minX) return;
 
     const spawn = pickAmbientSpawn(bounds);
-    const impulse = ambientSoftEntranceImpulse(bounds);
 
+    // Fully still — no impulse until after blur-in + smile complete.
     settleBreath.set(1);
     squashAxis.set(0);
     squashValue.set(1);
-    stateRef.current = { ...spawn, ...impulse };
+    speedNorm.set(0);
+    airStretchX.set(1);
+    airStretchY.set(1);
+    stateRef.current = { ...spawn, vx: 0, vy: 0 };
     posX.set(spawn.x);
     posY.set(spawn.y);
     restSinceRef.current = null;
     setPhaseSafe("ambient");
-  }, [posX, posY, readSectionBounds, setPhaseSafe, settleBreath, squashAxis, squashValue]);
+  }, [
+    airStretchX,
+    airStretchY,
+    posX,
+    posY,
+    readSectionBounds,
+    setPhaseSafe,
+    settleBreath,
+    speedNorm,
+    squashAxis,
+    squashValue,
+  ]);
 
   const beginFadeOut = useCallback(() => {
     if (cycleRef.current !== "live") return;
-    // Allow dissolve after a throw settles (simulating → parked).
     if (phaseRef.current === "entering") return;
 
-    // Freeze exactly where motion ended — dissolve into the background, no rush elsewhere.
+    // Hard stop exactly where motion ended.
     const parked = stateRef.current;
-    stateRef.current = { ...parked, vx: 0, vy: 0 };
+    stateRef.current = { x: parked.x, y: parked.y, vx: 0, vy: 0 };
     posX.set(parked.x);
     posY.set(parked.y);
-    settleBreath.set(0.97);
+    settleBreath.set(1);
     speedNorm.set(0);
     airStretchX.set(1);
     airStretchY.set(1);
@@ -308,17 +321,35 @@ export function HeroFaceBall({
         if (cycleRef.current !== "dormant") return;
 
         cycleRef.current = "fading-in";
-        // Reappear elsewhere only while fully dissolved — soft drift, never a wall dash.
         softRespawnAmbient();
+        entranceSmile.set(0);
         ballPresence.set(0);
+
         fadeControlsRef.current = animate(ballPresence, 1, {
           duration: AMBIENT_CYCLE.fadeInMs / 1000,
           ease: [0.22, 1, 0.36, 1],
         });
 
+        void animate(entranceSmile, 1, {
+          duration: AMBIENT_CYCLE.smileMs / 1000,
+          ease: [0.22, 1, 0.36, 1],
+        });
+
         void fadeControlsRef.current.then(() => {
           if (cycleRef.current !== "fading-in") return;
-          cycleRef.current = "live";
+
+          // Stay still and smiling, then a soft loft continues the ambient loop.
+          dormantTimerRef.current = setTimeout(() => {
+            if (cycleRef.current !== "fading-in" && cycleRef.current !== "live") return;
+            const { bounds } = readSectionBounds();
+            if (bounds.maxX <= bounds.minX) return;
+            stateRef.current = {
+              ...stateRef.current,
+              ...ambientNextLoftImpulse(bounds),
+            };
+            restSinceRef.current = null;
+            cycleRef.current = "live";
+          }, AMBIENT_CYCLE.holdBeforeLoftMs);
         });
       }, AMBIENT_CYCLE.dormantMs);
     });
@@ -327,8 +358,10 @@ export function HeroFaceBall({
     airStretchY,
     ballPresence,
     clearDormantTimer,
+    entranceSmile,
     posX,
     posY,
+    readSectionBounds,
     setPhaseSafe,
     settleBreath,
     softRespawnAmbient,
@@ -351,12 +384,26 @@ export function HeroFaceBall({
     interruptCycle();
     softRespawnAmbient();
     ballPresence.set(1);
-    cycleRef.current = "live";
+    // First ambient beat: soft loft after a short still smile.
+    cycleRef.current = "fading-in";
+    dormantTimerRef.current = setTimeout(() => {
+      const { bounds } = readSectionBounds();
+      if (bounds.maxX <= bounds.minX) {
+        cycleRef.current = "live";
+        return;
+      }
+      stateRef.current = {
+        ...stateRef.current,
+        ...ambientNextLoftImpulse(bounds),
+      };
+      cycleRef.current = "live";
+    }, AMBIENT_CYCLE.holdBeforeLoftMs);
   }, [
     ballPresence,
     entranceSmile,
     fitDiameter,
     interruptCycle,
+    readSectionBounds,
     softRespawnAmbient,
     squashValue,
   ]);
@@ -489,7 +536,8 @@ export function HeroFaceBall({
       const cycle = cycleRef.current;
 
       if (phase !== "ambient" && phase !== "simulating") return;
-      if (phase === "ambient" && cycle !== "live" && cycle !== "fading-in") return;
+      // Frozen during dissolve / still blur-in — never step physics then.
+      if (phase === "ambient" && cycle !== "live") return;
 
       const dt = Math.min(now - last, 24);
       last = now;
@@ -497,6 +545,27 @@ export function HeroFaceBall({
       const { bounds } = readSectionBounds();
       const drag = phase === "simulating" && draggingRef.current ? pointerRef.current : null;
       const config = phase === "ambient" ? AMBIENT_PHYSICS : HERO_BALL_PHYSICS;
+
+      // Already resting — keep pinned still until fade begins (no micro-bounce wakeups).
+      if (
+        phase === "ambient" &&
+        restSinceRef.current !== null &&
+        Math.hypot(stateRef.current.vx, stateRef.current.vy) < AMBIENT_PHYSICS.sleepSpeed
+      ) {
+        stateRef.current = {
+          x: stateRef.current.x,
+          y: stateRef.current.y,
+          vx: 0,
+          vy: 0,
+        };
+        posX.set(stateRef.current.x);
+        posY.set(stateRef.current.y);
+        speedNorm.set(0);
+        if (now - restSinceRef.current >= AMBIENT_CYCLE.restBeforeFadeMs) {
+          beginFadeOut();
+        }
+        return;
+      }
 
       const result = stepBasketballPhysics(stateRef.current, config, bounds, dt, drag
         ? { isDragging: true, dragX: drag.x, dragY: drag.y }
@@ -540,19 +609,16 @@ export function HeroFaceBall({
       posY.set(result.y);
 
       if (phase === "simulating" && result.sleeping) {
-        interruptCycle();
         beginFadeOut();
         return;
       }
 
       if (phase === "ambient") {
         if (result.sleeping) {
-          settleBreath.set(0.96);
-          if (!restSinceRef.current) {
-            restSinceRef.current = now;
-          } else if (now - restSinceRef.current >= AMBIENT_CYCLE.restBeforeFadeMs) {
-            beginFadeOut();
-          }
+          stateRef.current = { x: result.x, y: result.y, vx: 0, vy: 0 };
+          settleBreath.set(1);
+          speedNorm.set(0);
+          if (!restSinceRef.current) restSinceRef.current = now;
         } else {
           settleBreath.set(1);
           restSinceRef.current = null;
@@ -570,7 +636,6 @@ export function HeroFaceBall({
     contactPinX,
     contactPinY,
     floorProximity,
-    interruptCycle,
     posX,
     posY,
     prefersReducedMotion,
