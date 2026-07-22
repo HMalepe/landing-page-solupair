@@ -13,7 +13,6 @@ import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   AMBIENT_CYCLE,
   AMBIENT_PHYSICS,
-  ambientNextLoftImpulse,
   pickAmbientSpawn,
 } from "@/lib/hero-ball-ambient-cycle";
 import {
@@ -264,7 +263,7 @@ export function HeroFaceBall({
 
     const spawn = pickAmbientSpawn(bounds);
 
-    // Fully still — no impulse until after blur-in + smile complete.
+    // Still in the air — gravity starts the drop once the cycle goes live.
     settleBreath.set(1);
     squashAxis.set(0);
     squashValue.set(1);
@@ -293,7 +292,6 @@ export function HeroFaceBall({
     if (cycleRef.current !== "live") return;
     if (phaseRef.current === "entering") return;
 
-    // Hard stop exactly where motion ended.
     const parked = stateRef.current;
     stateRef.current = { x: parked.x, y: parked.y, vx: 0, vy: 0 };
     posX.set(parked.x);
@@ -337,19 +335,10 @@ export function HeroFaceBall({
 
         void fadeControlsRef.current.then(() => {
           if (cycleRef.current !== "fading-in") return;
-
-          // Stay still and smiling, then a soft loft continues the ambient loop.
-          dormantTimerRef.current = setTimeout(() => {
-            if (cycleRef.current !== "fading-in" && cycleRef.current !== "live") return;
-            const { bounds } = readSectionBounds();
-            if (bounds.maxX <= bounds.minX) return;
-            stateRef.current = {
-              ...stateRef.current,
-              ...ambientNextLoftImpulse(bounds),
-            };
-            restSinceRef.current = null;
-            cycleRef.current = "live";
-          }, AMBIENT_CYCLE.holdBeforeLoftMs);
+          // Drop from this air spawn — no kick, just gravity.
+          stateRef.current = { ...stateRef.current, vx: 0, vy: 0 };
+          restSinceRef.current = null;
+          cycleRef.current = "live";
         });
       }, AMBIENT_CYCLE.dormantMs);
     });
@@ -361,7 +350,6 @@ export function HeroFaceBall({
     entranceSmile,
     posX,
     posY,
-    readSectionBounds,
     setPhaseSafe,
     settleBreath,
     softRespawnAmbient,
@@ -384,26 +372,13 @@ export function HeroFaceBall({
     interruptCycle();
     softRespawnAmbient();
     ballPresence.set(1);
-    // First ambient beat: soft loft after a short still smile.
-    cycleRef.current = "fading-in";
-    dormantTimerRef.current = setTimeout(() => {
-      const { bounds } = readSectionBounds();
-      if (bounds.maxX <= bounds.minX) {
-        cycleRef.current = "live";
-        return;
-      }
-      stateRef.current = {
-        ...stateRef.current,
-        ...ambientNextLoftImpulse(bounds),
-      };
-      cycleRef.current = "live";
-    }, AMBIENT_CYCLE.holdBeforeLoftMs);
+    stateRef.current = { ...stateRef.current, vx: 0, vy: 0 };
+    cycleRef.current = "live";
   }, [
     ballPresence,
     entranceSmile,
     fitDiameter,
     interruptCycle,
-    readSectionBounds,
     softRespawnAmbient,
     squashValue,
   ]);
