@@ -48,23 +48,23 @@
 
   .site-logo {
     max-width: calc(100% - 9.25rem);
-    gap: 0.4rem;
+    gap: 0.55rem;
     align-items: center;
-    transform: translateY(-0.1rem);
+    transform: none;
   }
 
   .site-logo-mark {
     height: 2.35rem;
-    padding-block: 0.06rem;
+    padding: 0;
   }
 
   .site-logo-wordmark-wrap,
   .site-logo-wordmark-wrap--desktop {
     display: flex !important;
     align-items: center;
-    height: clamp(1.3rem, 5.2vw, 1.55rem);
+    height: clamp(1.4rem, 5vw, 1.5rem);
     overflow: visible;
-    padding-block: 0.08rem;
+    padding: 0;
   }
 
   .site-logo-wordmark {

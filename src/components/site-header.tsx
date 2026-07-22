@@ -14,7 +14,7 @@ function SolupairLogo() {
   return (
     <Link
       to="/"
-      className="site-logo inline-flex min-w-0 flex-row items-center gap-2 sm:gap-3 lg:gap-4"
+      className="site-logo inline-flex min-w-0 flex-row items-center gap-2.5 sm:gap-3 lg:gap-3.5"
       aria-label="Solupair home"
     >
       <img
@@ -33,7 +33,7 @@ function SolupairLogo() {
           width={1600}
           height={220}
           decoding="async"
-          className="site-logo-wordmark h-full w-auto object-contain object-left object-center"
+          className="site-logo-wordmark h-full w-auto object-contain object-left"
         />
       </div>
     </Link>
