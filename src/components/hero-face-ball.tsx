@@ -28,7 +28,6 @@ import {
 import {
   BALL_SHADOW,
   BALL_SURFACE,
-  clientToSectionLocal,
   computeThrowVelocity,
   getSectionBallBounds,
   stepBasketballPhysics,
@@ -41,7 +40,7 @@ type CyclePhase = "live" | "fading-out" | "dormant" | "fading-in";
 
 const MIN_DIAMETER = Math.round(100 * HERO_BALL_SIZE_SCALE);
 const MAX_DIAMETER = Math.round(480 * HERO_BALL_SIZE_SCALE);
-const IMPACT_SQUASH = 0.82;
+const IMPACT_SQUASH = 0.78;
 /** Expensive rubber — soft attack, gentle overshoot, quick settle. */
 const SQUASH_SPRING = { stiffness: 320, damping: 18, mass: 0.85 } as const;
 const SHADOW_SPRING = { stiffness: 120, damping: 28, mass: 0.9 } as const;
@@ -168,30 +167,13 @@ export function HeroFaceBall({
   const lastHitAtRef = useRef(0);
 
   const readSectionBounds = useCallback(() => {
-    const playfield = playfieldRef.current;
-    const ground = groundRef.current;
-
-    // Prefer the dedicated full-bleed playfield. Fall back to the hero box, then the window.
-    // Never use padded content width (logo/nav column) — those are not the walls.
-    let width = 0;
-    let height = 0;
-
-    if (playfield) {
-      width = playfield.clientWidth || playfield.offsetWidth;
-      height = playfield.clientHeight || playfield.offsetHeight;
-    }
-    if ((!width || !height) && ground) {
-      width = ground.clientWidth || ground.offsetWidth;
-      height = ground.clientHeight || ground.offsetHeight;
-    }
-    if ((!width || !height) && typeof window !== "undefined") {
-      width = window.innerWidth;
-      height = window.innerHeight;
-    }
-
+    // Walls = the browser chrome edges (user marks), never logo/nav inset.
+    const vv = typeof window !== "undefined" ? window.visualViewport : null;
+    const width = Math.round(vv?.width ?? window?.innerWidth ?? 0);
+    const height = Math.round(vv?.height ?? window?.innerHeight ?? 0);
     const bounds = getSectionBallBounds(width, height, radiusRef.current, 0);
     return { width, height, bounds };
-  }, [groundRef]);
+  }, []);
 
   const fitDiameter = useCallback((preferred: number) => {
     const { width, height } = readSectionBounds();
@@ -216,7 +198,7 @@ export function HeroFaceBall({
       squashTimerRef.current = setTimeout(() => {
         squashValue.set(1);
         squashTimerRef.current = null;
-      }, 130);
+      }, 180);
     },
     [squashAxis, squashValue],
   );
@@ -698,27 +680,28 @@ export function HeroFaceBall({
 
   const applyClientDrag = useCallback(
     (clientX: number, clientY: number) => {
-      const ground = playfieldRef.current ?? groundRef.current;
-      if (!ground) return;
-      const local = clientToSectionLocal(clientX, clientY, ground.getBoundingClientRect());
-      applyDragPosition(local.x, local.y);
+      // Playfield is viewport-locked — client coords map 1:1 to ball space.
+      const vv = window.visualViewport;
+      const offsetX = vv?.offsetLeft ?? 0;
+      const offsetY = vv?.offsetTop ?? 0;
+      applyDragPosition(clientX - offsetX, clientY - offsetY);
     },
-    [applyDragPosition, groundRef],
+    [applyDragPosition],
   );
 
   const activateFromAmbient = useCallback(() => {
     const el = ballRef.current;
-    const ground = playfieldRef.current ?? groundRef.current;
-    if (!el || !ground || phaseRef.current !== "ambient") return;
+    if (!el || phaseRef.current !== "ambient") return;
     if (cycleRef.current !== "live") return;
 
     const ballRect = el.getBoundingClientRect();
-    const groundRect = ground.getBoundingClientRect();
-    const local = clientToSectionLocal(
-      ballRect.left + ballRect.width / 2,
-      ballRect.top + ballRect.height / 2,
-      groundRect,
-    );
+    const vv = window.visualViewport;
+    const offsetX = vv?.offsetLeft ?? 0;
+    const offsetY = vv?.offsetTop ?? 0;
+    const local = {
+      x: ballRect.left + ballRect.width / 2 - offsetX,
+      y: ballRect.top + ballRect.height / 2 - offsetY,
+    };
 
     const nextDiameter = ballRect.width;
     setDiameter(nextDiameter);
@@ -731,7 +714,7 @@ export function HeroFaceBall({
     setFaceHint(0);
     interruptCycle();
     setPhaseSafe("simulating");
-  }, [groundRef, interruptCycle, posX, posY, setPhaseSafe]);
+  }, [interruptCycle, posX, posY, setPhaseSafe]);
 
   useEffect(() => {
     const el = ballRef.current;
@@ -911,7 +894,8 @@ export function HeroFaceBall({
   return (
     <div
       ref={playfieldRef}
-      className="hero-ball-playfield pointer-events-none absolute inset-0 z-[8] h-full w-full overflow-hidden"
+      className="hero-ball-playfield pointer-events-none fixed inset-0 z-[8] overflow-hidden"
+      style={{ width: "100vw", height: "100dvh" }}
     >
       <motion.div
         aria-hidden

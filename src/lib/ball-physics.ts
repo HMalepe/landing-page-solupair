@@ -420,8 +420,8 @@ export function getViewportBallBounds(radius: number, topInset = 8): PhysicsBoun
 }
 
 /**
- * True viewport / playfield walls.
- * Center travels so the disc presses flush to every screen edge (tiny overshoot under clip).
+ * True browser-viewport walls.
+ * Center travels so the disc presses flush to every screen edge.
  */
 export function getSectionBallBounds(
   width: number,
@@ -429,7 +429,7 @@ export function getSectionBallBounds(
   radius: number,
   edgeInset = 0,
 ): PhysicsBounds {
-  // Default: 2px overshoot so anti-aliasing still reads as a hard kiss.
+  // 2px overshoot so anti-aliasing still reads as a hard kiss on the clip edge.
   const kiss = edgeInset === 0 ? -2 : edgeInset;
   const minX = Math.max(0, radius + kiss);
   const maxX = Math.max(minX, width - radius - kiss);
