@@ -4150,7 +4150,7 @@ main > header,
   letter-spacing: -0.02em;
   color: var(--text-main);
   max-width: 24ch;
-  min-height: 2.3em;
+  min-height: 2.55em;
 }
 
 @media (min-width: 640px) {
@@ -4174,9 +4174,43 @@ main > header,
   color: transparent;
 }
 
-.final-cta-answer__accent--blockbuster {
-  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--glow-cyan) 28%, transparent))
-    drop-shadow(0 0 28px color-mix(in srgb, var(--glow-pink) 18%, transparent));
+.final-cta-answer__accent--line {
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--glow-cyan) 24%, transparent))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--glow-pink) 14%, transparent));
+}
+
+.final-cta-answer__accent-letter {
+  color: inherit;
+}
+
+.final-cta-answer__accent-letter--space {
+  width: 0.28em;
+}
+
+.final-cta-answer__accent--line.is-sheen {
+  background-image: linear-gradient(
+    105deg,
+    var(--brand-cyan) 0%,
+    var(--brand-pink) 34%,
+    color-mix(in srgb, white 72%, var(--brand-cyan)) 50%,
+    var(--brand-pink) 66%,
+    var(--brand-cyan) 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: final-cta-accent-sheen 3.6s ease-in-out infinite;
+}
+
+@keyframes final-cta-accent-sheen {
+  0%,
+  18% {
+    background-position: 100% 50%;
+  }
+  55%,
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .final-cta-support {
@@ -4186,6 +4220,14 @@ main > header,
   line-height: 1.65;
   letter-spacing: 0.01em;
   color: color-mix(in srgb, var(--text-soft) 78%, transparent);
+}
+
+.final-cta-support-line {
+  overflow: hidden;
+}
+
+.final-cta-support-word {
+  white-space: nowrap;
 }
 
 @media (min-width: 640px) {

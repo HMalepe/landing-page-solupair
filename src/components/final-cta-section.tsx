@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import {
   AnimatePresence,
   motion,
@@ -12,71 +12,61 @@ import { navigateToSection } from "@/lib/section-nav";
 
 const QUESTION = "HAVE A MESSY BUSINESS PROCESS?";
 const SOLUTION_LEAD = ["WE", "CAN", "TURN", "IT", "INTO", "A"] as const;
-const SOLUTION_HERO = ["CLEAN", "DIGITAL", "SYSTEM."] as const;
+const SOLUTION_HERO = "CLEAN DIGITAL SYSTEM.";
 const BODY_PHRASES = [
   "From missed messages to manual spreadsheets,",
   "Solupair helps turn everyday operational friction",
   "into smooth digital workflows.",
 ] as const;
 
-/** Cinematic blockbuster ease — slow attack, soft settle */
+/** Soft cinematic ease — story beats, not snaps */
 const EASE = [0.16, 1, 0.3, 1] as const;
-const WORD_MS = 0.92;
-const WORD_STAGGER = 0.2;
-const HERO_WORD_MS = 1.05;
-const HERO_STAGGER = 0.28;
-const PHRASE_MS = 0.85;
-const PHRASE_STAGGER = 0.32;
-const TYPE_MS = 78;
-const BEAT_MS = 920;
-const SOLUTION_HOLD_MS = 2600;
+const TYPE_MS = 72;
+const BEAT_MS = 780;
+const LEAD_STAGGER = 0.16;
+const LEAD_MS = 0.72;
+const LETTER_STAGGER = 0.05;
+const LETTER_MS = 0.82;
+const WORD_STAGGER = 0.058;
+const WORD_MS = 0.64;
+const BODY_LINE_GAP = 0.28;
+const HERO_LEAD_GAP = 0.28;
 
 const leadWordVariants: Variants = {
-  hidden: { opacity: 0, y: 28, filter: "blur(10px)", scale: 0.94 },
+  hidden: { opacity: 0, y: 20 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
+    transition: {
+      delay: i * LEAD_STAGGER,
+      duration: LEAD_MS,
+      ease: EASE,
+    },
+  }),
+};
+
+const accentLetterVariants: Variants = {
+  hidden: { opacity: 0, y: "0.62em", scale: 0.86 },
+  show: (i: number) => ({
+    opacity: 1,
+    y: "0em",
     scale: 1,
+    transition: {
+      delay: i * LETTER_STAGGER,
+      duration: LETTER_MS,
+      ease: EASE,
+    },
+  }),
+};
+
+const supportWordVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
     transition: {
       delay: i * WORD_STAGGER,
       duration: WORD_MS,
-      ease: EASE,
-    },
-  }),
-};
-
-const heroWordVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 36,
-    filter: "blur(14px)",
-    scale: 0.9,
-    letterSpacing: "0.08em",
-  },
-  show: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    scale: 1,
-    letterSpacing: "-0.02em",
-    transition: {
-      delay: SOLUTION_LEAD.length * WORD_STAGGER + 0.18 + i * HERO_STAGGER,
-      duration: HERO_WORD_MS,
-      ease: EASE,
-    },
-  }),
-};
-
-const phraseVariants: Variants = {
-  hidden: { opacity: 0, y: 18, filter: "blur(8px)" },
-  show: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: {
-      delay: i * PHRASE_STAGGER,
-      duration: PHRASE_MS,
       ease: EASE,
     },
   }),
@@ -128,13 +118,155 @@ function TypeLine({
   );
 }
 
-type PitchPhase = "idle" | "question" | "beat" | "solution" | "rest";
+function AccentLetterLine({
+  text,
+  play,
+  reduceMotion,
+  sheen,
+  onDone,
+}: {
+  text: string;
+  play: boolean;
+  reduceMotion: boolean;
+  sheen: boolean;
+  onDone?: () => void;
+}) {
+  const chars = useMemo(() => Array.from(text), [text]);
+  const doneRef = useRef(false);
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+
+  const durationMs = Math.round(((chars.length - 1) * LETTER_STAGGER + LETTER_MS) * 1000) + 60;
+
+  useEffect(() => {
+    doneRef.current = false;
+  }, [play, text]);
+
+  useEffect(() => {
+    if (!play) return;
+    if (reduceMotion) {
+      onDoneRef.current?.();
+      return;
+    }
+    const t = window.setTimeout(() => {
+      if (doneRef.current) return;
+      doneRef.current = true;
+      onDoneRef.current?.();
+    }, durationMs);
+    return () => window.clearTimeout(t);
+  }, [play, reduceMotion, durationMs]);
+
+  if (!play && !reduceMotion) {
+    return <span className="invisible">{text}</span>;
+  }
+
+  return (
+    <span
+      className={`final-cta-answer__accent final-cta-answer__accent--line inline-block${
+        sheen ? " is-sheen" : ""
+      }`}
+    >
+      {chars.map((char, i) => (
+        <motion.span
+          key={`${char}-${i}`}
+          custom={reduceMotion ? 0 : i}
+          variants={accentLetterVariants}
+          initial={reduceMotion ? false : "hidden"}
+          animate="show"
+          className={
+            char === " "
+              ? "final-cta-answer__accent-letter final-cta-answer__accent-letter--space inline-block"
+              : "final-cta-answer__accent-letter inline-block"
+          }
+          aria-hidden
+        >
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+function SupportStory({
+  active,
+  reduceMotion,
+  onDone,
+}: {
+  active: boolean;
+  reduceMotion: boolean;
+  onDone?: () => void;
+}) {
+  const flat = useMemo(() => {
+    const words: { word: string; line: number; index: number }[] = [];
+    let index = 0;
+    BODY_PHRASES.forEach((phrase, line) => {
+      phrase.split(/\s+/).forEach((word) => {
+        words.push({ word, line, index });
+        index += 1;
+      });
+      index += Math.round(BODY_LINE_GAP / WORD_STAGGER);
+    });
+    return words;
+  }, []);
+
+  const doneRef = useRef(false);
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+
+  const lastIndex = flat[flat.length - 1]?.index ?? 0;
+  const totalMs = Math.round((lastIndex * WORD_STAGGER + WORD_MS) * 1000) + 200;
+
+  useEffect(() => {
+    doneRef.current = false;
+  }, [active]);
+
+  useEffect(() => {
+    if (!active) return;
+    if (reduceMotion) {
+      onDoneRef.current?.();
+      return;
+    }
+    const t = window.setTimeout(() => {
+      if (doneRef.current) return;
+      doneRef.current = true;
+      onDoneRef.current?.();
+    }, totalMs);
+    return () => window.clearTimeout(t);
+  }, [active, reduceMotion, totalMs]);
+
+  return (
+    <span aria-hidden className="inline-flex flex-col items-center gap-1 sm:gap-1.5">
+      {BODY_PHRASES.map((phrase, line) => (
+        <span key={phrase} className="final-cta-support-line block">
+          {flat
+            .filter((item) => item.line === line)
+            .map(({ word, index }) => (
+              <motion.span
+                key={`${line}-${word}-${index}`}
+                custom={reduceMotion ? 0 : index}
+                variants={supportWordVariants}
+                initial={reduceMotion ? false : "hidden"}
+                animate={active || reduceMotion ? "show" : "hidden"}
+                className="final-cta-support-word inline-block"
+              >
+                {word}
+                {"\u00A0"}
+              </motion.span>
+            ))}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+type PitchPhase = "idle" | "question" | "beat" | "solution" | "hero" | "body" | "rest";
 
 export function FinalCtaSection() {
   const { sectionRef, sectionInView } = useSectionInView();
   const { prefersReducedMotion } = useDeviceProfile();
-  const reduceMotion = useReducedMotion() || prefersReducedMotion;
+  const reduceMotion = !!(useReducedMotion() || prefersReducedMotion);
   const [phase, setPhase] = useState<PitchPhase>("idle");
+  const [accentSheen, setAccentSheen] = useState(false);
 
   useEffect(() => {
     if (!sectionInView || phase !== "idle") return;
@@ -147,13 +279,28 @@ export function FinalCtaSection() {
     return () => window.clearTimeout(t);
   }, [phase, reduceMotion]);
 
+  // After lead words land, start the letter spectacle.
   useEffect(() => {
     if (phase !== "solution") return;
-    const t = window.setTimeout(() => setPhase("rest"), reduceMotion ? 0 : SOLUTION_HOLD_MS);
+    if (reduceMotion) {
+      setPhase("rest");
+      setAccentSheen(true);
+      return;
+    }
+    const leadMs = Math.round((SOLUTION_LEAD.length * LEAD_STAGGER + LEAD_MS + HERO_LEAD_GAP) * 1000);
+    const t = window.setTimeout(() => setPhase("hero"), leadMs);
     return () => window.clearTimeout(t);
   }, [phase, reduceMotion]);
 
-  const showSolution = phase === "solution" || phase === "rest";
+  useEffect(() => {
+    if (phase === "idle") setAccentSheen(false);
+    if (phase === "rest" && reduceMotion) setAccentSheen(true);
+  }, [phase, reduceMotion]);
+
+  const showSolution =
+    phase === "solution" || phase === "hero" || phase === "body" || phase === "rest";
+  const playHero = phase === "hero" || phase === "body" || phase === "rest";
+  const showBody = phase === "body" || phase === "rest";
   const showRest = phase === "rest";
   const questionActive = phase === "question" || phase === "beat" || showSolution;
 
@@ -189,7 +336,10 @@ export function FinalCtaSection() {
           Solupair · Digital systems
         </motion.p>
 
-        <h2 id="final-cta-heading" className="final-cta-question font-display font-black uppercase tracking-tighter text-foreground">
+        <h2
+          id="final-cta-heading"
+          className="final-cta-question font-display font-black uppercase tracking-tighter text-foreground"
+        >
           <span className="sr-only">{QUESTION}</span>
           <span aria-hidden className="block">
             {reduceMotion ? (
@@ -210,39 +360,42 @@ export function FinalCtaSection() {
           </span>
         </h2>
 
-        <p className="final-cta-answer font-display font-black uppercase tracking-tighter">
-          <span className="sr-only">
-            We can turn it into a clean digital system.
-          </span>
+        <div className="final-cta-answer font-display font-black uppercase tracking-tighter">
+          <span className="sr-only">We can turn it into a clean digital system.</span>
           <span aria-hidden className="block">
             <AnimatePresence>
               {showSolution || reduceMotion ? (
                 <motion.span
                   key="solution"
-                  className="inline-flex flex-wrap items-baseline justify-center gap-x-[0.28em] gap-y-1"
+                  className="flex flex-col items-center gap-y-1 sm:gap-y-2"
                   initial="hidden"
                   animate="show"
                 >
-                  {SOLUTION_LEAD.map((word, i) => (
-                    <motion.span
-                      key={`lead-${word}`}
-                      custom={reduceMotion ? 0 : i}
-                      variants={leadWordVariants}
-                      className="inline-block text-foreground"
-                    >
-                      {word}
-                    </motion.span>
-                  ))}
-                  {SOLUTION_HERO.map((word, i) => (
-                    <motion.span
-                      key={`hero-${word}`}
-                      custom={reduceMotion ? 0 : i}
-                      variants={heroWordVariants}
-                      className="final-cta-answer__accent final-cta-answer__accent--blockbuster inline-block"
-                    >
-                      {word}
-                    </motion.span>
-                  ))}
+                  <span className="inline-flex flex-wrap items-baseline justify-center gap-x-[0.28em] gap-y-1 text-foreground">
+                    {SOLUTION_LEAD.map((word, i) => (
+                      <motion.span
+                        key={`lead-${word}`}
+                        custom={reduceMotion ? 0 : i}
+                        variants={leadWordVariants}
+                        className="inline-block"
+                      >
+                        {word}
+                      </motion.span>
+                    ))}
+                  </span>
+
+                  <span className="relative inline-block">
+                    <AccentLetterLine
+                      text={SOLUTION_HERO}
+                      play={playHero || reduceMotion}
+                      reduceMotion={reduceMotion}
+                      sheen={accentSheen}
+                      onDone={() => {
+                        setAccentSheen(true);
+                        setPhase((p) => (p === "hero" ? "body" : p));
+                      }}
+                    />
+                  </span>
                 </motion.span>
               ) : (
                 <span className="invisible inline-block">
@@ -251,27 +404,20 @@ export function FinalCtaSection() {
               )}
             </AnimatePresence>
           </span>
-        </p>
+        </div>
 
-        <motion.p
-          className="final-cta-support"
-          initial="hidden"
-          animate={showRest || reduceMotion ? "show" : "hidden"}
-        >
+        <div className="final-cta-support relative min-h-[4.8em]">
           <span className="sr-only">{BODY_PHRASES.join(" ")}</span>
-          <span aria-hidden className="inline-flex flex-col items-center gap-1 sm:gap-1.5">
-            {BODY_PHRASES.map((phrase, i) => (
-              <motion.span
-                key={phrase}
-                custom={reduceMotion ? 0 : i}
-                variants={phraseVariants}
-                className="block"
-              >
-                {phrase}
-              </motion.span>
-            ))}
-          </span>
-        </motion.p>
+          {(showBody || reduceMotion) && (
+            <SupportStory
+              active={showBody || reduceMotion}
+              reduceMotion={reduceMotion}
+              onDone={() => {
+                setPhase((p) => (p === "body" ? "rest" : p));
+              }}
+            />
+          )}
+        </div>
 
         <motion.div
           className="final-cta-actions"
@@ -279,9 +425,9 @@ export function FinalCtaSection() {
           animate={
             showRest || reduceMotion
               ? { opacity: 1, y: 0 }
-              : { opacity: 0, y: 16 }
+              : { opacity: 0, y: 14 }
           }
-          transition={{ duration: 0.9, ease: EASE, delay: reduceMotion ? 0 : 0.35 }}
+          transition={{ duration: 0.85, ease: EASE, delay: reduceMotion ? 0 : 0.08 }}
         >
           <a
             href="#contact"
