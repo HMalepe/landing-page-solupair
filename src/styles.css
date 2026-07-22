@@ -4114,7 +4114,7 @@ main > header,
   vertical-align: -0.06em;
   background: linear-gradient(180deg, var(--brand-cyan), var(--brand-pink));
   box-shadow: 0 0 12px color-mix(in srgb, var(--glow-cyan) 55%, transparent);
-  animation: final-cta-cursor-blink 0.85s steps(1, end) infinite;
+  animation: final-cta-cursor-blink 1.15s steps(1, end) infinite;
 }
 
 @keyframes final-cta-cursor-blink {
@@ -4177,6 +4177,11 @@ main > header,
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.final-cta-answer__accent--blockbuster {
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--glow-cyan) 28%, transparent))
+    drop-shadow(0 0 28px color-mix(in srgb, var(--glow-pink) 18%, transparent));
 }
 
 .final-cta-support {

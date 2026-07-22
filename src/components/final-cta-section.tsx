@@ -19,31 +19,64 @@ const BODY_PHRASES = [
   "into smooth digital workflows.",
 ] as const;
 
-/** Ease-out — matches --motion-ease */
-const EASE = [0.22, 1, 0.36, 1] as const;
-const REVEAL_MS = 0.45;
+/** Cinematic blockbuster ease — slow attack, soft settle */
+const EASE = [0.16, 1, 0.3, 1] as const;
+const WORD_MS = 0.92;
+const WORD_STAGGER = 0.2;
+const HERO_WORD_MS = 1.05;
+const HERO_STAGGER = 0.28;
+const PHRASE_MS = 0.85;
+const PHRASE_STAGGER = 0.32;
+const TYPE_MS = 78;
+const BEAT_MS = 920;
+const SOLUTION_HOLD_MS = 2600;
 
-const wordVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
+const leadWordVariants: Variants = {
+  hidden: { opacity: 0, y: 28, filter: "blur(10px)", scale: 0.94 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
+    filter: "blur(0px)",
+    scale: 1,
     transition: {
-      delay: i * 0.032,
-      duration: REVEAL_MS,
+      delay: i * WORD_STAGGER,
+      duration: WORD_MS,
+      ease: EASE,
+    },
+  }),
+};
+
+const heroWordVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 36,
+    filter: "blur(14px)",
+    scale: 0.9,
+    letterSpacing: "0.08em",
+  },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    scale: 1,
+    letterSpacing: "-0.02em",
+    transition: {
+      delay: SOLUTION_LEAD.length * WORD_STAGGER + 0.18 + i * HERO_STAGGER,
+      duration: HERO_WORD_MS,
       ease: EASE,
     },
   }),
 };
 
 const phraseVariants: Variants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 18, filter: "blur(8px)" },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
+    filter: "blur(0px)",
     transition: {
-      delay: i * 0.05,
-      duration: REVEAL_MS,
+      delay: i * PHRASE_STAGGER,
+      duration: PHRASE_MS,
       ease: EASE,
     },
   }),
@@ -83,7 +116,7 @@ function TypeLine({
         window.clearInterval(id);
         onDoneRef.current?.();
       }
-    }, 28);
+    }, TYPE_MS);
     return () => window.clearInterval(id);
   }, [active, text, reduceMotion]);
 
@@ -98,7 +131,6 @@ function TypeLine({
 type PitchPhase = "idle" | "question" | "beat" | "solution" | "rest";
 
 export function FinalCtaSection() {
-  // Defaults: meaningful viewport fill + settle delay — avoid mid-snap ghost opacity.
   const { sectionRef, sectionInView } = useSectionInView();
   const { prefersReducedMotion } = useDeviceProfile();
   const reduceMotion = useReducedMotion() || prefersReducedMotion;
@@ -111,13 +143,13 @@ export function FinalCtaSection() {
 
   useEffect(() => {
     if (phase !== "beat") return;
-    const t = window.setTimeout(() => setPhase("solution"), reduceMotion ? 0 : 280);
+    const t = window.setTimeout(() => setPhase("solution"), reduceMotion ? 0 : BEAT_MS);
     return () => window.clearTimeout(t);
   }, [phase, reduceMotion]);
 
   useEffect(() => {
     if (phase !== "solution") return;
-    const t = window.setTimeout(() => setPhase("rest"), reduceMotion ? 0 : 720);
+    const t = window.setTimeout(() => setPhase("rest"), reduceMotion ? 0 : SOLUTION_HOLD_MS);
     return () => window.clearTimeout(t);
   }, [phase, reduceMotion]);
 
@@ -146,13 +178,13 @@ export function FinalCtaSection() {
       <div className="final-cta-content relative z-10 mx-auto w-full max-w-4xl text-center">
         <motion.p
           className="final-cta-kicker"
-          initial={{ opacity: 0, letterSpacing: "0.32em" }}
+          initial={{ opacity: 0, letterSpacing: "0.42em", y: 10 }}
           animate={
             sectionInView
-              ? { opacity: 0.55, letterSpacing: "0.22em" }
-              : { opacity: 0, letterSpacing: "0.32em" }
+              ? { opacity: 0.55, letterSpacing: "0.22em", y: 0 }
+              : { opacity: 0, letterSpacing: "0.42em", y: 10 }
           }
-          transition={{ duration: REVEAL_MS, ease: EASE }}
+          transition={{ duration: 1.15, ease: EASE }}
         >
           Solupair · Digital systems
         </motion.p>
@@ -195,7 +227,7 @@ export function FinalCtaSection() {
                     <motion.span
                       key={`lead-${word}`}
                       custom={reduceMotion ? 0 : i}
-                      variants={wordVariants}
+                      variants={leadWordVariants}
                       className="inline-block text-foreground"
                     >
                       {word}
@@ -204,9 +236,9 @@ export function FinalCtaSection() {
                   {SOLUTION_HERO.map((word, i) => (
                     <motion.span
                       key={`hero-${word}`}
-                      custom={reduceMotion ? 0 : SOLUTION_LEAD.length + i}
-                      variants={wordVariants}
-                      className="final-cta-answer__accent inline-block"
+                      custom={reduceMotion ? 0 : i}
+                      variants={heroWordVariants}
+                      className="final-cta-answer__accent final-cta-answer__accent--blockbuster inline-block"
                     >
                       {word}
                     </motion.span>
@@ -247,9 +279,9 @@ export function FinalCtaSection() {
           animate={
             showRest || reduceMotion
               ? { opacity: 1, y: 0 }
-              : { opacity: 0, y: 12 }
+              : { opacity: 0, y: 16 }
           }
-          transition={{ duration: REVEAL_MS, ease: EASE, delay: reduceMotion ? 0 : 0.06 }}
+          transition={{ duration: 0.9, ease: EASE, delay: reduceMotion ? 0 : 0.35 }}
         >
           <a
             href="#contact"
