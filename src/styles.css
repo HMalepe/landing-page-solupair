@@ -4253,6 +4253,65 @@ main > header,
   justify-content: center;
 }
 
+/* Living neon heartbeat — double beat, then rest */
+.final-cta.final-cta-in-view .final-cta-btn.hero-btn--primary {
+  animation: final-cta-neon-pulse 2.55s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.final-cta-btn.hero-btn--primary:hover,
+.final-cta-btn.hero-btn--primary:focus-visible {
+  animation-play-state: paused;
+}
+
+@keyframes final-cta-neon-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(0.94) saturate(0.95);
+    box-shadow:
+      0 0 10px color-mix(in srgb, var(--glow-cyan) 28%, transparent),
+      0 0 22px color-mix(in srgb, var(--glow-pink) 16%, transparent),
+      0 0 0 0 color-mix(in srgb, var(--brand-cyan) 0%, transparent);
+  }
+  /* boom */
+  10% {
+    transform: scale(1.028);
+    filter: brightness(1.12) saturate(1.15);
+    box-shadow:
+      0 0 18px color-mix(in srgb, var(--glow-cyan) 78%, transparent),
+      0 0 42px color-mix(in srgb, var(--glow-pink) 52%, transparent),
+      0 0 68px color-mix(in srgb, var(--glow-cyan) 28%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--text-main) 22%, transparent);
+  }
+  18% {
+    transform: scale(1.006);
+    filter: brightness(0.97) saturate(1);
+    box-shadow:
+      0 0 12px color-mix(in srgb, var(--glow-cyan) 40%, transparent),
+      0 0 26px color-mix(in srgb, var(--glow-pink) 24%, transparent),
+      0 0 0 0 transparent;
+  }
+  /* boom */
+  28% {
+    transform: scale(1.022);
+    filter: brightness(1.1) saturate(1.12);
+    box-shadow:
+      0 0 20px color-mix(in srgb, var(--glow-cyan) 72%, transparent),
+      0 0 46px color-mix(in srgb, var(--glow-pink) 48%, transparent),
+      0 0 72px color-mix(in srgb, var(--glow-pink) 22%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--text-main) 18%, transparent);
+  }
+  40%,
+  100% {
+    transform: scale(1);
+    filter: brightness(0.94) saturate(0.95);
+    box-shadow:
+      0 0 10px color-mix(in srgb, var(--glow-cyan) 28%, transparent),
+      0 0 22px color-mix(in srgb, var(--glow-pink) 16%, transparent),
+      0 0 0 0 transparent;
+  }
+}
+
 @media (min-width: 640px) {
   .final-cta-btn {
     width: auto;
@@ -4289,6 +4348,12 @@ main > header,
   .final-cta-cursor {
     animation: none;
     opacity: 0;
+  }
+
+  .final-cta.final-cta-in-view .final-cta-btn.hero-btn--primary {
+    animation: none;
+    filter: none;
+    transform: none;
   }
 }
 
