@@ -142,7 +142,7 @@
   --shadow-elegant: 0 1px 2px rgba(0, 0, 0, 0.25), 0 8px 24px -8px rgba(0, 0, 0, 0.45);
   --shadow-glow: 0 0 40px var(--glow-cyan), 0 0 64px var(--glow-pink);
   --hero-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --hero-duration: 0.5s;
+  --hero-duration: 0.7s;
   /* Single motion language sitewide — premium ease-out, ~450ms */
   --motion-duration: 0.45s;
   --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -356,10 +356,9 @@ main > header,
       color-mix(in srgb, var(--brand-pink) 14%, transparent) 0%,
       transparent 60%
     );
-  filter: blur(40px) saturate(1.12);
+  filter: blur(28px) saturate(1.08);
   mix-blend-mode: screen;
-  opacity: 0.9;
-  will-change: transform, opacity;
+  opacity: 0.78;
 }
 
 .hero-ball-playfield {
@@ -377,7 +376,6 @@ main > header,
   pointer-events: none;
   mix-blend-mode: multiply;
   opacity: 0.95;
-  will-change: transform, opacity, filter;
 }
 
 .hero-ball-reduced-motion {
@@ -406,7 +404,7 @@ main > header,
     transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(1.5%, -1.2%, 0) scale(1.04);
+    transform: translate3d(0.8%, -0.6%, 0) scale(1.02);
   }
 }
 
@@ -416,7 +414,7 @@ main > header,
     transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(-1.2%, 1.5%, 0) scale(1.03);
+    transform: translate3d(-0.7%, 0.8%, 0) scale(1.015);
   }
 }
 
@@ -445,11 +443,9 @@ main > header,
 @keyframes hero-reveal {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -503,9 +499,8 @@ main > header,
 .hero-bg-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.26;
-  will-change: transform;
+  filter: blur(72px);
+  opacity: 0.2;
 }
 
 .hero-bg-glow--cyan {
@@ -514,7 +509,7 @@ main > header,
   left: -12%;
   top: 8%;
   background: radial-gradient(circle, var(--glow-cyan) 0%, transparent 70%);
-  animation: hero-glow-drift 24s var(--hero-ease) infinite;
+  animation: hero-glow-drift 36s linear infinite;
 }
 
 .hero-bg-glow--pink {
@@ -523,7 +518,7 @@ main > header,
   right: -10%;
   top: 4%;
   background: radial-gradient(circle, var(--glow-pink) 0%, transparent 72%);
-  animation: hero-glow-drift-alt 28s var(--hero-ease) infinite;
+  animation: hero-glow-drift-alt 42s linear infinite;
 }
 
 .hero-bg-glow--purple {
@@ -533,8 +528,8 @@ main > header,
   bottom: 4%;
   translate: -50% 0;
   background: radial-gradient(ellipse, var(--glow-purple) 0%, transparent 68%);
-  animation: hero-glow-drift 26s var(--hero-ease) infinite reverse;
-  opacity: 0.2;
+  animation: hero-glow-drift 40s linear infinite reverse;
+  opacity: 0.14;
 }
 
 .hero-bg-grain {
@@ -1115,41 +1110,41 @@ main > header,
 
 .hero-reveal--header {
   animation-duration: var(--hero-duration);
-  animation-delay: 0.02s;
+  animation-delay: 0.05s;
 }
 
 .hero-reveal--eyebrow {
-  animation-delay: 0.04s;
-}
-
-.hero-reveal--headline-a {
-  animation-duration: var(--hero-duration);
-  animation-delay: 0.08s;
-}
-
-.hero-reveal--headline-b {
-  animation-duration: var(--hero-duration);
   animation-delay: 0.14s;
 }
 
+.hero-reveal--headline-a {
+  animation-duration: calc(var(--hero-duration) + 0.12s);
+  animation-delay: 0.22s;
+}
+
+.hero-reveal--headline-b {
+  animation-duration: calc(var(--hero-duration) + 0.12s);
+  animation-delay: 0.34s;
+}
+
 .hero-reveal--subheading {
-  animation-duration: var(--hero-duration);
-  animation-delay: 0.2s;
+  animation-duration: calc(var(--hero-duration) + 0.1s);
+  animation-delay: 0.48s;
 }
 
 .hero-reveal--ctas {
   animation-duration: var(--hero-duration);
-  animation-delay: 0.26s;
+  animation-delay: 0.58s;
 }
 
 .hero-reveal--trust {
   animation-duration: var(--hero-duration);
-  animation-delay: 0.3s;
+  animation-delay: 0.66s;
 }
 
 .hero-reveal--trust-strip {
   animation-duration: var(--hero-duration);
-  animation-delay: 0.34s;
+  animation-delay: 0.74s;
 }
 
 .hero-trust-line {

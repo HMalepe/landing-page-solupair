@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { ContactSection } from "@/components/contact-section";
 import { HeroFaceBall } from "@/components/hero-face-ball";
 import { FinalCtaSection } from "@/components/final-cta-section";
@@ -12,39 +11,8 @@ export const Route = createFileRoute("/")({
   component: NovaHome,
 });
 
-const HERO_EASE = [0.22, 1, 0.36, 1] as const;
-const MOTION_DURATION = 0.45;
-
-function HeroWord({
-  children,
-  delay,
-  className,
-  reduceMotion,
-}: {
-  children: string;
-  delay: number;
-  className?: string;
-  reduceMotion: boolean;
-}) {
-  if (reduceMotion) {
-    return <span className={className}>{children}</span>;
-  }
-
-  return (
-    <motion.span
-      className={`inline-block ${className ?? ""}`}
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: MOTION_DURATION, ease: HERO_EASE, delay }}
-    >
-      {children}
-    </motion.span>
-  );
-}
-
 function Hero() {
   const heroGroundRef = useRef<HTMLElement>(null);
-  const reduceMotion = !!useReducedMotion();
 
   return (
     <section
@@ -112,25 +80,19 @@ function Hero() {
         <div className="hero-copy-stack w-full min-w-0">
           <div className="hero-reveal hero-reveal--eyebrow flex justify-center">
             <p className="hero-eyebrow">
-              {(
-                [
-                  ["Websites", 0.04],
-                  ["Dashboards", 0.08],
-                  ["WhatsApp", 0.12],
-                  ["Automation", 0.16],
-                ] as const
-              ).map(([label, delay], index, list) => (
-                <span key={label} className="inline-flex items-center">
-                  <HeroWord delay={delay} reduceMotion={reduceMotion}>
-                    {label}
-                  </HeroWord>
-                  {index < list.length - 1 ? (
-                    <span className="hero-eyebrow-sep" aria-hidden>
-                      ·
-                    </span>
-                  ) : null}
-                </span>
-              ))}
+              Websites
+              <span className="hero-eyebrow-sep" aria-hidden>
+                ·
+              </span>
+              Dashboards
+              <span className="hero-eyebrow-sep" aria-hidden>
+                ·
+              </span>
+              WhatsApp
+              <span className="hero-eyebrow-sep" aria-hidden>
+                ·
+              </span>
+              Automation
             </p>
           </div>
 
@@ -138,46 +100,21 @@ function Hero() {
             <div className="hero-headline-scrim" aria-hidden />
 
             <h1 className="relative z-[1] w-full min-w-0 text-center">
-              <span className="hero-headline hero-headline-text hero-headline-text--a">
-                <HeroWord className="hero-headline-line" delay={0.08} reduceMotion={reduceMotion}>
-                  DIGITAL
-                </HeroWord>{" "}
-                <HeroWord
-                  className="hero-headline-line hero-headline-gradient"
-                  delay={0.14}
-                  reduceMotion={reduceMotion}
-                >
-                  SOLUTIONS
-                </HeroWord>
+              <span className="hero-headline hero-headline-text hero-headline-text--a hero-reveal hero-reveal--headline-a">
+                <span className="hero-headline-line">DIGITAL</span>{" "}
+                <span className="hero-headline-line hero-headline-gradient">SOLUTIONS</span>
               </span>
-              <span className="hero-headline hero-headline-text hero-headline-text--b">
-                <HeroWord
-                  className="hero-headline-line hero-headline-phrase"
-                  delay={0.2}
-                  reduceMotion={reduceMotion}
-                >
-                  FOR YOUR
-                </HeroWord>{" "}
-                <HeroWord
-                  className="hero-headline-line hero-headline-phrase"
-                  delay={0.26}
-                  reduceMotion={reduceMotion}
-                >
-                  BUSINESS
-                </HeroWord>
+              <span className="hero-headline hero-headline-text hero-headline-text--b hero-reveal hero-reveal--headline-b">
+                <span className="hero-headline-line hero-headline-phrase">FOR YOUR</span>{" "}
+                <span className="hero-headline-line hero-headline-phrase">BUSINESS</span>
               </span>
             </h1>
           </div>
 
-          <motion.p
-            className="hero-subheading text-center"
-            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: MOTION_DURATION, ease: HERO_EASE, delay: reduceMotion ? 0 : 0.32 }}
-          >
+          <p className="hero-subheading hero-reveal hero-reveal--subheading text-center">
             Premium websites, dashboards and automated workflows for teams that need smoother
             bookings, sharper visibility and faster operations.
-          </motion.p>
+          </p>
         </div>
       </div>
     </section>

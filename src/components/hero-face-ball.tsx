@@ -17,10 +17,6 @@ import {
   pickAmbientSpawn,
 } from "@/lib/hero-ball-ambient-cycle";
 import {
-  ENTRANCE_PHYSICS,
-  faceHintFromRoll,
-  getEntranceInitialState,
-  getEntranceMaxDurationMs,
   getHeroBallDiameter,
   HERO_BALL_PHYSICS,
   HERO_BALL_SIZE_SCALE,
@@ -36,7 +32,7 @@ import {
   type PointerSample,
 } from "@/lib/ball-physics";
 
-type Phase = "entering" | "ambient" | "simulating";
+type Phase = "ambient" | "simulating";
 type CyclePhase = "live" | "fading-out" | "dormant" | "fading-in";
 
 const MIN_DIAMETER = Math.round(100 * HERO_BALL_SIZE_SCALE);
@@ -80,11 +76,11 @@ export function HeroFaceBall({
     target: groundRef,
     offset: ["start start", "end start"],
   });
-  const { prefersReducedMotion, isPhone } = useDeviceProfile();
+  const { prefersReducedMotion } = useDeviceProfile();
   const ballRef = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState<Phase>(prefersReducedMotion ? "ambient" : "entering");
-  const phaseRef = useRef<Phase>(prefersReducedMotion ? "ambient" : "entering");
-  const cycleRef = useRef<CyclePhase>("live");
+  const [phase, setPhase] = useState<Phase>("ambient");
+  const phaseRef = useRef<Phase>("ambient");
+  const cycleRef = useRef<CyclePhase>(prefersReducedMotion ? "live" : "dormant");
   const [diameter, setDiameter] = useState(() => getPreferredDiameter());
   const [faceReveal, setFaceReveal] = useState(prefersReducedMotion ? 1 : 0);
   const [faceHint, setFaceHint] = useState(0);
@@ -103,7 +99,7 @@ export function HeroFaceBall({
   const contactPinY = useMotionValue(0);
   const playfieldRef = useRef<HTMLDivElement>(null);
   const entranceSmile = useMotionValue(prefersReducedMotion ? 1 : 0);
-  const ballPresence = useMotionValue(1);
+  const ballPresence = useMotionValue(prefersReducedMotion ? 1 : 0);
   const squashValue = useMotionValue(1);
   const squashAxis = useMotionValue(0); // 0 = vertical impact, 1 = horizontal
   const squashX = useSpring(
@@ -291,7 +287,6 @@ export function HeroFaceBall({
 
   const beginFadeOut = useCallback(() => {
     if (cycleRef.current !== "live") return;
-    if (phaseRef.current === "entering") return;
 
     const parked = stateRef.current;
     stateRef.current = { x: parked.x, y: parked.y, vx: 0, vy: 0 };
@@ -363,26 +358,41 @@ export function HeroFaceBall({
     setDiameter(nextDiameter);
     radiusRef.current = nextDiameter / 2;
     squashValue.set(1);
-
     setFaceReveal(1);
     setFaceHint(0);
+
+    stopFade();
+    clearDormantTimer();
+    softRespawnAmbient();
+    entranceSmile.set(0);
+    ballPresence.set(0);
+    cycleRef.current = "fading-in";
+    setPhaseSafe("ambient");
+
+    fadeControlsRef.current = animate(ballPresence, 1, {
+      duration: 2.1,
+      ease: [0.22, 1, 0.36, 1],
+    });
     void animate(entranceSmile, 1, {
-      duration: 0.9,
+      duration: 1.7,
       ease: [0.22, 1, 0.36, 1],
     });
 
-    interruptCycle();
-    softRespawnAmbient();
-    ballPresence.set(1);
-    stateRef.current = { ...stateRef.current, vx: 0, vy: 0 };
-    cycleRef.current = "live";
+    void fadeControlsRef.current.then(() => {
+      if (cycleRef.current !== "fading-in") return;
+      stateRef.current = { ...stateRef.current, vx: 0, vy: 0 };
+      restSinceRef.current = null;
+      cycleRef.current = "live";
+    });
   }, [
     ballPresence,
+    clearDormantTimer,
     entranceSmile,
     fitDiameter,
-    interruptCycle,
+    setPhaseSafe,
     softRespawnAmbient,
     squashValue,
+    stopFade,
   ]);
 
   useEffect(() => {
@@ -391,113 +401,26 @@ export function HeroFaceBall({
 
     let raf = 0;
     let cancelled = false;
-    let last = performance.now();
-    const startTime = performance.now();
-    const maxDuration = getEntranceMaxDurationMs(isPhone);
-    const preferred = getPreferredDiameter();
-
-    const boot = () => {
-      const { width, height } = readSectionBounds();
-      if (width <= 0 || height <= 0) {
-        raf = requestAnimationFrame(boot);
-        return;
-      }
-
-      const baseDiameter = fitDiameter(preferred);
-      const entranceDiameter = baseDiameter * 0.92;
-      setDiameter(entranceDiameter);
-      radiusRef.current = entranceDiameter / 2;
-
-      const initial = getEntranceInitialState(width, height, radiusRef.current);
-      stateRef.current = initial;
-      posX.set(initial.x);
-      posY.set(initial.y);
-      rollAngleRef.current = 0;
-      setRollAngle(0);
-      setPhaseSafe("entering");
-
-      const tick = (now: number) => {
-        if (cancelled || phaseRef.current !== "entering") return;
-
-        if (now - startTime > maxDuration) {
-          settleEntrance();
+    // Let paint + fonts settle before the first ball motion.
+    const bootDelay = window.setTimeout(() => {
+      const boot = () => {
+        if (cancelled) return;
+        const { width, height } = readSectionBounds();
+        if (width <= 0 || height <= 0) {
+          raf = requestAnimationFrame(boot);
           return;
         }
-
-        const dt = Math.min(now - last, 24);
-        last = now;
-
-        const { bounds } = readSectionBounds();
-        const prev = stateRef.current;
-        const result = stepBasketballPhysics(prev, ENTRANCE_PHYSICS, bounds, dt, {
-          isDragging: false,
-        });
-
-        const dx = result.x - prev.x;
-        const dy = result.y - prev.y;
-        rollAngleRef.current += rollDeltaFromMotion(dx, dy, radiusRef.current);
-        setRollAngle(rollAngleRef.current);
-
-        const hitHorizontal = result.hitLeft || result.hitRight;
-        const hitVertical = result.hitTop || result.hitBottom;
-        const hit = hitHorizontal || hitVertical;
-        if (hit) {
-          applyImpactSquash(hitHorizontal, hitVertical, Math.hypot(prev.vx, prev.vy));
-        }
-        syncFlightDeform(result.vx, result.vy, hit);
-
-        if (result.hitLeft || result.x <= bounds.minX + 0.75) contactPinX.set(-1);
-        else if (result.hitRight || result.x >= bounds.maxX - 0.75) contactPinX.set(1);
-        else contactPinX.set(0);
-
-        if (result.hitTop || result.y <= bounds.minY + 0.75) contactPinY.set(-1);
-        else if (result.hitBottom || result.y >= bounds.maxY - 0.75) contactPinY.set(1);
-        else contactPinY.set(0);
-
-        floorProximity.set(result.floorProximity);
-
-        const elapsed = (now - startTime) / maxDuration;
-        setFaceHint(faceHintFromRoll(rollAngleRef.current, false));
-        const nextDiameter = baseDiameter * (0.92 + Math.min(1, elapsed) * 0.08);
-        setDiameter(nextDiameter);
-        radiusRef.current = nextDiameter / 2;
-
-        stateRef.current = result;
-        posX.set(result.x);
-        posY.set(result.y);
-
-        if (result.sleeping) {
-          settleEntrance();
-          return;
-        }
-
-        raf = requestAnimationFrame(tick);
+        settleEntrance();
       };
-
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(boot);
+      raf = requestAnimationFrame(boot);
+    }, 280);
 
     return () => {
       cancelled = true;
+      window.clearTimeout(bootDelay);
       cancelAnimationFrame(raf);
     };
-  }, [
-    applyImpactSquash,
-    contactPinX,
-    contactPinY,
-    fitDiameter,
-    floorProximity,
-    isPhone,
-    posX,
-    posY,
-    prefersReducedMotion,
-    readSectionBounds,
-    settleEntrance,
-    setPhaseSafe,
-    syncFlightDeform,
-  ]);
+  }, [prefersReducedMotion, readSectionBounds, settleEntrance]);
 
   useEffect(() => {
     if (prefersReducedMotion) return;
@@ -623,7 +546,7 @@ export function HeroFaceBall({
   ]);
 
   useEffect(() => {
-    if (phase === "entering" || phase === "ambient") return;
+    if (phase === "ambient") return;
     const { bounds } = readSectionBounds();
     const s = stateRef.current;
     const nx = clamp(s.x, bounds.minX, bounds.maxX);
@@ -653,24 +576,24 @@ export function HeroFaceBall({
 
   const presenceOpacity = useTransform(
     ballPresence,
-    [0, 0.12, 0.35, 0.65, 1],
-    [0, 0.18, 0.48, 0.82, 1],
+    [0, 0.18, 0.42, 0.72, 1],
+    [0, 0.22, 0.55, 0.86, 1],
   );
-  // Soft haze — keep the face luminous so dissolve doesn’t look muddy/tacky.
+  // Light haze only — heavy blur+filter on open was janking first paint.
   const presenceBlur = useTransform(
     ballPresence,
-    [0, 0.2, 0.45, 0.75, 1],
-    [20, 12, 6, 2, 0],
+    [0, 0.25, 0.55, 0.85, 1],
+    [8, 4.5, 2, 0.6, 0],
   );
   const presenceBrightness = useTransform(
     ballPresence,
-    [0, 0.3, 0.65, 1],
-    [0.62, 0.78, 0.92, 1],
+    [0, 0.35, 0.7, 1],
+    [0.82, 0.9, 0.96, 1],
   );
   const presenceSaturate = useTransform(
     ballPresence,
-    [0, 0.4, 1],
-    [0.62, 0.82, 1],
+    [0, 0.45, 1],
+    [0.85, 0.93, 1],
   );
 
   const cinematicOpacity = useTransform(
@@ -678,10 +601,10 @@ export function HeroFaceBall({
     ([scroll, presence]) => Number(scroll) * Number(presence),
   );
   // Keep scale off the positioned layer — it opens false edge gaps. Fade only.
-  const motionBlurPx = useTransform(speedNorm, [0, 1], [0, 1.2]);
+  const motionBlurPx = useTransform(speedNorm, [0, 1], [0, 0.6]);
   const cinematicBlurPx = useTransform(
     [presenceBlur, motionBlurPx],
-    ([presence, motion]) => Math.min(22, Number(presence) + Number(motion)),
+    ([presence, motion]) => Math.min(10, Number(presence) + Number(motion)),
   );
   const cinematicFilter = useMotionTemplate`blur(${cinematicBlurPx}px) brightness(${presenceBrightness}) saturate(${presenceSaturate})`;
   const shadowOpacity = useTransform(
@@ -874,11 +797,6 @@ export function HeroFaceBall({
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (prefersReducedMotion) return;
 
-    if (phaseRef.current === "entering") {
-      settleEntrance();
-      return;
-    }
-
     if (phaseRef.current === "ambient") {
       if (cycleRef.current !== "live") return;
       activateFromAmbient();
@@ -894,7 +812,7 @@ export function HeroFaceBall({
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!draggingRef.current || phaseRef.current === "ambient" || phaseRef.current === "entering") {
+    if (!draggingRef.current || phaseRef.current === "ambient") {
       return;
     }
     applyClientDrag(event.clientX, event.clientY);
@@ -938,7 +856,7 @@ export function HeroFaceBall({
     onPointerLeave: handlePointerLeave,
   };
 
-  const showFullFace = faceReveal > 0.08 || phase !== "entering";
+  const showFullFace = faceReveal > 0.08;
   const face = (
     <BallSphere
       showFace={showFullFace}
@@ -971,7 +889,7 @@ export function HeroFaceBall({
     );
   }
 
-  const isInteractive = phase === "entering" || phase === "simulating";
+  const isInteractive = phase === "simulating";
   const ballLayerZ = isInteractive ? "z-[18]" : "z-[8]";
 
   return (
@@ -990,7 +908,6 @@ export function HeroFaceBall({
           y: glowRenderY,
           opacity: glowOpacity,
           scale: glowScale,
-          willChange: "transform, opacity",
         }}
       />
 
@@ -1009,7 +926,6 @@ export function HeroFaceBall({
           opacity: shadowOpacity,
           scaleX: contactShadowScale,
           scaleY: contactShadowScaleY,
-          willChange: "transform, opacity, filter",
         }}
       />
 
@@ -1023,20 +939,14 @@ export function HeroFaceBall({
           height: diameter,
           opacity: cinematicOpacity,
           filter: cinematicFilter,
-          willChange: "transform, opacity, filter",
         }}
       >
         <motion.div
           ref={ballRef}
-          className={
-            phase === "entering"
-              ? "pointer-events-auto h-full w-full cursor-default"
-              : "pointer-events-auto h-full w-full cursor-grab active:cursor-grabbing"
-          }
+          className="pointer-events-auto h-full w-full cursor-grab active:cursor-grabbing"
           style={{
             scaleX: composedScaleX,
             scaleY: composedScaleY,
-            willChange: "transform",
           }}
           {...pointerHandlers}
         >
