@@ -2477,6 +2477,35 @@ main > header,
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--text-soft) 88%, transparent);
+  cursor: pointer;
+  transition:
+    border-color 0.22s var(--nav-ease),
+    background 0.22s var(--nav-ease),
+    color 0.22s var(--nav-ease),
+    box-shadow 0.22s var(--nav-ease);
+}
+
+.pricing-categories__chip:hover {
+  border-color: color-mix(in srgb, var(--brand-cyan) 42%, transparent);
+  color: var(--text-main);
+  background: color-mix(in srgb, var(--bg-deep) 68%, transparent);
+}
+
+.pricing-categories__chip:focus-visible {
+  outline: 2px solid var(--brand-cyan);
+  outline-offset: 2px;
+}
+
+.pricing-categories__chip--active,
+.pricing-categories__chip[aria-current="true"] {
+  border-color: color-mix(in srgb, var(--brand-cyan) 55%, var(--brand-pink) 35%);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--brand-cyan) 18%, transparent),
+    color-mix(in srgb, var(--brand-pink) 14%, transparent)
+  );
+  color: var(--text-main);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand-cyan) 22%, transparent);
 }
 
 @media (min-width: 640px) {
@@ -2484,6 +2513,13 @@ main > header,
     font-size: 0.75rem;
     padding: 0.5rem 1rem;
   }
+}
+
+.pricing-category-row--active {
+  border-color: color-mix(in srgb, var(--brand-cyan) 28%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--brand-cyan) 12%, transparent),
+    0 18px 48px color-mix(in srgb, var(--bg-deep) 42%, transparent);
 }
 
 .pricing-categories__sector-note {

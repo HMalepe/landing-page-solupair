@@ -44,7 +44,7 @@ export function PricingPageContent() {
 
       <PricingCategoriesSection />
 
-      <header className="pricing-direction-header pricing-direction-header--tiers">
+      <header id="pricing-tiers" className="pricing-direction-header pricing-direction-header--tiers" data-anchor-target>
         <p className="pricing-page-eyebrow pricing-reveal pricing-reveal--heading">
           Build tiers · starting points
         </p>

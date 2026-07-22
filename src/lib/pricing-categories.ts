@@ -9,6 +9,13 @@ export type PricingCategory = {
   monthlyNote: string;
 };
 
+export type PricingCategoryChip = {
+  id: string;
+  label: string;
+  /** Element id to scroll to (`pricing-category-{id}` or another page anchor). */
+  targetId: string;
+};
+
 /** Indicative ranges by sector — every brief is scoped individually. */
 export const PRICING_CATEGORIES: readonly PricingCategory[] = [
   {
@@ -98,12 +105,21 @@ export const PRICING_CATEGORY_INTRO = {
   body:
     "Missed messages, slow follow-ups, manual bookings and messy spreadsheets quietly drain time. Below are typical digital solutions we build by sector — with indicative setup, monthly and year-one figures to help you orient.",
   chips: [
-    "Salons & barbers",
-    "Clinics & pharmacies",
-    "Restaurants & takeaways",
-    "Service businesses",
-    "Retail teams",
-    "Small teams with too much admin",
-    "Owners who want cleaner operations",
-  ] as const,
+    ...PRICING_CATEGORIES.map((category) => ({
+      id: category.id,
+      label: category.label,
+      targetId: `pricing-category-${category.id}`,
+    })),
+    {
+      id: "admin-teams",
+      label: "Small teams with too much admin",
+      targetId: "pricing-tiers",
+    },
+    {
+      id: "cleaner-ops",
+      label: "Owners who want cleaner operations",
+      targetId: "pricing-tiers",
+    },
+  ] as const satisfies readonly PricingCategoryChip[],
 };
+
