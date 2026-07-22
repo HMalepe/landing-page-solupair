@@ -1,7 +1,7 @@
 import type { BasketballConfig, PhysicsBallState, PhysicsBounds } from "@/lib/ball-physics";
 
 /**
- * Ambient loop: blur in mid-air → fall → settle → blur out → repeat.
+ * Ambient loop: blur in mid-air → fall → settle → slow dissolve → wait → repeat.
  * No loft kicks — gravity alone carries each drop.
  */
 export const AMBIENT_PHYSICS: BasketballConfig = {
@@ -15,12 +15,23 @@ export const AMBIENT_PHYSICS: BasketballConfig = {
 };
 
 export const AMBIENT_CYCLE = {
-  restBeforeFadeMs: 700,
-  fadeOutMs: 1200,
-  dormantMs: 380,
-  fadeInMs: 1000,
-  smileMs: 900,
+  /** Hold fully still on the floor before dissolving. */
+  restBeforeFadeMs: 1000,
+  /** Long premium dissolve into the background. */
+  fadeOutMs: 3600,
+  /** Fully gone before the next air spawn. */
+  dormantMinMs: 2000,
+  dormantMaxMs: 4000,
+  /** Slow soft reappear from haze. */
+  fadeInMs: 2800,
+  /** Smile blooms through the blur-in. */
+  smileMs: 2200,
 } as const;
+
+export function nextDormantMs() {
+  const { dormantMinMs, dormantMaxMs } = AMBIENT_CYCLE;
+  return dormantMinMs + Math.random() * (dormantMaxMs - dormantMinMs);
+}
 
 /** Random spot in the upper air of the playfield (never on the floor). */
 export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, "x" | "y"> {

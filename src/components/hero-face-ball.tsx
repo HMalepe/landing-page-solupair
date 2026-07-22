@@ -13,6 +13,7 @@ import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   AMBIENT_CYCLE,
   AMBIENT_PHYSICS,
+  nextDormantMs,
   pickAmbientSpawn,
 } from "@/lib/hero-ball-ambient-cycle";
 import {
@@ -307,7 +308,8 @@ export function HeroFaceBall({
 
     fadeControlsRef.current = animate(ballPresence, 0, {
       duration: AMBIENT_CYCLE.fadeOutMs / 1000,
-      ease: [0.4, 0, 0.2, 1],
+      // Slow, even dissolve — no snap at the end.
+      ease: [0.33, 0.0, 0.2, 1],
     });
 
     void fadeControlsRef.current.then(() => {
@@ -340,7 +342,7 @@ export function HeroFaceBall({
           restSinceRef.current = null;
           cycleRef.current = "live";
         });
-      }, AMBIENT_CYCLE.dormantMs);
+      }, nextDormantMs());
     });
   }, [
     airStretchX,
@@ -649,20 +651,37 @@ export function HeroFaceBall({
   );
   const scrollPresence = useSpring(scrollPresenceRaw, { stiffness: 70, damping: 24 });
 
-  const presenceOpacity = useTransform(ballPresence, [0, 0.06, 1], [0, 0.08, 1]);
-  const presenceBlur = useTransform(ballPresence, [0, 0.2, 0.55, 1], [14, 7, 2.2, 0]);
-  const presenceBrightness = useTransform(ballPresence, [0, 0.2, 0.55, 1], [0.12, 0.38, 0.72, 1]);
-  const presenceSaturate = useTransform(ballPresence, [0, 0.25, 1], [0.18, 0.55, 1]);
+  const presenceOpacity = useTransform(
+    ballPresence,
+    [0, 0.12, 0.35, 0.65, 1],
+    [0, 0.18, 0.48, 0.82, 1],
+  );
+  // Soft haze — keep the face luminous so dissolve doesn’t look muddy/tacky.
+  const presenceBlur = useTransform(
+    ballPresence,
+    [0, 0.2, 0.45, 0.75, 1],
+    [20, 12, 6, 2, 0],
+  );
+  const presenceBrightness = useTransform(
+    ballPresence,
+    [0, 0.3, 0.65, 1],
+    [0.62, 0.78, 0.92, 1],
+  );
+  const presenceSaturate = useTransform(
+    ballPresence,
+    [0, 0.4, 1],
+    [0.62, 0.82, 1],
+  );
 
   const cinematicOpacity = useTransform(
     [scrollPresence, presenceOpacity],
     ([scroll, presence]) => Number(scroll) * Number(presence),
   );
   // Keep scale off the positioned layer — it opens false edge gaps. Fade only.
-  const motionBlurPx = useTransform(speedNorm, [0, 1], [0, 1.6]);
+  const motionBlurPx = useTransform(speedNorm, [0, 1], [0, 1.2]);
   const cinematicBlurPx = useTransform(
     [presenceBlur, motionBlurPx],
-    ([presence, motion]) => Math.min(16, Number(presence) + Number(motion)),
+    ([presence, motion]) => Math.min(22, Number(presence) + Number(motion)),
   );
   const cinematicFilter = useMotionTemplate`blur(${cinematicBlurPx}px) brightness(${presenceBrightness}) saturate(${presenceSaturate})`;
   const shadowOpacity = useTransform(
