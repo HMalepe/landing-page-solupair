@@ -1,6 +1,6 @@
 import type { BasketballConfig, PhysicsBallState, PhysicsBounds } from "@/lib/ball-physics";
 
-/** Ambient: long silk arcs, calm settle, then a prepared loft. */
+/** Ambient: long silk arcs, calm settle, then dissolve in place. */
 export const AMBIENT_PHYSICS: BasketballConfig = {
   gravity: 1720,
   restitution: 0.74,
@@ -12,12 +12,10 @@ export const AMBIENT_PHYSICS: BasketballConfig = {
 };
 
 export const AMBIENT_CYCLE = {
-  /** Hold on the floor long enough to read the settle. */
-  restBeforeKickMs: 980,
-  /** Wind-up squash before loft. */
-  anticipationMs: 160,
-  fadeOutMs: 1680,
-  dormantMs: 640,
+  /** Hold still long enough to read the settle before dissolving. */
+  restBeforeFadeMs: 720,
+  fadeOutMs: 1400,
+  dormantMs: 520,
   fadeInMs: 1100,
 } as const;
 
@@ -32,25 +30,19 @@ export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, 
 }
 
 /**
- * Loft from the current floor contact — never teleport.
- * Horizontal speed is tuned to reach the far wall before the next settle.
+ * Soft re-entry drift after a dissolve — never a wall-seeking rush.
+ * Applied only while the ball is still invisible / fading in.
  */
-export function ambientRespawnImpulse(
+export function ambientSoftEntranceImpulse(
   bounds: PhysicsBounds,
-  fromX: number,
 ): Pick<PhysicsBallState, "vx" | "vy"> {
   const spanX = Math.max(1, bounds.maxX - bounds.minX);
   const spanY = Math.max(1, bounds.maxY - bounds.minY);
-  const mid = (bounds.minX + bounds.maxX) * 0.5;
-  const towardRight = fromX <= mid;
-  const sign = towardRight ? 1 : -1;
-  const loft = 0.96 + Math.random() * 0.12;
-  // Cover well over a full span in one flight so walls get kissed every rally.
-  const wallSeek = Math.max(1100, spanX * 2.15);
+  const sign = Math.random() < 0.5 ? -1 : 1;
 
   return {
-    vx: sign * wallSeek * loft,
-    vy: -Math.max(560, spanY * 0.78) * loft,
+    vx: sign * (140 + Math.random() * 180) * (0.55 + spanX / 2400),
+    vy: -(220 + Math.random() * 160) * (0.55 + spanY / 1600),
   };
 }
 

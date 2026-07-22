@@ -13,7 +13,8 @@ import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   AMBIENT_CYCLE,
   AMBIENT_PHYSICS,
-  ambientRespawnImpulse,
+  ambientSoftEntranceImpulse,
+  pickAmbientSpawn,
 } from "@/lib/hero-ball-ambient-cycle";
 import {
   ENTRANCE_PHYSICS,
@@ -257,42 +258,45 @@ export function HeroFaceBall({
     settleBreath.set(1);
   }, [ballPresence, clearDormantTimer, settleBreath, stopFade]);
 
-  const kickAmbientRally = useCallback(() => {
+  const softRespawnAmbient = useCallback(() => {
     const { bounds } = readSectionBounds();
     if (bounds.maxX <= bounds.minX) return;
 
-    const current = stateRef.current;
-    const x = clamp(current.x, bounds.minX, bounds.maxX);
-    const y = bounds.maxY;
+    const spawn = pickAmbientSpawn(bounds);
+    const impulse = ambientSoftEntranceImpulse(bounds);
 
-    // Anticipation: compress into the floor, then loft.
-    settleBreath.set(0.9);
+    settleBreath.set(1);
     squashAxis.set(0);
-    squashValue.set(0.9);
-
-    window.setTimeout(() => {
-      const impulse = ambientRespawnImpulse(bounds, x);
-      settleBreath.set(1);
-      squashValue.set(1);
-      stateRef.current = { x, y, ...impulse };
-      posX.set(x);
-      posY.set(y);
-      restSinceRef.current = null;
-      cycleRef.current = "live";
-      ballPresence.set(1);
-      setPhaseSafe("ambient");
-    }, AMBIENT_CYCLE.anticipationMs);
-  }, [ballPresence, posX, posY, readSectionBounds, setPhaseSafe, settleBreath, squashAxis, squashValue]);
+    squashValue.set(1);
+    stateRef.current = { ...spawn, ...impulse };
+    posX.set(spawn.x);
+    posY.set(spawn.y);
+    restSinceRef.current = null;
+    setPhaseSafe("ambient");
+  }, [posX, posY, readSectionBounds, setPhaseSafe, settleBreath, squashAxis, squashValue]);
 
   const beginFadeOut = useCallback(() => {
-    if (cycleRef.current !== "live" || phaseRef.current === "simulating") return;
+    if (cycleRef.current !== "live") return;
+    // Allow dissolve after a throw settles (simulating → parked).
+    if (phaseRef.current === "entering") return;
+
+    // Freeze exactly where motion ended — dissolve into the background, no rush elsewhere.
+    const parked = stateRef.current;
+    stateRef.current = { ...parked, vx: 0, vy: 0 };
+    posX.set(parked.x);
+    posY.set(parked.y);
+    settleBreath.set(0.97);
+    speedNorm.set(0);
+    airStretchX.set(1);
+    airStretchY.set(1);
+    setPhaseSafe("ambient");
 
     cycleRef.current = "fading-out";
     restSinceRef.current = null;
 
     fadeControlsRef.current = animate(ballPresence, 0, {
       duration: AMBIENT_CYCLE.fadeOutMs / 1000,
-      ease: [0.45, 0, 0.55, 1],
+      ease: [0.4, 0, 0.2, 1],
     });
 
     void fadeControlsRef.current.then(() => {
@@ -304,7 +308,9 @@ export function HeroFaceBall({
         if (cycleRef.current !== "dormant") return;
 
         cycleRef.current = "fading-in";
-        kickAmbientRally();
+        // Reappear elsewhere only while fully dissolved — soft drift, never a wall dash.
+        softRespawnAmbient();
+        ballPresence.set(0);
         fadeControlsRef.current = animate(ballPresence, 1, {
           duration: AMBIENT_CYCLE.fadeInMs / 1000,
           ease: [0.22, 1, 0.36, 1],
@@ -316,7 +322,18 @@ export function HeroFaceBall({
         });
       }, AMBIENT_CYCLE.dormantMs);
     });
-  }, [ballPresence, clearDormantTimer, kickAmbientRally]);
+  }, [
+    airStretchX,
+    airStretchY,
+    ballPresence,
+    clearDormantTimer,
+    posX,
+    posY,
+    setPhaseSafe,
+    settleBreath,
+    softRespawnAmbient,
+    speedNorm,
+  ]);
 
   const settleEntrance = useCallback(() => {
     const nextDiameter = fitDiameter(getPreferredDiameter());
@@ -332,8 +349,17 @@ export function HeroFaceBall({
     });
 
     interruptCycle();
-    kickAmbientRally();
-  }, [entranceSmile, fitDiameter, interruptCycle, kickAmbientRally, squashValue]);
+    softRespawnAmbient();
+    ballPresence.set(1);
+    cycleRef.current = "live";
+  }, [
+    ballPresence,
+    entranceSmile,
+    fitDiameter,
+    interruptCycle,
+    softRespawnAmbient,
+    squashValue,
+  ]);
 
   useEffect(() => {
     if (prefersReducedMotion || entranceStartedRef.current) return;
@@ -463,7 +489,7 @@ export function HeroFaceBall({
       const cycle = cycleRef.current;
 
       if (phase !== "ambient" && phase !== "simulating") return;
-      if (phase === "ambient" && cycle !== "live") return;
+      if (phase === "ambient" && cycle !== "live" && cycle !== "fading-in") return;
 
       const dt = Math.min(now - last, 24);
       last = now;
@@ -515,7 +541,7 @@ export function HeroFaceBall({
 
       if (phase === "simulating" && result.sleeping) {
         interruptCycle();
-        kickAmbientRally();
+        beginFadeOut();
         return;
       }
 
@@ -524,9 +550,8 @@ export function HeroFaceBall({
           settleBreath.set(0.96);
           if (!restSinceRef.current) {
             restSinceRef.current = now;
-          } else if (now - restSinceRef.current >= AMBIENT_CYCLE.restBeforeKickMs) {
-            if (Math.random() < 0.32) beginFadeOut();
-            else kickAmbientRally();
+          } else if (now - restSinceRef.current >= AMBIENT_CYCLE.restBeforeFadeMs) {
+            beginFadeOut();
           }
         } else {
           settleBreath.set(1);
@@ -546,7 +571,6 @@ export function HeroFaceBall({
     contactPinY,
     floorProximity,
     interruptCycle,
-    kickAmbientRally,
     posX,
     posY,
     prefersReducedMotion,
