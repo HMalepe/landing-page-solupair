@@ -6,8 +6,10 @@ import {
 export function PricingCategoriesSection() {
   return (
     <section
+      id="pricing-categories"
       className="pricing-categories"
       aria-labelledby="pricing-categories-heading"
+      data-anchor-target
     >
       <header className="pricing-categories__header">
         <p className="pricing-page-eyebrow pricing-reveal pricing-reveal--heading">

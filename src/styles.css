@@ -98,6 +98,10 @@
   --glass-border: rgba(255, 255, 255, 0.16);
   --border-subtle: rgba(255, 255, 255, 0.08);
   --header-glass: color-mix(in srgb, var(--bg-deep) 20%, transparent);
+  /* Measured live by SiteHeader ResizeObserver; fallback ~110px until mount. */
+  --site-header-height: 6.875rem;
+  --site-header-clearance: 0.85rem;
+  --site-header-offset: calc(var(--site-header-height) + var(--site-header-clearance));
   --nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --nav-duration: 0.28s;
 
@@ -194,6 +198,8 @@
     transition: background-color 300ms ease, color 300ms ease;
     overflow-x: clip;
     scroll-behavior: smooth;
+    /* Hash / scrollIntoView clearance under the sticky header + breathing room. */
+    scroll-padding-top: var(--site-header-offset);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -209,6 +215,26 @@
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* Sitewide: scrolled-to sections and named anchors clear the sticky header. */
+section,
+[data-scroll-snap],
+[data-anchor-target],
+h1[id],
+h2[id],
+h3[id],
+h4[id],
+main > header,
+.pricing-categories,
+.pricing-direction-header,
+.pricing-page-content > header {
+  scroll-margin-top: var(--site-header-offset);
+}
+
+/* Named fragment targets that aren't covered above (e.g. #contact-form). */
+[id]:not(input):not(textarea):not(select):not(button):not(option):not(a):not(svg):not(path):not(defs):not(linearGradient):not(stop):not(circle) {
+  scroll-margin-top: var(--site-header-offset);
 }
 
 @utility safe-area-x {

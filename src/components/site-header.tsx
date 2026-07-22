@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import solupairLogo from "@/assets/solupair-logo.png";
 import solupairWordmark from "@/assets/solupair-wordmark.png";
 
@@ -6,6 +7,8 @@ type SiteHeaderProps = {
   /** Sticky bar for inner pages (pricing, etc.) */
   sticky?: boolean;
 };
+
+const HEADER_HEIGHT_VAR = "--site-header-height";
 
 function SolupairLogo() {
   return (
@@ -37,9 +40,40 @@ function SolupairLogo() {
   );
 }
 
+function publishHeaderHeight(el: HTMLElement) {
+  const height = Math.ceil(el.getBoundingClientRect().height);
+  if (height <= 0) return;
+  document.documentElement.style.setProperty(HEADER_HEIGHT_VAR, `${height}px`);
+}
+
 export function SiteHeader({ sticky = false }: SiteHeaderProps) {
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    publishHeaderHeight(el);
+
+    const ro = new ResizeObserver(() => {
+      publishHeaderHeight(el);
+    });
+    ro.observe(el);
+
+    const onViewport = () => publishHeaderHeight(el);
+    window.addEventListener("resize", onViewport);
+    window.visualViewport?.addEventListener("resize", onViewport);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", onViewport);
+      window.visualViewport?.removeEventListener("resize", onViewport);
+    };
+  }, []);
+
   return (
     <header
+      ref={headerRef}
       className={`site-header safe-area-top relative z-50 w-full${sticky ? " site-header--sticky" : ""}`}
     >
       <div className="site-header-bar">
