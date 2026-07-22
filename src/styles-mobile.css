@@ -14,7 +14,7 @@
   html,
   body,
   .scroll-snap-canvas {
-    scroll-snap-type: y proximity;
+    scroll-snap-type: none;
   }
 
   .snap-section-panel,
@@ -195,8 +195,6 @@
   /* ── Projects ── */
   .projects-section {
     min-height: 100dvh;
-    scroll-snap-align: start;
-    scroll-snap-stop: normal;
     padding-top: 2.5rem;
     padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
   }

@@ -19,9 +19,9 @@ const BODY_PHRASES = [
   "into smooth digital workflows.",
 ] as const;
 
-/** Ease-out — matches --reveal-ease */
-const EASE = [0.16, 1, 0.3, 1] as const;
-const REVEAL_MS = 0.4;
+/** Ease-out — matches --motion-ease */
+const EASE = [0.22, 1, 0.36, 1] as const;
+const REVEAL_MS = 0.45;
 
 const wordVariants: Variants = {
   hidden: { opacity: 0, y: 12 },

@@ -142,11 +142,13 @@
   --shadow-elegant: 0 1px 2px rgba(0, 0, 0, 0.25), 0 8px 24px -8px rgba(0, 0, 0, 0.45);
   --shadow-glow: 0 0 40px var(--glow-cyan), 0 0 64px var(--glow-pink);
   --hero-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --hero-duration: 0.95s;
-  /* Scroll reveals: short ease-out so snap settle never leaves ghost opacity */
-  --reveal-duration: 0.4s;
-  --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --reveal-distance: 8px;
+  --hero-duration: 0.5s;
+  /* Single motion language sitewide — premium ease-out, ~450ms */
+  --motion-duration: 0.45s;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --reveal-duration: var(--motion-duration);
+  --reveal-ease: var(--motion-ease);
+  --reveal-distance: 10px;
   --chart-1: var(--brand-cyan);
   --chart-2: var(--brand-pink);
   --chart-3: var(--brand-purple);
@@ -1108,42 +1110,42 @@ main > header,
 }
 
 .hero-reveal--header {
-  animation-duration: 0.72s;
-  animation-delay: 0.05s;
+  animation-duration: var(--hero-duration);
+  animation-delay: 0.02s;
 }
 
 .hero-reveal--eyebrow {
-  animation-delay: 0.08s;
+  animation-delay: 0.04s;
 }
 
 .hero-reveal--headline-a {
-  animation-duration: 1s;
-  animation-delay: 0.24s;
+  animation-duration: var(--hero-duration);
+  animation-delay: 0.08s;
 }
 
 .hero-reveal--headline-b {
-  animation-duration: 1s;
-  animation-delay: 0.4s;
+  animation-duration: var(--hero-duration);
+  animation-delay: 0.14s;
 }
 
 .hero-reveal--subheading {
-  animation-duration: 0.88s;
-  animation-delay: 0.56s;
+  animation-duration: var(--hero-duration);
+  animation-delay: 0.2s;
 }
 
 .hero-reveal--ctas {
-  animation-duration: 0.9s;
-  animation-delay: 0.76s;
+  animation-duration: var(--hero-duration);
+  animation-delay: 0.26s;
 }
 
 .hero-reveal--trust {
-  animation-duration: 0.85s;
-  animation-delay: 0.92s;
+  animation-duration: var(--hero-duration);
+  animation-delay: 0.3s;
 }
 
 .hero-reveal--trust-strip {
-  animation-duration: 0.9s;
-  animation-delay: 1.06s;
+  animation-duration: var(--hero-duration);
+  animation-delay: 0.34s;
 }
 
 .hero-trust-line {
@@ -2286,7 +2288,7 @@ main > header,
 @keyframes who-for-reveal {
   from {
     opacity: 0;
-    transform: translate3d(0, 8px, 0);
+    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
@@ -3085,7 +3087,7 @@ main > header,
 @keyframes pricing-reveal {
   from {
     opacity: 0;
-    transform: translate3d(0, 8px, 0);
+    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
@@ -3115,8 +3117,6 @@ main > header,
 
 /* ── Projects + Contact shared tokens ── */
 .projects-section {
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
   overflow-x: clip;
   color: var(--text-main);
   background: linear-gradient(
@@ -3978,7 +3978,7 @@ main > header,
 @keyframes projects-value-card-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 8px, 0);
+    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
@@ -3989,7 +3989,7 @@ main > header,
 @keyframes projects-reveal-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 8px, 0);
+    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
@@ -4000,7 +4000,7 @@ main > header,
 @keyframes projects-mockup-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 8px, 0) scale(0.992);
+    transform: translate3d(0, 10px, 0) scale(0.992);
   }
   to {
     opacity: 1;
@@ -4017,7 +4017,7 @@ main > header,
 }
 
 .projects-in-view .projects-reveal--mockup {
-  animation: projects-mockup-in 0.45s var(--reveal-ease) 0.04s forwards;
+  animation: projects-mockup-in var(--reveal-duration) var(--reveal-ease) 0.04s forwards;
 }
 
 .projects-in-view .projects-reveal--value-card {
@@ -4564,7 +4564,7 @@ main > header,
 @keyframes contact-reveal-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 8px, 0);
+    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
@@ -4783,25 +4783,24 @@ main > header,
   }
 }
 
-/* ── Full-page scroll choreography: stacked premium panels ── */
+/* ── Full-page scroll: linear premium flow (no sticky stack / snap fighting) ── */
 /*
- * Proximity + stop:normal keeps gentle section landing without fighting
- * mouse-wheel / trackpad (mandatory + always feels sticky / multi-tick).
- * Programmatic nav still uses scrollIntoView({ behavior: "smooth" }).
+ * Sticky panels + view() transform/filter + scroll-snap caused compositing
+ * glitches from hero → contact. Sections are normal document flow with soft
+ * visual separators; motion comes from consistent reveal timing only.
  */
 html,
 body {
-  scroll-snap-type: y proximity;
+  scroll-snap-type: none;
   scroll-behavior: auto;
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: auto;
 }
 
 .scroll-snap-canvas {
   position: relative;
-  /* Snap is owned by the document scrollport (html); canvas is not a scroller. */
   overflow-x: clip;
   max-width: 100%;
-  perspective: 1200px;
+  perspective: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4829,103 +4828,62 @@ body {
   }
 }
 
-.snap-section-start {
-  scroll-snap-align: start;
+.snap-section-start,
+.snap-section-panel,
+.projects-section.snap-section-flow,
+.snap-section-flow,
+.final-cta.snap-section-anchor,
+.snap-section-anchor,
+.contact-section.snap-section-compact,
+.snap-section-compact {
+  position: relative;
+  top: auto;
+  scroll-snap-align: none;
   scroll-snap-stop: normal;
+  transform: none;
+  filter: none;
+  animation: none;
 }
 
 .snap-section-panel {
-  position: sticky;
-  top: 0;
   z-index: 1;
   min-height: 100dvh;
   height: 100dvh;
   max-height: 100dvh;
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
   transform-origin: center top;
 }
 
-/* Following pages stack over the hero with depth, not a hard cut. */
+/* Soft depth between sections — visual stack cue without sticky jank */
 .projects-section.snap-section-flow,
 .snap-section-flow {
-  position: sticky;
-  top: 0;
   z-index: 2;
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
   min-height: 100dvh;
   margin-top: 0;
   border-radius: 1.75rem 1.75rem 0 0;
   box-shadow:
-    0 -24px 80px color-mix(in srgb, var(--bg-deep) 55%, transparent),
+    0 -18px 56px color-mix(in srgb, var(--bg-deep) 42%, transparent),
     0 -1px 0 color-mix(in srgb, var(--text-main) 8%, transparent);
   background: color-mix(in srgb, var(--bg-main) 96%, var(--bg-deep));
 }
 
 .final-cta.snap-section-anchor,
 .snap-section-anchor {
-  position: sticky;
-  top: 0;
   z-index: 3;
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
   min-height: min(92dvh, 56rem);
   border-radius: 1.75rem 1.75rem 0 0;
   box-shadow:
-    0 -28px 90px color-mix(in srgb, var(--bg-deep) 60%, transparent),
+    0 -18px 56px color-mix(in srgb, var(--bg-deep) 46%, transparent),
     0 -1px 0 color-mix(in srgb, var(--text-main) 10%, transparent);
 }
 
 .contact-section.snap-section-compact,
 .snap-section-compact {
-  position: relative;
   z-index: 4;
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
   min-height: auto;
   border-radius: 1.75rem 1.75rem 0 0;
   box-shadow:
-    0 -24px 80px color-mix(in srgb, var(--bg-deep) 55%, transparent),
+    0 -18px 56px color-mix(in srgb, var(--bg-deep) 42%, transparent),
     0 -1px 0 color-mix(in srgb, var(--text-main) 8%, transparent);
-}
-
-@supports (animation-timeline: view()) {
-  .projects-section.snap-section-flow,
-  .final-cta.snap-section-anchor,
-  .contact-section.snap-section-compact {
-    animation: stack-section-rise linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 28%;
-  }
-
-  @keyframes stack-section-rise {
-    from {
-      transform: translate3d(0, 4.5vh, 0) scale(0.985);
-      filter: brightness(0.86);
-    }
-    to {
-      transform: translate3d(0, 0, 0) scale(1);
-      filter: brightness(1);
-    }
-  }
-
-  .snap-section-panel {
-    animation: stack-hero-recede linear both;
-    animation-timeline: view();
-    animation-range: exit 0% exit 55%;
-  }
-
-  @keyframes stack-hero-recede {
-    from {
-      transform: scale(1);
-      filter: brightness(1);
-    }
-    to {
-      transform: scale(0.94);
-      filter: brightness(0.72);
-    }
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

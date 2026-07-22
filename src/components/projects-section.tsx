@@ -12,7 +12,8 @@ import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useSectionInView } from "@/hooks/use-section-in-view";
 import { navigateToSection } from "@/lib/section-nav";
 
-const REVEAL_EASE = [0.16, 1, 0.3, 1] as const;
+const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
+const MOTION_DURATION = 0.45;
 const projects = PROJECT_SHOWCASES;
 
 function revealProps(
@@ -26,11 +27,11 @@ function revealProps(
   }
 
   return {
-    initial: { opacity: 0, y: 12, ...(withScale ? { scale: 0.992 } : {}) },
+    initial: { opacity: 0, y: 10, ...(withScale ? { scale: 0.992 } : {}) },
     animate: inView
       ? { opacity: 1, y: 0, ...(withScale ? { scale: 1 } : {}) }
-      : { opacity: 0, y: 12, ...(withScale ? { scale: 0.992 } : {}) },
-    transition: { duration: 0.4, ease: REVEAL_EASE, delay },
+      : { opacity: 0, y: 10, ...(withScale ? { scale: 0.992 } : {}) },
+    transition: { duration: MOTION_DURATION, ease: REVEAL_EASE, delay },
   };
 }
 

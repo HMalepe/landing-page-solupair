@@ -12,6 +12,7 @@ export const Route = createFileRoute("/")({
 });
 
 const HERO_EASE = [0.22, 1, 0.36, 1] as const;
+const MOTION_DURATION = 0.45;
 
 function HeroWord({
   children,
@@ -31,9 +32,9 @@ function HeroWord({
   return (
     <motion.span
       className={`inline-block ${className ?? ""}`}
-      initial={{ opacity: 0, y: 28, filter: "blur(12px)", scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
-      transition={{ duration: 0.78, ease: HERO_EASE, delay }}
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: MOTION_DURATION, ease: HERO_EASE, delay }}
     >
       {children}
     </motion.span>
@@ -113,10 +114,10 @@ function Hero() {
             <p className="hero-eyebrow">
               {(
                 [
-                  ["Websites", 0.12],
-                  ["Dashboards", 0.22],
-                  ["WhatsApp", 0.32],
-                  ["Automation", 0.42],
+                  ["Websites", 0.04],
+                  ["Dashboards", 0.08],
+                  ["WhatsApp", 0.12],
+                  ["Automation", 0.16],
                 ] as const
               ).map(([label, delay], index, list) => (
                 <span key={label} className="inline-flex items-center">
@@ -138,12 +139,12 @@ function Hero() {
 
             <h1 className="relative z-[1] w-full min-w-0 text-center">
               <span className="hero-headline hero-headline-text hero-headline-text--a">
-                <HeroWord className="hero-headline-line" delay={0.28} reduceMotion={reduceMotion}>
+                <HeroWord className="hero-headline-line" delay={0.08} reduceMotion={reduceMotion}>
                   DIGITAL
                 </HeroWord>{" "}
                 <HeroWord
                   className="hero-headline-line hero-headline-gradient"
-                  delay={0.4}
+                  delay={0.14}
                   reduceMotion={reduceMotion}
                 >
                   SOLUTIONS
@@ -152,14 +153,14 @@ function Hero() {
               <span className="hero-headline hero-headline-text hero-headline-text--b">
                 <HeroWord
                   className="hero-headline-line hero-headline-phrase"
-                  delay={0.54}
+                  delay={0.2}
                   reduceMotion={reduceMotion}
                 >
                   FOR YOUR
                 </HeroWord>{" "}
                 <HeroWord
                   className="hero-headline-line hero-headline-phrase"
-                  delay={0.66}
+                  delay={0.26}
                   reduceMotion={reduceMotion}
                 >
                   BUSINESS
@@ -170,9 +171,9 @@ function Hero() {
 
           <motion.p
             className="hero-subheading text-center"
-            initial={reduceMotion ? false : { opacity: 0, y: 18, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.85, ease: HERO_EASE, delay: reduceMotion ? 0 : 0.82 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: MOTION_DURATION, ease: HERO_EASE, delay: reduceMotion ? 0 : 0.32 }}
           >
             Premium websites, dashboards and automated workflows for teams that need smoother
             bookings, sharper visibility and faster operations.

@@ -2,39 +2,29 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 
 type SectionInViewOptions = {
-  /** IntersectionObserver threshold(s). Prefer defaults — high values break tall pages. */
   threshold?: number | number[];
   rootMargin?: string;
-  /**
-   * Require this much of the element (or of the viewport filled by it) before revealing.
-   * Prevents mid-snap ghost opacity when only a sliver is visible.
-   */
+  /** Fraction of element (or viewport fill) required before reveal. */
   minRatio?: number;
-  /** Hold intersection this long before flipping — skips transient snap crossings. */
+  /** Brief debounce so fast flings don’t flash mid-pass. */
   settleMs?: number;
 };
 
-const DEFAULT_THRESHOLDS = [0, 0.1, 0.2, 0.35, 0.5, 0.65, 0.8];
+const DEFAULT_THRESHOLDS = [0, 0.08, 0.16, 0.28, 0.45, 0.65];
 
-function isMeaningfullyVisible(
-  el: HTMLElement,
-  minRatio: number,
-  rootMarginBottomPct = 0.18,
-) {
+function isMeaningfullyVisible(el: HTMLElement, minRatio: number) {
   const rect = el.getBoundingClientRect();
   const vh = window.innerHeight || document.documentElement.clientHeight;
   if (vh <= 0) return false;
 
-  const topBound = vh * rootMarginBottomPct;
-  const bottomBound = vh * (1 - rootMarginBottomPct);
-  const visibleTop = Math.max(rect.top, topBound);
-  const visibleBottom = Math.min(rect.bottom, bottomBound);
+  const visibleTop = Math.max(rect.top, 0);
+  const visibleBottom = Math.min(rect.bottom, vh);
   const visiblePx = Math.max(0, visibleBottom - visibleTop);
   if (visiblePx <= 0) return false;
 
   const elementRatio = visiblePx / Math.max(rect.height, 1);
   const viewportFill = visiblePx / vh;
-  return elementRatio >= minRatio || viewportFill >= Math.max(minRatio, 0.4);
+  return elementRatio >= minRatio || viewportFill >= 0.28;
 }
 
 function entryIsMeaningful(
@@ -46,17 +36,16 @@ function entryIsMeaningful(
   if (rootH <= 0) return false;
   const visiblePx = entry.intersectionRect.height;
   const viewportFill = visiblePx / rootH;
-  return entry.intersectionRatio >= minRatio || viewportFill >= Math.max(minRatio, 0.4);
+  return entry.intersectionRatio >= minRatio || viewportFill >= 0.28;
 }
 
-/** IntersectionObserver reveal trigger — respects prefers-reduced-motion. */
+/** One-shot section reveal — linear scroll, consistent motion budget. */
 export function useSectionInView(options: SectionInViewOptions = {}) {
   const {
     threshold = DEFAULT_THRESHOLDS,
-    // Shrink the bottom of the root so we wait until the section has risen into view.
-    rootMargin = "0px 0px -18% 0px",
-    minRatio = 0.35,
-    settleMs = 150,
+    rootMargin = "0px 0px -10% 0px",
+    minRatio = 0.16,
+    settleMs = 48,
   } = options;
   const sectionRef = useRef<HTMLElement>(null);
   const [sectionInView, setSectionInView] = useState(false);
@@ -71,7 +60,6 @@ export function useSectionInView(options: SectionInViewOptions = {}) {
       return;
     }
 
-    // Sync check before paint — avoids a blank opacity-0 flash on route entry.
     if (isMeaningfullyVisible(section, minRatio)) {
       setSectionInView(true);
       return;
@@ -111,10 +99,7 @@ export function useSectionInView(options: SectionInViewOptions = {}) {
         if (settleTimer !== null) return;
         settleTimer = setTimeout(() => {
           settleTimer = null;
-          // Re-check after settle — snap may have bounced past.
-          if (isMeaningfullyVisible(section, minRatio)) {
-            reveal();
-          }
+          if (isMeaningfullyVisible(section, minRatio)) reveal();
         }, settleMs);
       },
       { threshold, rootMargin },
