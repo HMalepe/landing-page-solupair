@@ -2516,10 +2516,12 @@ main > header,
 }
 
 .pricing-category-row--active {
-  border-color: color-mix(in srgb, var(--brand-cyan) 28%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brand-cyan) 12%, transparent),
-    0 18px 48px color-mix(in srgb, var(--bg-deep) 42%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--brand-cyan) 35%, transparent);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--brand-cyan) 8%, transparent),
+    transparent 42%
+  );
 }
 
 .pricing-categories__sector-note {
