@@ -143,6 +143,10 @@
   --shadow-glow: 0 0 40px var(--glow-cyan), 0 0 64px var(--glow-pink);
   --hero-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --hero-duration: 0.95s;
+  /* Scroll reveals: short ease-out so snap settle never leaves ghost opacity */
+  --reveal-duration: 0.4s;
+  --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --reveal-distance: 8px;
   --chart-1: var(--brand-cyan);
   --chart-2: var(--brand-pink);
   --chart-3: var(--brand-purple);
@@ -197,7 +201,8 @@
   html {
     transition: background-color 300ms ease, color 300ms ease;
     overflow-x: clip;
-    scroll-behavior: smooth;
+    /* Native scroll stays responsive; section links use scrollIntoView smooth. */
+    scroll-behavior: auto;
     /* Hash / scrollIntoView clearance under the sticky header + breathing room. */
     scroll-padding-top: var(--site-header-offset);
   }
@@ -2281,7 +2286,7 @@ main > header,
 @keyframes who-for-reveal {
   from {
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
+    transform: translate3d(0, 8px, 0);
   }
   to {
     opacity: 1;
@@ -2294,15 +2299,15 @@ main > header,
 }
 
 .who-for-in-view .who-for-reveal--heading {
-  animation: who-for-reveal 0.74s cubic-bezier(0.22, 1, 0.36, 1) 0.04s forwards;
+  animation: who-for-reveal var(--reveal-duration) var(--reveal-ease) 0.02s forwards;
 }
 
 .who-for-in-view .who-for-reveal--body {
-  animation: who-for-reveal 0.74s cubic-bezier(0.22, 1, 0.36, 1) 0.12s forwards;
+  animation: who-for-reveal var(--reveal-duration) var(--reveal-ease) 0.06s forwards;
 }
 
 .who-for-in-view .who-for-reveal--chip {
-  animation: who-for-reveal 0.66s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: who-for-reveal var(--reveal-duration) var(--reveal-ease) forwards;
 }
 
 /* ── Pricing direction ── */
@@ -2929,7 +2934,7 @@ main > header,
 }
 
 .pricing-in-view .pricing-reveal--chip {
-  animation: pricing-reveal 0.66s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: pricing-reveal var(--reveal-duration) var(--reveal-ease) forwards;
 }
 
 .pricing-card__estimate-label {
@@ -3080,7 +3085,7 @@ main > header,
 @keyframes pricing-reveal {
   from {
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
+    transform: translate3d(0, 8px, 0);
   }
   to {
     opacity: 1;
@@ -3093,19 +3098,19 @@ main > header,
 }
 
 .pricing-in-view .pricing-reveal--heading {
-  animation: pricing-reveal 0.74s cubic-bezier(0.22, 1, 0.36, 1) 0.04s forwards;
+  animation: pricing-reveal var(--reveal-duration) var(--reveal-ease) 0.02s forwards;
 }
 
 .pricing-in-view .pricing-reveal--subtitle {
-  animation: pricing-reveal 0.74s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+  animation: pricing-reveal var(--reveal-duration) var(--reveal-ease) 0.05s forwards;
 }
 
 .pricing-in-view .pricing-reveal--card {
-  animation: pricing-reveal 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: pricing-reveal var(--reveal-duration) var(--reveal-ease) forwards;
 }
 
 .pricing-in-view .pricing-reveal--note {
-  animation: pricing-reveal 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.48s forwards;
+  animation: pricing-reveal var(--reveal-duration) var(--reveal-ease) 0.08s forwards;
 }
 
 /* ── Projects + Contact shared tokens ── */
@@ -3973,7 +3978,7 @@ main > header,
 @keyframes projects-value-card-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 12px, 0);
+    transform: translate3d(0, 8px, 0);
   }
   to {
     opacity: 1;
@@ -3984,7 +3989,7 @@ main > header,
 @keyframes projects-reveal-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
+    transform: translate3d(0, 8px, 0);
   }
   to {
     opacity: 1;
@@ -3995,7 +4000,7 @@ main > header,
 @keyframes projects-mockup-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0) scale(0.985);
+    transform: translate3d(0, 8px, 0) scale(0.992);
   }
   to {
     opacity: 1;
@@ -4008,15 +4013,15 @@ main > header,
 }
 
 .projects-in-view .projects-reveal--heading {
-  animation: projects-reveal-up 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.04s forwards;
+  animation: projects-reveal-up var(--reveal-duration) var(--reveal-ease) 0.02s forwards;
 }
 
 .projects-in-view .projects-reveal--mockup {
-  animation: projects-mockup-in 0.88s cubic-bezier(0.22, 1, 0.36, 1) 0.16s forwards;
+  animation: projects-mockup-in 0.45s var(--reveal-ease) 0.04s forwards;
 }
 
 .projects-in-view .projects-reveal--value-card {
-  animation: projects-value-card-in 0.68s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: projects-value-card-in var(--reveal-duration) var(--reveal-ease) forwards;
 }
 
 /* ── Final CTA ── */
@@ -4559,7 +4564,7 @@ main > header,
 @keyframes contact-reveal-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
+    transform: translate3d(0, 8px, 0);
   }
   to {
     opacity: 1;
@@ -4572,24 +4577,19 @@ main > header,
 }
 
 .contact-in-view .contact-reveal--heading {
-  animation: contact-reveal-up 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.04s forwards;
+  animation: contact-reveal-up var(--reveal-duration) var(--reveal-ease) 0.02s forwards;
 }
 
 .contact-in-view .contact-reveal--lead {
-  animation: contact-reveal-up 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+  animation: contact-reveal-up var(--reveal-duration) var(--reveal-ease) 0.05s forwards;
 }
 
 .contact-in-view .contact-reveal--form {
-  animation: contact-reveal-up 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.16s forwards;
-}
-
-.contact-in-view .contact-reveal--field,
-.contact-in-view .contact-reveal--submit {
-  animation: contact-reveal-up 0.68s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: contact-reveal-up var(--reveal-duration) var(--reveal-ease) 0.06s forwards;
 }
 
 .contact-in-view .contact-reveal--details {
-  animation: contact-reveal-up 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.34s forwards;
+  animation: contact-reveal-up var(--reveal-duration) var(--reveal-ease) 0.08s forwards;
 }
 
 /* ── Contact helix: 3D neon particle waves behind the form ── */
@@ -4784,16 +4784,21 @@ main > header,
 }
 
 /* ── Full-page scroll choreography: stacked premium panels ── */
+/*
+ * Proximity + stop:normal keeps gentle section landing without fighting
+ * mouse-wheel / trackpad (mandatory + always feels sticky / multi-tick).
+ * Programmatic nav still uses scrollIntoView({ behavior: "smooth" }).
+ */
 html,
 body {
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  overscroll-behavior-y: none;
+  scroll-snap-type: y proximity;
+  scroll-behavior: auto;
+  overscroll-behavior-y: contain;
 }
 
 .scroll-snap-canvas {
   position: relative;
-  scroll-snap-type: y mandatory;
+  /* Snap is owned by the document scrollport (html); canvas is not a scroller. */
   overflow-x: clip;
   max-width: 100%;
   perspective: 1200px;
@@ -4826,7 +4831,7 @@ body {
 
 .snap-section-start {
   scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-stop: normal;
 }
 
 .snap-section-panel {
@@ -4837,7 +4842,7 @@ body {
   height: 100dvh;
   max-height: 100dvh;
   scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-stop: normal;
   transform-origin: center top;
 }
 
@@ -4848,7 +4853,7 @@ body {
   top: 0;
   z-index: 2;
   scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-stop: normal;
   min-height: 100dvh;
   margin-top: 0;
   border-radius: 1.75rem 1.75rem 0 0;
@@ -4864,7 +4869,7 @@ body {
   top: 0;
   z-index: 3;
   scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-stop: normal;
   min-height: min(92dvh, 56rem);
   border-radius: 1.75rem 1.75rem 0 0;
   box-shadow:
@@ -4877,7 +4882,7 @@ body {
   position: relative;
   z-index: 4;
   scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-stop: normal;
   min-height: auto;
   border-radius: 1.75rem 1.75rem 0 0;
   box-shadow:
@@ -5323,6 +5328,149 @@ body {
     max-width: 14rem;
     font-size: 0.8125rem;
   }
+}
+
+/* ── Legal pages (Privacy / Terms) ── */
+.legal-page-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-page-glow {
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+  width: min(42rem, 70vw);
+  height: min(42rem, 70vw);
+  border-radius: 50%;
+  filter: blur(72px);
+  opacity: 0.35;
+}
+
+.legal-page-glow--left {
+  top: -12%;
+  left: -18%;
+  background: color-mix(in srgb, var(--brand-cyan) 28%, transparent);
+}
+
+.legal-page-glow--right {
+  right: -16%;
+  bottom: 8%;
+  background: color-mix(in srgb, var(--brand-cyan) 14%, transparent);
+}
+
+.legal-page-eyebrow {
+  margin: 0 0 clamp(0.65rem, 1.5vh, 0.85rem);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-cyan) 72%, var(--text-soft));
+}
+
+@media (min-width: 640px) {
+  .legal-page-eyebrow {
+    font-size: 0.6875rem;
+  }
+}
+
+.legal-page-title {
+  margin: 0;
+  font-size: clamp(2rem, 7vw, 3.75rem);
+  line-height: 0.94;
+  max-width: 14ch;
+}
+
+.legal-page-updated {
+  margin: clamp(0.85rem, 2vh, 1.15rem) 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--text-dim) 92%, transparent);
+}
+
+.legal-page-body {
+  margin-top: clamp(1.75rem, 4vh, 2.75rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3.5vh, 2.25rem);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--text-soft) 94%, transparent);
+}
+
+.legal-page-body > p {
+  margin: 0;
+}
+
+.legal-page-body strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.legal-section {
+  scroll-margin-top: var(--site-header-offset, 5.5rem);
+}
+
+.legal-section__title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.05rem, 2.8vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-main);
+}
+
+.legal-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.legal-section__body p {
+  margin: 0;
+}
+
+.legal-section__body ul {
+  margin: 0;
+  padding-left: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.legal-section__body li {
+  padding-left: 0.15rem;
+}
+
+.legal-page-inline-link {
+  color: color-mix(in srgb, var(--brand-cyan) 82%, var(--text-main));
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--brand-cyan) 35%, transparent);
+  text-underline-offset: 0.18em;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+
+.legal-page-inline-link:hover {
+  color: var(--brand-cyan);
+  text-decoration-color: color-mix(in srgb, var(--brand-cyan) 70%, transparent);
+}
+
+.legal-page-footer {
+  margin-top: clamp(2.5rem, 6vh, 3.5rem);
+  padding-top: clamp(1.25rem, 3vh, 1.75rem);
+  border-top: 1px solid color-mix(in srgb, var(--text-dim) 28%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--text-soft) 90%, transparent);
+}
+
+.legal-page-footer-meta {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--text-dim) 92%, transparent);
 }
 
 @import "./styles-mobile.css";

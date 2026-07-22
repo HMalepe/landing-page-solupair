@@ -19,32 +19,31 @@ const BODY_PHRASES = [
   "into smooth digital workflows.",
 ] as const;
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+/** Ease-out — matches --reveal-ease */
+const EASE = [0.16, 1, 0.3, 1] as const;
+const REVEAL_MS = 0.4;
 
 const wordVariants: Variants = {
-  hidden: { opacity: 0, y: 26, filter: "blur(12px)", scale: 0.96 },
+  hidden: { opacity: 0, y: 12 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    scale: 1,
     transition: {
-      delay: i * 0.085,
-      duration: 0.68,
+      delay: i * 0.032,
+      duration: REVEAL_MS,
       ease: EASE,
     },
   }),
 };
 
 const phraseVariants: Variants = {
-  hidden: { opacity: 0, y: 16, filter: "blur(10px)" },
+  hidden: { opacity: 0, y: 10 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: {
-      delay: i * 0.14,
-      duration: 0.72,
+      delay: i * 0.05,
+      duration: REVEAL_MS,
       ease: EASE,
     },
   }),
@@ -84,7 +83,7 @@ function TypeLine({
         window.clearInterval(id);
         onDoneRef.current?.();
       }
-    }, 36);
+    }, 28);
     return () => window.clearInterval(id);
   }, [active, text, reduceMotion]);
 
@@ -99,10 +98,8 @@ function TypeLine({
 type PitchPhase = "idle" | "question" | "beat" | "solution" | "rest";
 
 export function FinalCtaSection() {
-  const { sectionRef, sectionInView } = useSectionInView({
-    threshold: 0.22,
-    rootMargin: "0px 0px -8% 0px",
-  });
+  // Defaults: meaningful viewport fill + settle delay — avoid mid-snap ghost opacity.
+  const { sectionRef, sectionInView } = useSectionInView();
   const { prefersReducedMotion } = useDeviceProfile();
   const reduceMotion = useReducedMotion() || prefersReducedMotion;
   const [phase, setPhase] = useState<PitchPhase>("idle");
@@ -114,13 +111,13 @@ export function FinalCtaSection() {
 
   useEffect(() => {
     if (phase !== "beat") return;
-    const t = window.setTimeout(() => setPhase("solution"), reduceMotion ? 0 : 420);
+    const t = window.setTimeout(() => setPhase("solution"), reduceMotion ? 0 : 280);
     return () => window.clearTimeout(t);
   }, [phase, reduceMotion]);
 
   useEffect(() => {
     if (phase !== "solution") return;
-    const t = window.setTimeout(() => setPhase("rest"), reduceMotion ? 0 : 1450);
+    const t = window.setTimeout(() => setPhase("rest"), reduceMotion ? 0 : 720);
     return () => window.clearTimeout(t);
   }, [phase, reduceMotion]);
 
@@ -149,13 +146,13 @@ export function FinalCtaSection() {
       <div className="final-cta-content relative z-10 mx-auto w-full max-w-4xl text-center">
         <motion.p
           className="final-cta-kicker"
-          initial={{ opacity: 0, letterSpacing: "0.42em" }}
+          initial={{ opacity: 0, letterSpacing: "0.32em" }}
           animate={
             sectionInView
               ? { opacity: 0.55, letterSpacing: "0.22em" }
-              : { opacity: 0, letterSpacing: "0.42em" }
+              : { opacity: 0, letterSpacing: "0.32em" }
           }
-          transition={{ duration: 1.05, ease: EASE }}
+          transition={{ duration: REVEAL_MS, ease: EASE }}
         >
           Solupair · Digital systems
         </motion.p>
@@ -249,10 +246,10 @@ export function FinalCtaSection() {
           initial={false}
           animate={
             showRest || reduceMotion
-              ? { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }
-              : { opacity: 0, y: 22, scale: 0.96, filter: "blur(8px)" }
+              ? { opacity: 1, y: 0 }
+              : { opacity: 0, y: 12 }
           }
-          transition={{ duration: 0.78, ease: EASE, delay: reduceMotion ? 0 : 0.22 }}
+          transition={{ duration: REVEAL_MS, ease: EASE, delay: reduceMotion ? 0 : 0.06 }}
         >
           <a
             href="#contact"

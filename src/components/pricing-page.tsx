@@ -7,7 +7,7 @@ import {
 } from "@/lib/pricing-tiers";
 
 export function PricingPageContent() {
-  const { sectionRef, sectionInView } = useSectionInView({ threshold: 0.08 });
+  const { sectionRef, sectionInView } = useSectionInView();
 
   return (
     <div
@@ -62,7 +62,7 @@ export function PricingPageContent() {
           <article
             key={tier.id}
             className={`pricing-card pricing-reveal pricing-reveal--card${tier.featured ? " pricing-card--featured" : ""}`}
-            style={{ animationDelay: `${0.18 + index * 0.1}s` }}
+            style={{ animationDelay: `${0.04 + index * 0.04}s` }}
           >
             <div className="pricing-card__top">
               <h2 className="pricing-card__title">{tier.title}</h2>
@@ -112,7 +112,7 @@ export function PricingPageContent() {
             <li
               key={factor.title}
               className="pricing-factor-card pricing-reveal pricing-reveal--card"
-              style={{ animationDelay: `${0.12 + index * 0.06}s` }}
+              style={{ animationDelay: `${0.04 + index * 0.03}s` }}
             >
               <h3 className="pricing-factor-card__title">{factor.title}</h3>
               <p className="pricing-factor-card__body">{factor.body}</p>
@@ -130,7 +130,7 @@ export function PricingPageContent() {
             <li
               key={point}
               className="pricing-general-notes__item pricing-reveal pricing-reveal--note"
-              style={{ animationDelay: `${0.2 + index * 0.05}s` }}
+              style={{ animationDelay: `${0.05 + index * 0.03}s` }}
             >
               {point}
             </li>

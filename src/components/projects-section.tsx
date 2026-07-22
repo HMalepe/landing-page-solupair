@@ -12,7 +12,7 @@ import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useSectionInView } from "@/hooks/use-section-in-view";
 import { navigateToSection } from "@/lib/section-nav";
 
-const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
+const REVEAL_EASE = [0.16, 1, 0.3, 1] as const;
 const projects = PROJECT_SHOWCASES;
 
 function revealProps(
@@ -26,19 +26,16 @@ function revealProps(
   }
 
   return {
-    initial: { opacity: 0, y: 24, ...(withScale ? { scale: 0.98 } : {}) },
+    initial: { opacity: 0, y: 12, ...(withScale ? { scale: 0.992 } : {}) },
     animate: inView
       ? { opacity: 1, y: 0, ...(withScale ? { scale: 1 } : {}) }
-      : { opacity: 0, y: 24, ...(withScale ? { scale: 0.98 } : {}) },
-    transition: { duration: withScale ? 0.85 : 0.72, ease: REVEAL_EASE, delay },
+      : { opacity: 0, y: 12, ...(withScale ? { scale: 0.992 } : {}) },
+    transition: { duration: 0.4, ease: REVEAL_EASE, delay },
   };
 }
 
 export function ProjectsSection() {
-  const { sectionRef, sectionInView } = useSectionInView({
-    threshold: 0.1,
-    rootMargin: "0px 0px -6% 0px",
-  });
+  const { sectionRef, sectionInView } = useSectionInView();
   const sliderRef = useRef<ShowcaseSliderHandle>(null);
   const [carousel, setCarousel] = useState<ShowcaseCarouselState>({
     index: 0,
@@ -109,33 +106,33 @@ export function ProjectsSection() {
             <motion.h2
               id="projects-heading"
               className="projects-heading font-display font-black uppercase tracking-tighter text-foreground"
-              {...revealProps(reduceMotion, sectionInView, 0.02)}
+              {...revealProps(reduceMotion, sectionInView, 0)}
             >
               Projects
             </motion.h2>
             <motion.p
               className="projects-hint projects-hint--desktop"
-              {...revealProps(reduceMotion, sectionInView, 0.1)}
+              {...revealProps(reduceMotion, sectionInView, 0.04)}
             >
               Swipe, use the arrows, dots or cards below to browse builds.
             </motion.p>
             <motion.p
               className="projects-hint projects-hint--mobile"
-              {...revealProps(reduceMotion, sectionInView, 0.1)}
+              {...revealProps(reduceMotion, sectionInView, 0.04)}
             >
               Swipe, tap arrows, dots or cards below to browse builds.
             </motion.p>
           </div>
           <motion.p
             className="projects-description"
-            {...revealProps(reduceMotion, sectionInView, 0.18)}
+            {...revealProps(reduceMotion, sectionInView, 0.06)}
           >
             Live dashboards, booking flows and automation tools built to reduce admin, missed
             bookings and messy operations.
           </motion.p>
         </header>
 
-        <motion.div className="projects-stage" {...revealProps(reduceMotion, sectionInView, 0.26, true)}>
+        <motion.div className="projects-stage" {...revealProps(reduceMotion, sectionInView, 0.08, true)}>
           <div className="projects-showcase-shell">
             <div
               className="projects-carousel-region"

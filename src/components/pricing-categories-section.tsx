@@ -124,7 +124,7 @@ export function PricingCategoriesSection() {
               id={`pricing-chip-${chip.id}`}
               aria-current={selected ? "true" : undefined}
               className={`pricing-categories__chip pricing-reveal pricing-reveal--chip${selected ? " pricing-categories__chip--active" : ""}`}
-              style={{ animationDelay: `${0.2 + index * 0.05}s` }}
+              style={{ animationDelay: `${0.04 + index * 0.03}s` }}
               data-pricing-chip-id={chip.id}
               onClick={() => selectChip(chip)}
             >
@@ -179,7 +179,7 @@ export function PricingCategoriesSection() {
             key={category.id}
             id={`pricing-category-${category.id}`}
             className={`pricing-category-row pricing-reveal pricing-reveal--card${activeChipId === category.id ? " pricing-category-row--active" : ""}`}
-            style={{ animationDelay: `${0.18 + index * 0.06}s` }}
+            style={{ animationDelay: `${0.04 + index * 0.03}s` }}
             aria-labelledby={`pricing-category-title-${category.id}`}
           >
             <div className="pricing-category-row__main">

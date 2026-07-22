@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import expirydeskImg from "@/assets/projects/expirydesk.jpg";
 import dashboardImg from "@/assets/projects/dashboard.jpg";
@@ -214,12 +215,12 @@ export function Contact() {
             © {new Date().getFullYear()} {LEGAL_NAME}. All rights reserved.
           </div>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-[var(--solupair-cyan)]">
+            <Link to="/privacy" className="hover:text-[var(--solupair-cyan)]">
               Privacy
-            </a>
-            <a href="#" className="hover:text-[var(--solupair-cyan)]">
+            </Link>
+            <Link to="/terms" className="hover:text-[var(--solupair-cyan)]">
               Terms
-            </a>
+            </Link>
           </div>
         </div>
       </div>

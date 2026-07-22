@@ -23,7 +23,7 @@ export function ProjectValueCards({ activeIndex, onSelect }: ProjectValueCardsPr
             className={`projects-value-card touch-target projects-reveal projects-reveal--value-card projects-value-card--${TAG_ACCENTS[index % TAG_ACCENTS.length]} ${
               index === activeIndex ? "projects-value-card--active" : ""
             }`}
-            style={{ animationDelay: `${0.28 + index * 0.1}s` }}
+            style={{ animationDelay: `${0.04 + index * 0.04}s` }}
           >
             <span className="projects-value-card__tag">{project.valueTag}</span>
             <span className="projects-value-card__title">{project.cardTitle}</span>

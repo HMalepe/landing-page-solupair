@@ -1,12 +1,10 @@
+import { Link } from "@tanstack/react-router";
 import { ViewportPhysicsBalls } from "@/components/viewport-physics-balls";
 import { ContactHelixBackground } from "@/components/contact-helix-background";
 import { useSectionInView } from "@/hooks/use-section-in-view";
 
 export function ContactSection() {
-  const { sectionRef, sectionInView } = useSectionInView({
-    threshold: 0.14,
-    rootMargin: "0px 0px -6% 0px",
-  });
+  const { sectionRef, sectionInView } = useSectionInView();
 
   return (
     <section
@@ -58,10 +56,7 @@ export function ContactSection() {
             onSubmit={(e) => e.preventDefault()}
             className="contact-form contact-reveal contact-reveal--form"
           >
-            <div
-              className="contact-field contact-reveal contact-reveal--field"
-              style={{ animationDelay: "0.22s" }}
-            >
+            <div className="contact-field">
               <label htmlFor="contact-name" className="contact-field-label">
                 Your name
               </label>
@@ -75,10 +70,7 @@ export function ContactSection() {
               />
             </div>
 
-            <div
-              className="contact-field contact-reveal contact-reveal--field"
-              style={{ animationDelay: "0.3s" }}
-            >
+            <div className="contact-field">
               <label htmlFor="contact-email" className="contact-field-label">
                 Your email
               </label>
@@ -92,10 +84,7 @@ export function ContactSection() {
               />
             </div>
 
-            <div
-              className="contact-field contact-reveal contact-reveal--field"
-              style={{ animationDelay: "0.38s" }}
-            >
+            <div className="contact-field">
               <label htmlFor="contact-message" className="contact-field-label">
                 Tell us about your project
               </label>
@@ -110,13 +99,12 @@ export function ContactSection() {
 
             <button
               type="submit"
-              className="contact-submit-btn hero-btn hero-btn--primary contact-reveal contact-reveal--submit touch-target"
-              style={{ animationDelay: "0.48s" }}
+              className="contact-submit-btn hero-btn hero-btn--primary touch-target"
             >
               <span>Send project request</span>
             </button>
 
-            <p className="contact-form-reassurance contact-reveal contact-reveal--field" style={{ animationDelay: "0.56s" }}>
+            <p className="contact-form-reassurance">
               No spam — we reply within 1–2 business days with scope and a starting price range.
             </p>
           </form>
@@ -125,20 +113,12 @@ export function ContactSection() {
         <div className="safe-area-bottom contact-footer">
           <p className="contact-footer-copy">© 2026 Solupair Pty Ltd. All rights reserved.</p>
           <nav className="contact-footer-nav" aria-label="Legal">
-            <a
-              href="#"
-              className="contact-footer-link"
-              onClick={(e) => e.preventDefault()}
-            >
+            <Link to="/privacy" className="contact-footer-link">
               Privacy
-            </a>
-            <a
-              href="#"
-              className="contact-footer-link"
-              onClick={(e) => e.preventDefault()}
-            >
+            </Link>
+            <Link to="/terms" className="contact-footer-link">
               Terms
-            </a>
+            </Link>
           </nav>
         </div>
       </div>
