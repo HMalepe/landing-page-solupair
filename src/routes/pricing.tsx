@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PricingPageContent } from "@/components/pricing-page";
+import { PricingRouteSkeleton } from "@/components/route-loading-skeleton";
 import { SiteHeader } from "@/components/site-header";
 import { SITE_URL } from "@/lib/site-seo";
 
@@ -8,6 +9,10 @@ const PRICING_DESCRIPTION =
 
 export const Route = createFileRoute("/pricing")({
   component: PricingPage,
+  pendingComponent: PricingRouteSkeleton,
+  pendingMs: 0,
+  // Ensures the pending skeleton can engage during the route transition.
+  loader: async () => null,
   head: () => ({
     meta: [
       { title: "Pricing estimates — Solupair" },

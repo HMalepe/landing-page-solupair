@@ -7,9 +7,10 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { RouteLoadingSkeleton } from "@/components/route-loading-skeleton";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "../lib/site-seo";
 
@@ -141,6 +142,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
+  pendingComponent: RouteLoadingSkeleton,
 });
 
 function RootShell({ children }: { children: ReactNode }) {
@@ -162,7 +164,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <Suspense fallback={<RouteLoadingSkeleton />}>
+        <Outlet />
+      </Suspense>
     </QueryClientProvider>
   );
 }
