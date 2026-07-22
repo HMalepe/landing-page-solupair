@@ -6,6 +6,7 @@ import { HeroFaceBall } from "@/components/hero-face-ball";
 import { FinalCtaSection } from "@/components/final-cta-section";
 import { ProjectsSection } from "@/components/projects-section";
 import { SiteHeader } from "@/components/site-header";
+import { useHomeMotionEpoch } from "@/hooks/use-home-motion-epoch";
 
 export const Route = createFileRoute("/")({
   component: NovaHome,
@@ -101,7 +102,6 @@ function Hero() {
         <div className="hero-bg-grain" />
       </div>
 
-      {/* Full-bleed walls — outside safe-area padding so logo/nav inset is NOT the playfield. */}
       <HeroFaceBall groundRef={heroGroundRef} />
 
       <div className="hero-reveal hero-reveal--header relative z-20 w-full shrink-0 safe-area-x">
@@ -185,12 +185,14 @@ function Hero() {
 }
 
 function NovaHome() {
+  const motionEpoch = useHomeMotionEpoch();
+
   return (
     <main className="scroll-snap-canvas min-h-[100dvh] bg-background font-sans text-foreground">
-      <Hero />
-      <ProjectsSection />
-      <FinalCtaSection />
-      <ContactSection />
+      <Hero key={`hero-${motionEpoch}`} />
+      <ProjectsSection key={`projects-${motionEpoch}`} />
+      <FinalCtaSection key={`cta-${motionEpoch}`} />
+      <ContactSection key={`contact-${motionEpoch}`} />
     </main>
   );
 }

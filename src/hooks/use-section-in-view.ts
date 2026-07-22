@@ -39,7 +39,10 @@ function entryIsMeaningful(
   return entry.intersectionRatio >= minRatio || viewportFill >= 0.28;
 }
 
-/** One-shot section reveal — linear scroll, consistent motion budget. */
+/**
+ * One-shot section reveal for a mount cycle.
+ * Home remounts (via motion epoch) start a fresh cycle from page one.
+ */
 export function useSectionInView(options: SectionInViewOptions = {}) {
   const {
     threshold = DEFAULT_THRESHOLDS,
