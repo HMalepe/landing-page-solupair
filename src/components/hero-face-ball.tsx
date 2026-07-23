@@ -87,7 +87,6 @@ export function HeroFaceBall({
   const cycleRef = useRef<CyclePhase>("live");
   const [diameter, setDiameter] = useState(() => getPreferredDiameter());
   const [faceReveal, setFaceReveal] = useState(prefersReducedMotion ? 1 : 0);
-  const [faceHint, setFaceHint] = useState(0);
   const [rollAngle, setRollAngle] = useState(0);
   const isHoveringRef = useRef(false);
   const entranceStartedRef = useRef(false);
@@ -324,7 +323,6 @@ export function HeroFaceBall({
         softRespawnAmbient();
         // Hidden until it settles again — no face while it's mid-flight.
         setFaceReveal(0);
-        setFaceHint(0);
         entranceSmile.set(0);
         ballPresence.set(0);
 
@@ -600,7 +598,6 @@ export function HeroFaceBall({
             restSinceRef.current = now;
             // Only now — settled and still — does the face appear and smile.
             setFaceReveal(1);
-            setFaceHint(0);
             void animate(entranceSmile, 1, {
               duration: AMBIENT_CYCLE.smileMs / 1000,
               ease: [0.22, 1, 0.36, 1],
@@ -652,8 +649,13 @@ export function HeroFaceBall({
   );
   const smile = useSpring(combinedSmile, { stiffness: 140, damping: 22 });
 
-  const lidRaw = useTransform(scrollY, [0, 220], [1, 0]);
-  const lidScale = useSpring(lidRaw, { stiffness: 140, damping: 22 });
+  const scrollLidRaw = useTransform(scrollY, [0, 220], [1, 0]);
+  const scrollLid = useSpring(scrollLidRaw, { stiffness: 140, damping: 22 });
+  // Eyes open (lid retracts) once the ball settles and starts smiling — the
+  // face isn't shown until it's at rest, so this reveals the eyes there too.
+  const lidScale = useTransform([scrollLid, entranceSmile], ([lid, sm]) =>
+    Math.min(Number(lid), 1 - Number(sm)),
+  );
 
   const scrollPresenceRaw = useTransform(
     heroProgress,
@@ -736,14 +738,6 @@ export function HeroFaceBall({
   const shadowRenderX = useTransform(shadowLagX, (x) => Number(x) - diameter * 0.42);
   const shadowRenderY = useTransform(posY, (y) => Number(y) + half * 0.02);
 
-  const mouthWidth = useTransform(smile, (v: number) => `${22 + v * 70}px`);
-  const mouthHeight = useTransform(smile, (v: number) => `${36 + v * 12}px`);
-  const mouthRadius = useTransform(
-    smile,
-    (v: number) =>
-      `${50 - v * 40}% ${50 - v * 40}% ${50 + v * 45}% ${50 + v * 45}% / ${50 - v * 35}% ${50 - v * 35}% ${50 + v * 55}% ${50 + v * 55}%`,
-  );
-
   const recordPointerSample = useCallback((localX: number, localY: number) => {
     const now = performance.now();
     pointerSamplesRef.current.push({ x: localX, y: localY, t: now });
@@ -805,7 +799,6 @@ export function HeroFaceBall({
     posX.set(local.x);
     posY.set(local.y);
     setFaceReveal(1);
-    setFaceHint(0);
     interruptCycle();
     setPhaseSafe("simulating");
   }, [interruptCycle, posX, posY, setPhaseSafe]);
@@ -954,12 +947,9 @@ export function HeroFaceBall({
     <BallSphere
       showFace={showFullFace}
       faceReveal={faceReveal}
-      faceHint={faceHint}
       rollAngle={rollAngle}
       lidScale={lidScale}
-      mouthRadius={mouthRadius}
-      mouthHeight={mouthHeight}
-      mouthWidth={mouthWidth}
+      smile={smile}
     />
   );
 

@@ -1,20 +1,63 @@
-import { motion, type MotionValue } from "framer-motion";
+import { motion, useTransform, type MotionValue } from "framer-motion";
 import { getSphereLighting } from "@/lib/ball-physics";
 
+/** Glossy almond eye with catchlights + a lid that scales down to blink/open. */
 function Eye({ side, lidScale }: { side: "left" | "right"; lidScale: MotionValue<number> }) {
-  const posClass = side === "left" ? "left-[26%]" : "right-[26%]";
+  const posClass = side === "left" ? "left-[29%]" : "right-[29%]";
   return (
-    <div className={`absolute ${posClass} top-[38%] aspect-square w-[22cqmin]`}>
-      <div className="absolute inset-0 rounded-full bg-black">
-        <div className="absolute left-[24%] top-[20%] h-[30%] w-[30%] rounded-full bg-white/85" />
+    <div className={`absolute ${posClass} top-[37%] h-[15cqmin] w-[12cqmin]`}>
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: "radial-gradient(circle at 38% 30%, #3a3f57 0%, #14161f 46%, #05060a 100%)",
+          boxShadow:
+            "inset 0 1.2cqmin 1.8cqmin oklch(1 0 0 / 0.18), inset 0 -1cqmin 1.4cqmin oklch(0 0 0 / 0.5)",
+        }}
+      >
+        <div
+          className="absolute left-[26%] top-[20%] h-[34%] w-[34%] rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, #ffffff 0%, rgba(255,255,255,0.75) 55%, transparent 72%)",
+          }}
+        />
+        <div className="absolute bottom-[24%] right-[22%] h-[14%] w-[14%] rounded-full bg-white/50" />
       </div>
       <motion.div
-        className="absolute inset-0 origin-center rounded-full"
-        style={{
-          scaleY: lidScale,
-          background: getSphereLighting(0).background,
-        }}
+        className="absolute inset-0 origin-top rounded-full"
+        style={{ scaleY: lidScale, background: getSphereLighting(0).background }}
       />
+    </div>
+  );
+}
+
+/** Curved-line smile that deepens from a soft rest curve to a full grin. */
+function Mouth({ smile }: { smile: MotionValue<number> }) {
+  const d = useTransform(smile, (raw) => {
+    const v = Math.min(1, Math.max(0, Number(raw)));
+    const corner = (18 - v * 5).toFixed(1); // corners lift as it smiles
+    const control = (24 + v * 34).toFixed(1); // curve deepens
+    return `M 15 ${corner} Q 50 ${control} 85 ${corner}`;
+  });
+
+  return (
+    <div className="pointer-events-none absolute left-1/2 top-[55%] h-[28cqmin] w-[46cqmin] -translate-x-1/2">
+      <svg
+        viewBox="0 0 100 60"
+        preserveAspectRatio="xMidYMid meet"
+        className="h-full w-full overflow-visible"
+        aria-hidden
+      >
+        <motion.path
+          d={d}
+          fill="none"
+          stroke="#0b0c12"
+          strokeWidth={6.5}
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+          style={{ filter: "drop-shadow(0 0.5px 0.5px oklch(1 0 0 / 0.14))" }}
+        />
+      </svg>
     </div>
   );
 }
@@ -22,28 +65,21 @@ function Eye({ side, lidScale }: { side: "left" | "right"; lidScale: MotionValue
 type BallSphereProps = {
   showFace?: boolean;
   faceReveal?: number;
-  faceHint?: number;
   rollAngle?: number;
   lidScale?: MotionValue<number>;
-  mouthRadius?: MotionValue<string>;
-  mouthHeight?: MotionValue<string>;
-  mouthWidth?: MotionValue<string>;
+  smile?: MotionValue<number>;
   compact?: boolean;
 };
 
 export function BallSphere({
   showFace = false,
   faceReveal = 1,
-  faceHint = 0,
   rollAngle = 0,
   lidScale,
-  mouthRadius,
-  mouthHeight,
-  mouthWidth,
+  smile,
   compact = false,
 }: BallSphereProps) {
   const reveal = showFace ? faceReveal : 0;
-  const hint = showFace ? 0 : faceHint;
   const lighting = getSphereLighting(rollAngle, compact);
 
   return (
@@ -75,29 +111,14 @@ export function BallSphere({
         aria-hidden
       />
 
-      {hint > 0.02 && (
-        <div
-          className="pointer-events-none absolute inset-0 rounded-full transition-opacity duration-75"
-          style={{ opacity: hint }}
-          aria-hidden
-        >
-          <div className="absolute left-[28%] top-[39%] h-[3cqmin] w-[3cqmin] rounded-full bg-black/35 blur-[1px]" />
-          <div className="absolute right-[28%] top-[39%] h-[3cqmin] w-[3cqmin] rounded-full bg-black/35 blur-[1px]" />
-          <div className="absolute left-1/2 top-[57%] h-[1.5cqmin] w-[14cqmin] -translate-x-1/2 rounded-full bg-black/20 blur-[0.5px]" />
-        </div>
-      )}
-
-      {showFace && lidScale && mouthRadius && mouthHeight && mouthWidth && (
+      {showFace && lidScale && smile && (
         <div
           className="absolute inset-0 rounded-full"
           style={{ opacity: reveal, transition: "opacity 0.12s linear" }}
         >
           <Eye side="left" lidScale={lidScale} />
           <Eye side="right" lidScale={lidScale} />
-          <motion.div
-            className="absolute left-1/2 top-[64%] -translate-x-1/2 bg-black"
-            style={{ width: mouthWidth, height: mouthHeight, borderRadius: mouthRadius }}
-          />
+          <Mouth smile={smile} />
         </div>
       )}
     </div>
