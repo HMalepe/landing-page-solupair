@@ -8,7 +8,8 @@ import {
 export const HERO_BALL_SIZE_SCALE = 0.5;
 
 /**
- * Interactive throw physics (drag / release).
+ * Senior-tuned rubber orb:
+ * floaty parabolic arcs, soft wall kisses, elegant energy bleed.
  */
 export const HERO_BALL_PHYSICS: BasketballConfig = {
   gravity: 1760,
@@ -20,18 +21,17 @@ export const HERO_BALL_PHYSICS: BasketballConfig = {
   sleepSpeed: 9,
 };
 
-/** Kept for throw continuity — opening no longer uses a violent entrance rally. */
 export const ENTRANCE_PHYSICS: BasketballConfig = {
   ...HERO_BALL_PHYSICS,
-  restitution: 0.62,
-  wallRestitution: 0.6,
+  restitution: 0.8,
+  wallRestitution: 0.82,
   gravity: 1680,
-  maxSpeed: 2800,
-  sleepSpeed: 14,
+  maxSpeed: 4200,
+  sleepSpeed: 8,
 };
 
 export function getEntranceMaxDurationMs(isPhone: boolean) {
-  return isPhone ? 2_400 : 2_800;
+  return isPhone ? 8_500 : 10_500;
 }
 
 export function getHeroBallDiameter(width: number, height: number, preferred: number) {
@@ -41,7 +41,7 @@ export function getHeroBallDiameter(width: number, height: number, preferred: nu
   return Math.min(preferred, Math.max(minByRoom, Math.min(maxByRoom, preferred)));
 }
 
-/** Soft mid-air open — still; gravity starts the first drop after blur-in. */
+/** Opening loft — starts pinned to the left edge, drives hard into the far wall. */
 export function getEntranceInitialState(
   width: number,
   height: number,
@@ -52,10 +52,10 @@ export function getEntranceInitialState(
   const spanY = Math.max(1, bounds.maxY - bounds.minY);
 
   return {
-    x: bounds.minX + spanX * (0.28 + Math.random() * 0.44),
-    y: bounds.minY + spanY * (0.12 + Math.random() * 0.28),
-    vx: 0,
-    vy: 0,
+    x: bounds.minX,
+    y: bounds.minY + spanY * 0.28,
+    vx: Math.max(1200, spanX * 2.05),
+    vy: -Math.max(420, spanY * 0.48),
   };
 }
 

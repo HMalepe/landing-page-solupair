@@ -5,8 +5,8 @@ function Eye({ side, lidScale }: { side: "left" | "right"; lidScale: MotionValue
   const posClass = side === "left" ? "left-[26%]" : "right-[26%]";
   return (
     <div className={`absolute ${posClass} top-[38%] aspect-square w-[22cqmin]`}>
-      <div className="absolute inset-0 flex items-center justify-center text-[18cqmin] leading-none text-black">
-        ✻
+      <div className="absolute inset-0 rounded-full bg-black">
+        <div className="absolute left-[24%] top-[20%] h-[30%] w-[30%] rounded-full bg-white/85" />
       </div>
       <motion.div
         className="absolute inset-0 origin-center rounded-full"

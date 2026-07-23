@@ -1,17 +1,17 @@
 import type { BasketballConfig, PhysicsBallState, PhysicsBounds } from "@/lib/ball-physics";
 
 /**
- * Ambient loop: blur in mid-air → fall → settle → slow dissolve → wait → repeat.
- * No loft kicks — gravity alone carries each drop.
+ * Ambient loop: blur in mid-air → loft → real bounce/roll physics → settle →
+ * slow dissolve → wait → reappear elsewhere → repeat.
  */
 export const AMBIENT_PHYSICS: BasketballConfig = {
-  gravity: 1680,
-  restitution: 0.58,
-  wallRestitution: 0.55,
-  airFriction: 0.998,
-  floorFriction: 0.88,
-  maxSpeed: 3200,
-  sleepSpeed: 16,
+  gravity: 1720,
+  restitution: 0.74,
+  wallRestitution: 0.77,
+  airFriction: 0.999,
+  floorFriction: 0.92,
+  maxSpeed: 4200,
+  sleepSpeed: 14,
 };
 
 export const AMBIENT_CYCLE = {
@@ -41,6 +41,18 @@ export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, 
   return {
     x: bounds.minX + spanX * (0.12 + Math.random() * 0.76),
     y: bounds.minY + spanY * (0.08 + Math.random() * 0.38),
+  };
+}
+
+/** Gentle relaunch once a reappear finishes blurring in — carries it into a real arc. */
+export function ambientNextLoftImpulse(bounds: PhysicsBounds): Pick<PhysicsBallState, "vx" | "vy"> {
+  const spanX = Math.max(1, bounds.maxX - bounds.minX);
+  const spanY = Math.max(1, bounds.maxY - bounds.minY);
+  const sign = Math.random() < 0.5 ? -1 : 1;
+
+  return {
+    vx: sign * (220 + Math.random() * 160) * (0.5 + spanX / 2800),
+    vy: -(380 + Math.random() * 140) * (0.55 + spanY / 1800),
   };
 }
 

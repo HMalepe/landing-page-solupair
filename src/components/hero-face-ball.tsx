@@ -13,10 +13,14 @@ import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   AMBIENT_CYCLE,
   AMBIENT_PHYSICS,
+  ambientNextLoftImpulse,
   nextDormantMs,
   pickAmbientSpawn,
 } from "@/lib/hero-ball-ambient-cycle";
 import {
+  ENTRANCE_PHYSICS,
+  getEntranceInitialState,
+  getEntranceMaxDurationMs,
   getHeroBallDiameter,
   HERO_BALL_PHYSICS,
   HERO_BALL_SIZE_SCALE,
@@ -32,7 +36,7 @@ import {
   type PointerSample,
 } from "@/lib/ball-physics";
 
-type Phase = "ambient" | "simulating";
+type Phase = "entering" | "ambient" | "simulating";
 type CyclePhase = "live" | "fading-out" | "dormant" | "fading-in";
 
 const MIN_DIAMETER = Math.round(100 * HERO_BALL_SIZE_SCALE);
@@ -76,11 +80,11 @@ export function HeroFaceBall({
     target: groundRef,
     offset: ["start start", "end start"],
   });
-  const { prefersReducedMotion } = useDeviceProfile();
+  const { prefersReducedMotion, isPhone } = useDeviceProfile();
   const ballRef = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState<Phase>("ambient");
-  const phaseRef = useRef<Phase>("ambient");
-  const cycleRef = useRef<CyclePhase>(prefersReducedMotion ? "live" : "dormant");
+  const [phase, setPhase] = useState<Phase>(prefersReducedMotion ? "ambient" : "entering");
+  const phaseRef = useRef<Phase>(prefersReducedMotion ? "ambient" : "entering");
+  const cycleRef = useRef<CyclePhase>("live");
   const [diameter, setDiameter] = useState(() => getPreferredDiameter());
   const [faceReveal, setFaceReveal] = useState(prefersReducedMotion ? 1 : 0);
   const [faceHint, setFaceHint] = useState(0);
@@ -99,7 +103,7 @@ export function HeroFaceBall({
   const contactPinY = useMotionValue(0);
   const playfieldRef = useRef<HTMLDivElement>(null);
   const entranceSmile = useMotionValue(prefersReducedMotion ? 1 : 0);
-  const ballPresence = useMotionValue(prefersReducedMotion ? 1 : 0);
+  const ballPresence = useMotionValue(1);
   const squashValue = useMotionValue(1);
   const squashAxis = useMotionValue(0); // 0 = vertical impact, 1 = horizontal
   const squashX = useSpring(
@@ -287,6 +291,7 @@ export function HeroFaceBall({
 
   const beginFadeOut = useCallback(() => {
     if (cycleRef.current !== "live") return;
+    if (phaseRef.current === "entering") return;
 
     const parked = stateRef.current;
     stateRef.current = { x: parked.x, y: parked.y, vx: 0, vy: 0 };
@@ -317,23 +322,27 @@ export function HeroFaceBall({
 
         cycleRef.current = "fading-in";
         softRespawnAmbient();
+        // Hidden until it settles again — no face while it's mid-flight.
+        setFaceReveal(0);
+        setFaceHint(0);
         entranceSmile.set(0);
         ballPresence.set(0);
+
+        const { bounds: respawnBounds } = readSectionBounds();
+        if (respawnBounds.maxX > respawnBounds.minX) {
+          stateRef.current = {
+            ...stateRef.current,
+            ...ambientNextLoftImpulse(respawnBounds),
+          };
+        }
 
         fadeControlsRef.current = animate(ballPresence, 1, {
           duration: AMBIENT_CYCLE.fadeInMs / 1000,
           ease: [0.22, 1, 0.36, 1],
         });
 
-        void animate(entranceSmile, 1, {
-          duration: AMBIENT_CYCLE.smileMs / 1000,
-          ease: [0.22, 1, 0.36, 1],
-        });
-
         void fadeControlsRef.current.then(() => {
           if (cycleRef.current !== "fading-in") return;
-          // Drop from this air spawn — no kick, just gravity.
-          stateRef.current = { ...stateRef.current, vx: 0, vy: 0 };
           restSinceRef.current = null;
           cycleRef.current = "live";
         });
@@ -347,53 +356,35 @@ export function HeroFaceBall({
     entranceSmile,
     posX,
     posY,
+    readSectionBounds,
     setPhaseSafe,
     settleBreath,
     softRespawnAmbient,
     speedNorm,
   ]);
 
-  const settleEntrance = useCallback(() => {
-    const nextDiameter = fitDiameter(getPreferredDiameter());
-    setDiameter(nextDiameter);
-    radiusRef.current = nextDiameter / 2;
-    squashValue.set(1);
-    setFaceReveal(1);
-    setFaceHint(0);
-
-    stopFade();
-    clearDormantTimer();
-    softRespawnAmbient();
-    entranceSmile.set(0);
-    ballPresence.set(0);
-    cycleRef.current = "fading-in";
-    setPhaseSafe("ambient");
-
-    fadeControlsRef.current = animate(ballPresence, 1, {
-      duration: 2.1,
-      ease: [0.22, 1, 0.36, 1],
-    });
-    void animate(entranceSmile, 1, {
-      duration: 1.7,
-      ease: [0.22, 1, 0.36, 1],
-    });
-
-    void fadeControlsRef.current.then(() => {
-      if (cycleRef.current !== "fading-in") return;
-      stateRef.current = { ...stateRef.current, vx: 0, vy: 0 };
+  /**
+   * Entrance flight ends wherever it naturally comes to rest — no teleport.
+   * `keepMomentum` hands current velocity to the ambient loop when the
+   * flight is cut off by the max-duration timer while still moving —
+   * zeroing it there would kill horizontal motion and leave a vertical-only
+   * bounce for the rest of the ambient loop.
+   */
+  const finishEntrance = useCallback(
+    (keepMomentum = false) => {
+      const nextDiameter = fitDiameter(getPreferredDiameter());
+      setDiameter(nextDiameter);
+      radiusRef.current = nextDiameter / 2;
+      squashValue.set(1);
+      if (!keepMomentum) {
+        stateRef.current = { ...stateRef.current, vx: 0, vy: 0 };
+      }
       restSinceRef.current = null;
+      setPhaseSafe("ambient");
       cycleRef.current = "live";
-    });
-  }, [
-    ballPresence,
-    clearDormantTimer,
-    entranceSmile,
-    fitDiameter,
-    setPhaseSafe,
-    softRespawnAmbient,
-    squashValue,
-    stopFade,
-  ]);
+    },
+    [fitDiameter, setPhaseSafe, squashValue],
+  );
 
   useEffect(() => {
     if (prefersReducedMotion || entranceStartedRef.current) return;
@@ -401,26 +392,113 @@ export function HeroFaceBall({
 
     let raf = 0;
     let cancelled = false;
-    // Let paint + fonts settle before the first ball motion.
-    const bootDelay = window.setTimeout(() => {
-      const boot = () => {
-        if (cancelled) return;
-        const { width, height } = readSectionBounds();
-        if (width <= 0 || height <= 0) {
-          raf = requestAnimationFrame(boot);
+    let last = performance.now();
+    const startTime = performance.now();
+    const maxDuration = getEntranceMaxDurationMs(isPhone);
+    const preferred = getPreferredDiameter();
+
+    const boot = () => {
+      if (cancelled) return;
+      const { width, height } = readSectionBounds();
+      if (width <= 0 || height <= 0) {
+        raf = requestAnimationFrame(boot);
+        return;
+      }
+
+      const baseDiameter = fitDiameter(preferred);
+      const entranceDiameter = baseDiameter * 0.92;
+      setDiameter(entranceDiameter);
+      radiusRef.current = entranceDiameter / 2;
+
+      const initial = getEntranceInitialState(width, height, radiusRef.current);
+      stateRef.current = initial;
+      posX.set(initial.x);
+      posY.set(initial.y);
+      rollAngleRef.current = 0;
+      setRollAngle(0);
+      setPhaseSafe("entering");
+
+      const tick = (now: number) => {
+        if (cancelled || phaseRef.current !== "entering") return;
+
+        if (now - startTime > maxDuration) {
+          finishEntrance(true);
           return;
         }
-        settleEntrance();
+
+        const dt = Math.min(now - last, 24);
+        last = now;
+
+        const { bounds } = readSectionBounds();
+        const prev = stateRef.current;
+        const result = stepBasketballPhysics(prev, ENTRANCE_PHYSICS, bounds, dt, {
+          isDragging: false,
+        });
+
+        const dx = result.x - prev.x;
+        const dy = result.y - prev.y;
+        rollAngleRef.current += rollDeltaFromMotion(dx, dy, radiusRef.current);
+        setRollAngle(rollAngleRef.current);
+
+        const hitHorizontal = result.hitLeft || result.hitRight;
+        const hitVertical = result.hitTop || result.hitBottom;
+        const hit = hitHorizontal || hitVertical;
+        if (hit) {
+          applyImpactSquash(hitHorizontal, hitVertical, Math.hypot(prev.vx, prev.vy));
+        }
+        syncFlightDeform(result.vx, result.vy, hit);
+
+        if (result.hitLeft || result.x <= bounds.minX + 0.75) contactPinX.set(-1);
+        else if (result.hitRight || result.x >= bounds.maxX - 0.75) contactPinX.set(1);
+        else contactPinX.set(0);
+
+        if (result.hitTop || result.y <= bounds.minY + 0.75) contactPinY.set(-1);
+        else if (result.hitBottom || result.y >= bounds.maxY - 0.75) contactPinY.set(1);
+        else contactPinY.set(0);
+
+        floorProximity.set(result.floorProximity);
+
+        const elapsed = (now - startTime) / maxDuration;
+        const nextDiameter = baseDiameter * (0.92 + Math.min(1, elapsed) * 0.08);
+        setDiameter(nextDiameter);
+        radiusRef.current = nextDiameter / 2;
+
+        stateRef.current = result;
+        posX.set(result.x);
+        posY.set(result.y);
+
+        if (result.sleeping) {
+          finishEntrance();
+          return;
+        }
+
+        raf = requestAnimationFrame(tick);
       };
-      raf = requestAnimationFrame(boot);
-    }, 280);
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(boot);
 
     return () => {
       cancelled = true;
-      window.clearTimeout(bootDelay);
       cancelAnimationFrame(raf);
     };
-  }, [prefersReducedMotion, readSectionBounds, settleEntrance]);
+  }, [
+    applyImpactSquash,
+    contactPinX,
+    contactPinY,
+    finishEntrance,
+    fitDiameter,
+    floorProximity,
+    isPhone,
+    posX,
+    posY,
+    prefersReducedMotion,
+    readSectionBounds,
+    setPhaseSafe,
+    syncFlightDeform,
+  ]);
 
   useEffect(() => {
     if (prefersReducedMotion) return;
@@ -518,7 +596,16 @@ export function HeroFaceBall({
           stateRef.current = { x: result.x, y: result.y, vx: 0, vy: 0 };
           settleBreath.set(1);
           speedNorm.set(0);
-          if (!restSinceRef.current) restSinceRef.current = now;
+          if (restSinceRef.current === null) {
+            restSinceRef.current = now;
+            // Only now — settled and still — does the face appear and smile.
+            setFaceReveal(1);
+            setFaceHint(0);
+            void animate(entranceSmile, 1, {
+              duration: AMBIENT_CYCLE.smileMs / 1000,
+              ease: [0.22, 1, 0.36, 1],
+            });
+          }
         } else {
           settleBreath.set(1);
           restSinceRef.current = null;
@@ -535,6 +622,7 @@ export function HeroFaceBall({
     beginFadeOut,
     contactPinX,
     contactPinY,
+    entranceSmile,
     floorProximity,
     posX,
     posY,
@@ -546,7 +634,7 @@ export function HeroFaceBall({
   ]);
 
   useEffect(() => {
-    if (phase === "ambient") return;
+    if (phase === "entering" || phase === "ambient") return;
     const { bounds } = readSectionBounds();
     const s = stateRef.current;
     const nx = clamp(s.x, bounds.minX, bounds.maxX);
@@ -797,6 +885,11 @@ export function HeroFaceBall({
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (prefersReducedMotion) return;
 
+    if (phaseRef.current === "entering") {
+      finishEntrance();
+      return;
+    }
+
     if (phaseRef.current === "ambient") {
       if (cycleRef.current !== "live") return;
       activateFromAmbient();
@@ -812,7 +905,7 @@ export function HeroFaceBall({
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!draggingRef.current || phaseRef.current === "ambient") {
+    if (!draggingRef.current || phaseRef.current === "ambient" || phaseRef.current === "entering") {
       return;
     }
     applyClientDrag(event.clientX, event.clientY);
@@ -889,7 +982,7 @@ export function HeroFaceBall({
     );
   }
 
-  const isInteractive = phase === "simulating";
+  const isInteractive = phase === "entering" || phase === "simulating";
   const ballLayerZ = isInteractive ? "z-[18]" : "z-[8]";
 
   return (
@@ -943,7 +1036,11 @@ export function HeroFaceBall({
       >
         <motion.div
           ref={ballRef}
-          className="pointer-events-auto h-full w-full cursor-grab active:cursor-grabbing"
+          className={
+            phase === "entering"
+              ? "pointer-events-auto h-full w-full cursor-default"
+              : "pointer-events-auto h-full w-full cursor-grab active:cursor-grabbing"
+          }
           style={{
             scaleX: composedScaleX,
             scaleY: composedScaleY,
