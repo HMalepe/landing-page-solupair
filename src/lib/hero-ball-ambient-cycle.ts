@@ -33,26 +33,42 @@ export function nextDormantMs() {
   return dormantMinMs + Math.random() * (dormantMaxMs - dormantMinMs);
 }
 
-/** Random spot in the upper air of the playfield (never on the floor). */
+/**
+ * Reappear near a top corner (alternating sides), hugging the edge so the next
+ * launch has the full width of the screen to fly across. The recurring beat
+ * mirrors the dramatic opening flight instead of a timid mid-screen drop.
+ */
 export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, "x" | "y"> {
   const spanX = Math.max(1, bounds.maxX - bounds.minX);
   const spanY = Math.max(1, bounds.maxY - bounds.minY);
+  const fromLeft = Math.random() < 0.5;
 
   return {
-    x: bounds.minX + spanX * (0.12 + Math.random() * 0.76),
-    y: bounds.minY + spanY * (0.08 + Math.random() * 0.38),
+    x: fromLeft
+      ? bounds.minX + spanX * (0.03 + Math.random() * 0.12)
+      : bounds.maxX - spanX * (0.03 + Math.random() * 0.12),
+    y: bounds.minY + spanY * (0.06 + Math.random() * 0.2),
   };
 }
 
-/** Gentle relaunch once a reappear finishes blurring in — carries it into a real arc. */
-export function ambientNextLoftImpulse(bounds: PhysicsBounds): Pick<PhysicsBallState, "vx" | "vy"> {
+/**
+ * Strong cross-screen launch — the same energy as the opening flight, always
+ * aimed toward the far wall from wherever the ball just reappeared, so it flies
+ * corner-to-corner and bounces around until it bleeds off all momentum.
+ */
+export function ambientNextLoftImpulse(
+  bounds: PhysicsBounds,
+  spawnX: number,
+): Pick<PhysicsBallState, "vx" | "vy"> {
   const spanX = Math.max(1, bounds.maxX - bounds.minX);
   const spanY = Math.max(1, bounds.maxY - bounds.minY);
-  const sign = Math.random() < 0.5 ? -1 : 1;
+  const mid = (bounds.minX + bounds.maxX) / 2;
+  // Fire toward the opposite side from the spawn edge.
+  const sign = spawnX <= mid ? 1 : -1;
 
   return {
-    vx: sign * (220 + Math.random() * 160) * (0.5 + spanX / 2800),
-    vy: -(380 + Math.random() * 140) * (0.55 + spanY / 1800),
+    vx: sign * Math.max(1200, spanX * 1.9) * (0.85 + Math.random() * 0.3),
+    vy: -Math.max(360, spanY * 0.42) * (0.75 + Math.random() * 0.4),
   };
 }
 

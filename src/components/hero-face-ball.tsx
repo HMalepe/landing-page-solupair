@@ -332,7 +332,7 @@ export function HeroFaceBall({
         if (respawnBounds.maxX > respawnBounds.minX) {
           stateRef.current = {
             ...stateRef.current,
-            ...ambientNextLoftImpulse(respawnBounds),
+            ...ambientNextLoftImpulse(respawnBounds, stateRef.current.x),
           };
         }
 
