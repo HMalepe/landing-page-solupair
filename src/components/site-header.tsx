@@ -30,8 +30,8 @@ function SolupairLogo() {
         <img
           src={solupairWordmark}
           alt="Solupair"
-          width={1600}
-          height={220}
+          width={1448}
+          height={156}
           decoding="async"
           className="site-logo-wordmark h-full w-auto object-contain object-left"
         />

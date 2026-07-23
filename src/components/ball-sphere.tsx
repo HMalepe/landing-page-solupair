@@ -114,7 +114,7 @@ export function BallSphere({
       {showFace && lidScale && smile && (
         <div
           className="absolute inset-0 rounded-full"
-          style={{ opacity: reveal, transition: "opacity 0.12s linear" }}
+          style={{ opacity: reveal, transition: "opacity 0.4s ease" }}
         >
           <Eye side="left" lidScale={lidScale} />
           <Eye side="right" lidScale={lidScale} />

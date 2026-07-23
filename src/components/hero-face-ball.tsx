@@ -13,7 +13,6 @@ import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   AMBIENT_CYCLE,
   AMBIENT_PHYSICS,
-  ambientNextLoftImpulse,
   nextDormantMs,
   pickAmbientSpawn,
 } from "@/lib/hero-ball-ambient-cycle";
@@ -91,6 +90,9 @@ export function HeroFaceBall({
   const isHoveringRef = useRef(false);
   const entranceStartedRef = useRef(false);
   const restSinceRef = useRef<number | null>(null);
+  // The opening flight smiles once it settles; ambient reappears smile on
+  // blur-in instead, so their bounce settle must NOT re-trigger a rest smile.
+  const smileOnRestRef = useRef(false);
   const dormantTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fadeControlsRef = useRef<ReturnType<typeof animate> | null>(null);
 
@@ -321,18 +323,16 @@ export function HeroFaceBall({
 
         cycleRef.current = "fading-in";
         softRespawnAmbient();
-        // Hidden until it settles again — no face while it's mid-flight.
-        setFaceReveal(0);
+        // Reappears smiling — the face blooms while it blurs back in, still.
+        // No sideways launch: it will simply drop under gravity once live.
+        smileOnRestRef.current = false;
+        setFaceReveal(1);
         entranceSmile.set(0);
+        void animate(entranceSmile, 1, {
+          duration: AMBIENT_CYCLE.smileMs / 1000,
+          ease: [0.22, 1, 0.36, 1],
+        });
         ballPresence.set(0);
-
-        const { bounds: respawnBounds } = readSectionBounds();
-        if (respawnBounds.maxX > respawnBounds.minX) {
-          stateRef.current = {
-            ...stateRef.current,
-            ...ambientNextLoftImpulse(respawnBounds, stateRef.current.x),
-          };
-        }
 
         fadeControlsRef.current = animate(ballPresence, 1, {
           duration: AMBIENT_CYCLE.fadeInMs / 1000,
@@ -343,6 +343,9 @@ export function HeroFaceBall({
           if (cycleRef.current !== "fading-in") return;
           restSinceRef.current = null;
           cycleRef.current = "live";
+          // Let go — the smile relaxes and the face fades as it starts to drop.
+          setFaceReveal(0);
+          void animate(entranceSmile, 0, { duration: 0.5, ease: [0.4, 0, 0.2, 1] });
         });
       }, nextDormantMs());
     });
@@ -354,7 +357,6 @@ export function HeroFaceBall({
     entranceSmile,
     posX,
     posY,
-    readSectionBounds,
     setPhaseSafe,
     settleBreath,
     softRespawnAmbient,
@@ -378,6 +380,8 @@ export function HeroFaceBall({
         stateRef.current = { ...stateRef.current, vx: 0, vy: 0 };
       }
       restSinceRef.current = null;
+      // The opening flight earns its smile when it comes to rest.
+      smileOnRestRef.current = true;
       setPhaseSafe("ambient");
       cycleRef.current = "live";
     },
@@ -596,12 +600,16 @@ export function HeroFaceBall({
           speedNorm.set(0);
           if (restSinceRef.current === null) {
             restSinceRef.current = now;
-            // Only now — settled and still — does the face appear and smile.
-            setFaceReveal(1);
-            void animate(entranceSmile, 1, {
-              duration: AMBIENT_CYCLE.smileMs / 1000,
-              ease: [0.22, 1, 0.36, 1],
-            });
+            // Only the opening flight smiles on settle; ambient reappears have
+            // already smiled on blur-in, so their bounce settle stays faceless.
+            if (smileOnRestRef.current) {
+              smileOnRestRef.current = false;
+              setFaceReveal(1);
+              void animate(entranceSmile, 1, {
+                duration: AMBIENT_CYCLE.smileMs / 1000,
+                ease: [0.22, 1, 0.36, 1],
+              });
+            }
           }
         } else {
           settleBreath.set(1);

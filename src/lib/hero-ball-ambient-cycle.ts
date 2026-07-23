@@ -34,41 +34,17 @@ export function nextDormantMs() {
 }
 
 /**
- * Reappear near a top corner (alternating sides), hugging the edge so the next
- * launch has the full width of the screen to fly across. The recurring beat
- * mirrors the dramatic opening flight instead of a timid mid-screen drop.
+ * Reappear at a random spot across the upper-middle air — never hugging the
+ * edges. There's no sideways launch afterwards: the ball simply drops from
+ * here under gravity and bounces straight up and down until it settles.
  */
 export function pickAmbientSpawn(bounds: PhysicsBounds): Pick<PhysicsBallState, "x" | "y"> {
   const spanX = Math.max(1, bounds.maxX - bounds.minX);
   const spanY = Math.max(1, bounds.maxY - bounds.minY);
-  const fromLeft = Math.random() < 0.5;
 
   return {
-    x: fromLeft
-      ? bounds.minX + spanX * (0.03 + Math.random() * 0.12)
-      : bounds.maxX - spanX * (0.03 + Math.random() * 0.12),
-    y: bounds.minY + spanY * (0.06 + Math.random() * 0.2),
-  };
-}
-
-/**
- * Strong cross-screen launch — the same energy as the opening flight, always
- * aimed toward the far wall from wherever the ball just reappeared, so it flies
- * corner-to-corner and bounces around until it bleeds off all momentum.
- */
-export function ambientNextLoftImpulse(
-  bounds: PhysicsBounds,
-  spawnX: number,
-): Pick<PhysicsBallState, "vx" | "vy"> {
-  const spanX = Math.max(1, bounds.maxX - bounds.minX);
-  const spanY = Math.max(1, bounds.maxY - bounds.minY);
-  const mid = (bounds.minX + bounds.maxX) / 2;
-  // Fire toward the opposite side from the spawn edge.
-  const sign = spawnX <= mid ? 1 : -1;
-
-  return {
-    vx: sign * Math.max(1200, spanX * 1.9) * (0.85 + Math.random() * 0.3),
-    vy: -Math.max(360, spanY * 0.42) * (0.75 + Math.random() * 0.4),
+    x: bounds.minX + spanX * (0.18 + Math.random() * 0.64),
+    y: bounds.minY + spanY * (0.06 + Math.random() * 0.22),
   };
 }
 
