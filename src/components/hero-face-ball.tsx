@@ -86,7 +86,9 @@ export function HeroFaceBall({
   const cycleRef = useRef<CyclePhase>("live");
   const [diameter, setDiameter] = useState(() => getPreferredDiameter());
   const [faceReveal, setFaceReveal] = useState(prefersReducedMotion ? 1 : 0);
-  const [rollAngle, setRollAngle] = useState(0);
+  // Roll angle drives the rolling highlight — a MotionValue so per-frame updates
+  // never trigger a React re-render (that was a source of entrance-motion jank).
+  const rollAngle = useMotionValue(0);
   const isHoveringRef = useRef(false);
   const entranceStartedRef = useRef(false);
   const restSinceRef = useRef<number | null>(null);
@@ -395,7 +397,7 @@ export function HeroFaceBall({
     let raf = 0;
     let cancelled = false;
     let last = performance.now();
-    const startTime = performance.now();
+    let startTime = performance.now();
     const maxDuration = getEntranceMaxDurationMs(isPhone);
     const preferred = getPreferredDiameter();
 
@@ -407,18 +409,24 @@ export function HeroFaceBall({
         return;
       }
 
+      // Fly in at final size — growing width/height every frame forced a layout
+      // reflow mid-flight (the entrance jank). Size is fixed; only transforms move.
       const baseDiameter = fitDiameter(preferred);
-      const entranceDiameter = baseDiameter * 0.92;
-      setDiameter(entranceDiameter);
-      radiusRef.current = entranceDiameter / 2;
+      setDiameter(baseDiameter);
+      radiusRef.current = baseDiameter / 2;
 
       const initial = getEntranceInitialState(width, height, radiusRef.current);
       stateRef.current = initial;
       posX.set(initial.x);
       posY.set(initial.y);
       rollAngleRef.current = 0;
-      setRollAngle(0);
+      rollAngle.set(0);
       setPhaseSafe("entering");
+
+      // Start the clock at the first real motion frame so a slow boot/layout
+      // wait can't produce a jumbo first-frame delta or clip the flight short.
+      last = performance.now();
+      startTime = performance.now();
 
       const tick = (now: number) => {
         if (cancelled || phaseRef.current !== "entering") return;
@@ -440,7 +448,7 @@ export function HeroFaceBall({
         const dx = result.x - prev.x;
         const dy = result.y - prev.y;
         rollAngleRef.current += rollDeltaFromMotion(dx, dy, radiusRef.current);
-        setRollAngle(rollAngleRef.current);
+        rollAngle.set(rollAngleRef.current);
 
         const hitHorizontal = result.hitLeft || result.hitRight;
         const hitVertical = result.hitTop || result.hitBottom;
@@ -459,11 +467,6 @@ export function HeroFaceBall({
         else contactPinY.set(0);
 
         floorProximity.set(result.floorProximity);
-
-        const elapsed = (now - startTime) / maxDuration;
-        const nextDiameter = baseDiameter * (0.92 + Math.min(1, elapsed) * 0.08);
-        setDiameter(nextDiameter);
-        radiusRef.current = nextDiameter / 2;
 
         stateRef.current = result;
         posX.set(result.x);
@@ -498,6 +501,7 @@ export function HeroFaceBall({
     posY,
     prefersReducedMotion,
     readSectionBounds,
+    rollAngle,
     setPhaseSafe,
     syncFlightDeform,
   ]);
@@ -555,7 +559,7 @@ export function HeroFaceBall({
       const dy = result.y - prevY;
       if (!drag) {
         rollAngleRef.current += rollDeltaFromMotion(dx, dy, radiusRef.current);
-        setRollAngle(rollAngleRef.current);
+        rollAngle.set(rollAngleRef.current);
       }
 
       const hitHorizontal = result.hitLeft || result.hitRight;
@@ -633,6 +637,7 @@ export function HeroFaceBall({
     posY,
     prefersReducedMotion,
     readSectionBounds,
+    rollAngle,
     settleBreath,
     speedNorm,
     syncFlightDeform,
@@ -763,7 +768,7 @@ export function HeroFaceBall({
       const dx = px - prev.x;
       const dy = py - prev.y;
       rollAngleRef.current += rollDeltaFromMotion(dx, dy, radiusRef.current);
-      setRollAngle(rollAngleRef.current);
+      rollAngle.set(rollAngleRef.current);
 
       pointerRef.current = { x: px, y: py };
       recordPointerSample(px, py);
@@ -771,7 +776,7 @@ export function HeroFaceBall({
       posX.set(px);
       posY.set(py);
     },
-    [posX, posY, readSectionBounds, recordPointerSample],
+    [posX, posY, readSectionBounds, recordPointerSample, rollAngle],
   );
 
   const applyClientDrag = useCallback(
@@ -999,6 +1004,7 @@ export function HeroFaceBall({
           y: glowRenderY,
           opacity: glowOpacity,
           scale: glowScale,
+          willChange: "transform, opacity",
         }}
       />
 
@@ -1017,6 +1023,7 @@ export function HeroFaceBall({
           opacity: shadowOpacity,
           scaleX: contactShadowScale,
           scaleY: contactShadowScaleY,
+          willChange: "transform, opacity, filter",
         }}
       />
 
@@ -1030,6 +1037,7 @@ export function HeroFaceBall({
           height: diameter,
           opacity: cinematicOpacity,
           filter: cinematicFilter,
+          willChange: "transform, opacity, filter",
         }}
       >
         <motion.div
@@ -1042,6 +1050,7 @@ export function HeroFaceBall({
           style={{
             scaleX: composedScaleX,
             scaleY: composedScaleY,
+            willChange: "transform",
           }}
           {...pointerHandlers}
         >

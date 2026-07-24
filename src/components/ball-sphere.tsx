@@ -1,4 +1,4 @@
-import { motion, useTransform, type MotionValue } from "framer-motion";
+import { motion, useMotionValue, useTransform, type MotionValue } from "framer-motion";
 import { getSphereLighting } from "@/lib/ball-physics";
 
 /** Glossy almond eye with catchlights + a lid that scales down to blink/open. */
@@ -65,7 +65,8 @@ function Mouth({ smile }: { smile: MotionValue<number> }) {
 type BallSphereProps = {
   showFace?: boolean;
   faceReveal?: number;
-  rollAngle?: number;
+  /** Live roll angle. A MotionValue drives the rolling highlight without React re-renders. */
+  rollAngle?: MotionValue<number>;
   lidScale?: MotionValue<number>;
   smile?: MotionValue<number>;
   compact?: boolean;
@@ -74,40 +75,48 @@ type BallSphereProps = {
 export function BallSphere({
   showFace = false,
   faceReveal = 1,
-  rollAngle = 0,
+  rollAngle,
   lidScale,
   smile,
   compact = false,
 }: BallSphereProps) {
   const reveal = showFace ? faceReveal : 0;
-  const lighting = getSphereLighting(rollAngle, compact);
+
+  // Always subscribe to a MotionValue (Rules of Hooks); fall back to a static 0
+  // for the compact ambient blobs that never roll. Compute lighting once per
+  // frame off the compositor thread, then fan out — no per-frame re-render.
+  const fallbackRoll = useMotionValue(0);
+  const roll = rollAngle ?? fallbackRoll;
+  const lighting = useTransform(roll, (a) => getSphereLighting(Number(a), compact));
+  const background = useTransform(lighting, (l) => l.background);
+  const boxShadow = useTransform(lighting, (l) => l.boxShadow);
+  const rimGradient = useTransform(lighting, (l) => l.rimGradient);
+  const specLeft = useTransform(lighting, (l) => l.specular.x);
+  const specTop = useTransform(lighting, (l) => l.specular.y);
+  const specOpacity = useTransform(lighting, (l) => l.specular.opacity);
+  const specWidth = getSphereLighting(0, compact).specular.w;
+  const specHeight = getSphereLighting(0, compact).specular.h;
 
   return (
-    <div
+    <motion.div
       className="@container relative h-full w-full overflow-hidden rounded-full"
-      style={{
-        background: lighting.background,
-        boxShadow: lighting.boxShadow,
-      }}
+      style={{ background, boxShadow }}
     >
-      <div
+      <motion.div
         className="pointer-events-none absolute rounded-full bg-white/30 blur-[2px]"
         style={{
-          width: lighting.specular.w,
-          height: lighting.specular.h,
-          left: lighting.specular.x,
-          top: lighting.specular.y,
+          width: specWidth,
+          height: specHeight,
+          left: specLeft,
+          top: specTop,
           transform: "translate(-50%, -50%)",
-          opacity: lighting.specular.opacity,
+          opacity: specOpacity,
         }}
         aria-hidden
       />
-      <div
+      <motion.div
         className="pointer-events-none absolute inset-0 rounded-full"
-        style={{
-          background: lighting.rimGradient,
-          opacity: 0.85,
-        }}
+        style={{ background: rimGradient, opacity: 0.85 }}
         aria-hidden
       />
 
@@ -121,6 +130,6 @@ export function BallSphere({
           <Mouth smile={smile} />
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

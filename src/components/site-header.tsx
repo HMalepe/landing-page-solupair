@@ -31,7 +31,7 @@ function SolupairLogo() {
           src={solupairWordmark}
           alt="Solupair"
           width={1448}
-          height={156}
+          height={176}
           decoding="async"
           className="site-logo-wordmark h-full w-auto object-contain object-left"
         />

@@ -8,8 +8,15 @@ const root = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 /** Upscale small brand assets for crisp retina header display. */
 const WORDMARK_UPSCALE = 4;
 const LOGO_MIN_LONG_EDGE = 1536;
-/** Keep the full SOLUPAIR row (letters end ~46% down); everything below is the tagline. */
-const WORDMARK_ROW_RATIO = 0.465;
+/**
+ * Source-space (px) geometry of the name row in solupair-wordmark-source.png
+ * (396x86). Most letters end at y≈36, but the smiley "O" circle dips to y≈44,
+ * and a stray red accent dash sits under the U/P down to y≈51.
+ */
+const WORDMARK_NAME_BOTTOM = 48; // crop above the tagline, low enough for the full smiley O
+const WORDMARK_BASELINE = 38; // letters end here; only the smiley legitimately dips below
+const WORDMARK_SMILEY_X0 = 62; // keep sub-baseline content only within the smiley O column…
+const WORDMARK_SMILEY_X1 = 118; // …so the stray red dash under the U/P is removed
 /** Small horizontal-only breathing room (source px) so S and R never hug an edge. */
 const WORDMARK_PAD_X = 5;
 
@@ -84,7 +91,7 @@ async function buildWordmark(input, output, { threshold = 30 } = {}) {
   const srcH = meta.height ?? 1;
   const up = WORDMARK_UPSCALE;
   const cW = srcW * up;
-  const cropBot = Math.round(srcH * WORDMARK_ROW_RATIO) * up;
+  const cropBot = Math.min(srcH, WORDMARK_NAME_BOTTOM) * up;
 
   const { data } = await sharp(input)
     .resize({ width: cW, height: srcH * up, kernel: sharp.kernel.lanczos3 })
@@ -96,6 +103,19 @@ async function buildWordmark(input, output, { threshold = 30 } = {}) {
   const cropped = Buffer.alloc(cW * cropBot * 4);
   data.copy(cropped, 0, 0, cW * cropBot * 4);
   knockOutPixels(cropped, threshold);
+
+  // Below the letter baseline, keep only the smiley O column so the full circle
+  // survives while the stray red accent dash under the U/P is removed.
+  const baseUp = WORDMARK_BASELINE * up;
+  const smileyX0 = WORDMARK_SMILEY_X0 * up;
+  const smileyX1 = WORDMARK_SMILEY_X1 * up;
+  for (let y = baseUp; y < cropBot; y += 1) {
+    for (let x = 0; x < cW; x += 1) {
+      if (x < smileyX0 || x > smileyX1) {
+        cropped[(y * cW + x) * 4 + 3] = 0;
+      }
+    }
+  }
 
   const padX = WORDMARK_PAD_X * up;
   const transparent = { r: 0, g: 0, b: 0, alpha: 0 };
