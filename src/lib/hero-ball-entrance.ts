@@ -7,6 +7,28 @@ import {
 /** Sized for clear edge travel without dominating the hero. */
 export const HERO_BALL_SIZE_SCALE = 0.5;
 
+export const MIN_DIAMETER = Math.round(100 * HERO_BALL_SIZE_SCALE);
+export const MAX_DIAMETER = Math.round(480 * HERO_BALL_SIZE_SCALE);
+
+export function isMobileHeroLayout() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(max-width: 767px)").matches;
+}
+
+export function getPreferredDiameter() {
+  if (typeof window === "undefined") return Math.round(220 * HERO_BALL_SIZE_SCALE);
+  if (window.matchMedia("(min-width: 1024px)").matches) {
+    return Math.round(320 * HERO_BALL_SIZE_SCALE);
+  }
+  if (window.matchMedia("(min-width: 768px)").matches) {
+    return Math.round(280 * HERO_BALL_SIZE_SCALE);
+  }
+  if (isMobileHeroLayout()) {
+    return Math.round(180 * HERO_BALL_SIZE_SCALE);
+  }
+  return Math.round(200 * HERO_BALL_SIZE_SCALE);
+}
+
 /**
  * Senior-tuned rubber orb:
  * floaty parabolic arcs, soft wall kisses, elegant energy bleed.
