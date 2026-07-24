@@ -19,6 +19,8 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173) (port may vary if 5173 is in use).
 
+> **Use npm.** `package-lock.json` is the single source of truth (Vercel builds with `npm run build`). Do not commit `bun.lockb` or a second lockfile.
+
 ## Production domain
 
 - **Primary:** [https://solupair.co.za](https://solupair.co.za)
