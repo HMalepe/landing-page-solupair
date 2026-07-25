@@ -618,14 +618,29 @@ export function WhatsAppChatbotPreview({ isActive = true }: { isActive?: boolean
   );
 }
 
+/**
+ * Case-study fields, outcome-first per Solupair's portfolio brief:
+ * `before` (buyer's situation), `intervention` (what we built), `outcome`
+ * (a real number or an honestly-labelled estimate — never invented).
+ * `status: "pending"` cases carry a TODO below; fill in the confirmed
+ * number or a labelled estimate, then flip status to "confirmed" | "estimate".
+ */
+type CaseOutcome = {
+  status: "confirmed" | "estimate" | "pending";
+  value: string;
+};
+
 export const PROJECT_SHOWCASES = [
   {
     id: "expiry-desk",
     name: "ExpiryDesk Dashboard",
     cardTitle: "ExpiryDesk PRO",
     valueTag: "Inventory intelligence",
-    valueDescription:
-      "Track short-dated stock, write-offs and recovered value before losses happen.",
+    before: "Stock expired on the shelf before anyone caught it — write-offs found out too late.",
+    intervention:
+      "A live dashboard that flags at-risk stock by expiry date and tracks recovered value automatically.",
+    // TODO(owner): replace with the confirmed write-off/recovery number for this build.
+    outcome: { status: "pending", value: "ask us for the write-off numbers on this build" } as CaseOutcome,
     tag: "Pharmacy inventory · expiry tracking",
     Preview: ExpiryDeskDashboardPreview,
   },
@@ -634,8 +649,11 @@ export const PROJECT_SHOWCASES = [
     name: "Live Pulse",
     cardTitle: "Live Pulse Dashboard",
     valueTag: "Business visibility",
-    valueDescription:
-      "See bookings, revenue, staff activity and business health in one clean live view.",
+    before:
+      "Bookings, revenue and WhatsApp messages lived in three different places — nothing added up in one glance.",
+    intervention: "One live dashboard showing bookings, revenue and the WhatsApp inbox side by side.",
+    // TODO(owner): replace with the confirmed hours-saved / admin-time number for this build.
+    outcome: { status: "pending", value: "ask us for the hours saved on this build" } as CaseOutcome,
     tag: "Solupair · WhatsApp booking engine",
     Preview: LivePulseDashboardPreview,
   },
@@ -644,8 +662,11 @@ export const PROJECT_SHOWCASES = [
     name: WHATSAPP_AGENT_NAME,
     cardTitle: "WhatsApp Booking Agent",
     valueTag: "Customer automation",
-    valueDescription:
-      "Let customers book, reschedule, ask FAQs and receive reminders automatically.",
+    before:
+      "Customers messaged to book, reschedule and ask questions — replies waited until someone had a free minute.",
+    intervention: "A WhatsApp agent that books, reschedules, answers FAQs and sends reminders automatically.",
+    // TODO(owner): replace with the confirmed response-time / booking-recovery number for this build.
+    outcome: { status: "pending", value: "ask us for the response-time numbers on this build" } as CaseOutcome,
     tag: "MarineFlow booking bot",
     Preview: WhatsAppChatbotPreview,
   },
