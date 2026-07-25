@@ -667,7 +667,7 @@ export const PROJECT_SHOWCASES = [
     intervention: "A WhatsApp agent that books, reschedules, answers FAQs and sends reminders automatically.",
     // TODO(owner): replace with the confirmed response-time / booking-recovery number for this build.
     outcome: { status: "pending", value: "ask us for the response-time numbers on this build" } as CaseOutcome,
-    tag: "MarineFlow booking bot",
+    tag: "WhatsApp booking bot",
     Preview: WhatsAppChatbotPreview,
   },
 ] as const;

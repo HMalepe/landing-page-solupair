@@ -2,10 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { WhatWeBuildPageContent } from "@/components/what-we-build-page";
 import { WhatWeBuildRouteSkeleton } from "@/components/route-loading-skeleton";
 import { SiteHeader } from "@/components/site-header";
-import { SITE_URL } from "@/lib/site-seo";
-
-const WHAT_WE_BUILD_DESCRIPTION =
-  "Websites, dashboards and WhatsApp automation for South African SME owners — by business type and project shape. Every build starts with a conversation.";
+import { LEGAL_NAME, pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/what-we-build")({
   component: WhatWeBuildPage,
@@ -13,16 +10,13 @@ export const Route = createFileRoute("/what-we-build")({
   pendingMs: 0,
   // Ensures the pending skeleton can engage during the route transition.
   loader: async () => null,
-  head: () => ({
-    meta: [
-      { title: "What We Build — Solupair" },
-      { name: "description", content: WHAT_WE_BUILD_DESCRIPTION },
-      { property: "og:title", content: "What We Build — Solupair" },
-      { property: "og:description", content: WHAT_WE_BUILD_DESCRIPTION },
-      { property: "og:url", content: `${SITE_URL}/what-we-build` },
-    ],
-    links: [{ rel: "canonical", href: `${SITE_URL}/what-we-build` }],
-  }),
+  head: () =>
+    pageHead({
+      title: `What We Build — ${LEGAL_NAME}`,
+      description:
+        "Websites, dashboards and WhatsApp automation for South African SME owners — by business type and project shape. Every build starts with a conversation.",
+      path: "/what-we-build",
+    }),
 });
 
 function WhatWeBuildPage() {

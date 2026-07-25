@@ -3,7 +3,7 @@ const COOLDOWN_MS = 30_000;
 
 /** Basic client-side anti-spam: blocks rapid resubmission from the same browser. */
 export function useSubmitRateLimit() {
-  const checkAndMark = (): { allowed: true } | { allowed: false; waitSeconds: number } => {
+  const checkAllowed = (): { allowed: true } | { allowed: false; waitSeconds: number } => {
     if (typeof window === "undefined") return { allowed: true };
 
     const last = Number(window.localStorage.getItem(STORAGE_KEY) ?? 0);
@@ -13,9 +13,13 @@ export function useSubmitRateLimit() {
       return { allowed: false, waitSeconds: Math.ceil((COOLDOWN_MS - elapsed) / 1000) };
     }
 
-    window.localStorage.setItem(STORAGE_KEY, String(Date.now()));
     return { allowed: true };
   };
 
-  return { checkAndMark };
+  const markSubmitted = () => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(STORAGE_KEY, String(Date.now()));
+  };
+
+  return { checkAllowed, markSubmitted };
 }

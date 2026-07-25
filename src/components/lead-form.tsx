@@ -49,7 +49,7 @@ function needsForProjectType(type: ProjectTypeId): CapabilityNeed[] {
 }
 
 export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
-  const { checkAndMark } = useSubmitRateLimit();
+  const { checkAllowed, markSubmitted } = useSubmitRateLimit();
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
@@ -65,7 +65,7 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
     // Honeypot tripped — silently drop, no feedback that would help a bot learn.
     if (values.website) return;
 
-    const rate = checkAndMark();
+    const rate = checkAllowed();
     if (!rate.allowed) {
       toast.error(`Give it a few more seconds.`, {
         description: `Wait ${rate.waitSeconds}s and submit again.`,
@@ -100,6 +100,7 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
 
       if (error) throw error;
 
+      markSubmitted();
       toast.success("Booked.", {
         description: "We'll call you back within 1–2 business days.",
       });
@@ -137,9 +138,15 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
           autoComplete="name"
           placeholder="Your name"
           className="contact-form-input mobile-input"
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? "lead-name-error" : undefined}
           {...form.register("name")}
         />
-        {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+        {errors.name && (
+          <p id="lead-name-error" role="alert" className="text-xs text-destructive">
+            {errors.name.message}
+          </p>
+        )}
       </div>
 
       <div className="contact-field">
@@ -151,9 +158,15 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
           autoComplete="organization"
           placeholder="Your business name"
           className="contact-form-input mobile-input"
+          aria-invalid={!!errors.business}
+          aria-describedby={errors.business ? "lead-business-error" : undefined}
           {...form.register("business")}
         />
-        {errors.business && <p className="text-xs text-destructive">{errors.business.message}</p>}
+        {errors.business && (
+          <p id="lead-business-error" role="alert" className="text-xs text-destructive">
+            {errors.business.message}
+          </p>
+        )}
       </div>
 
       <div className="contact-field">
@@ -180,7 +193,11 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
-        {errors.needs && <p className="text-xs text-destructive">{errors.needs.message}</p>}
+        {errors.needs && (
+          <p role="alert" className="text-xs text-destructive">
+            {errors.needs.message}
+          </p>
+        )}
       </div>
 
       <div className="contact-field">
@@ -211,7 +228,9 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
           ))}
         </ToggleGroup>
         {errors.budgetBand && (
-          <p className="text-xs text-destructive">{errors.budgetBand.message}</p>
+          <p role="alert" className="text-xs text-destructive">
+            {errors.budgetBand.message}
+          </p>
         )}
       </div>
 
@@ -224,9 +243,15 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
           autoComplete="email"
           placeholder="you@business.co.za"
           className="contact-form-input mobile-input"
+          aria-invalid={!!errors.contact}
+          aria-describedby={errors.contact ? "lead-contact-error" : undefined}
           {...form.register("contact")}
         />
-        {errors.contact && <p className="text-xs text-destructive">{errors.contact.message}</p>}
+        {errors.contact && (
+          <p id="lead-contact-error" role="alert" className="text-xs text-destructive">
+            {errors.contact.message}
+          </p>
+        )}
       </div>
 
       {/* Honeypot — hidden from real visitors and screen readers, left empty by humans. */}

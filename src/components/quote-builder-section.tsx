@@ -197,9 +197,12 @@ export function QuoteBuilderSection({ onLockQuote }: QuoteBuilderSectionProps) {
 
           <div className="quote-builder-range">
             <p className="quote-builder-range__label">Your estimate</p>
-            <p className="quote-builder-range__amount">
+            <p className="quote-builder-range__amount" aria-hidden="true">
               <AnimatedZAR value={range.min} /> – <AnimatedZAR value={range.max} />
             </p>
+            <span className="sr-only" aria-live="polite" aria-atomic="true">
+              Estimated range: {formatZAR(range.min)} to {formatZAR(range.max)}.
+            </span>
             <p className="quote-builder-range__note">Estimate, confirmed on the call.</p>
           </div>
 

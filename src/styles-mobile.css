@@ -463,11 +463,6 @@
     padding-top: 0.35rem;
   }
 
-  .final-cta-email {
-    min-height: 2.75rem;
-    padding-inline: 0.75rem;
-  }
-
   /* ── Contact ── */
   .contact-section {
     padding-top: 2.5rem;
@@ -517,7 +512,7 @@
   .contact-footer-link {
     display: inline-flex;
     align-items: center;
-    min-height: 2.5rem;
+    min-height: 2.75rem;
     padding-inline: 0.2rem;
   }
 

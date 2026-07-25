@@ -44,6 +44,8 @@ export function pageHead({
       { property: "og:type", content: "website" },
       { property: "og:url", content: url },
       { property: "og:site_name", content: SITE_NAME },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
     ],
     links: [{ rel: "canonical", href: url }],
   };
