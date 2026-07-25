@@ -80,19 +80,19 @@ function Hero() {
         <div className="hero-copy-stack w-full min-w-0">
           <div className="hero-reveal hero-reveal--eyebrow flex justify-center">
             <p className="hero-eyebrow">
-              Websites
-              <span className="hero-eyebrow-sep" aria-hidden>
-                ·
-              </span>
-              Dashboards
-              <span className="hero-eyebrow-sep" aria-hidden>
-                ·
-              </span>
               WhatsApp
               <span className="hero-eyebrow-sep" aria-hidden>
                 ·
               </span>
               Automation
+              <span className="hero-eyebrow-sep" aria-hidden>
+                ·
+              </span>
+              Websites
+              <span className="hero-eyebrow-sep" aria-hidden>
+                ·
+              </span>
+              Dashboards
             </p>
           </div>
 
@@ -101,19 +101,19 @@ function Hero() {
 
             <h1 className="relative z-[1] w-full min-w-0 text-center">
               <span className="hero-headline hero-headline-text hero-headline-text--a hero-reveal hero-reveal--headline-a">
-                <span className="hero-headline-line">DIGITAL</span>{" "}
-                <span className="hero-headline-line hero-headline-gradient">SOLUTIONS</span>
+                <span className="hero-headline-line">BOOKINGS</span>{" "}
+                <span className="hero-headline-line hero-headline-gradient">HANDLED</span>
               </span>
               <span className="hero-headline hero-headline-text hero-headline-text--b hero-reveal hero-reveal--headline-b">
-                <span className="hero-headline-line hero-headline-phrase">FOR YOUR</span>{" "}
-                <span className="hero-headline-line hero-headline-phrase">BUSINESS</span>
+                <span className="hero-headline-line hero-headline-phrase">WHILE YOU</span>{" "}
+                <span className="hero-headline-line hero-headline-phrase">TREAT</span>
               </span>
             </h1>
           </div>
 
           <p className="hero-subheading hero-reveal hero-reveal--subheading text-center">
-            Premium websites, dashboards and automated workflows for teams that need smoother
-            bookings, sharper visibility and faster operations.
+            Patients book, reschedule and confirm over WhatsApp all day — we automate the replies
+            so your calendar fills itself and you're never stuck typing between patients.
           </p>
         </div>
       </div>
