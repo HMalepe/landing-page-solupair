@@ -222,6 +222,13 @@
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* Sitewide safety net: named components define their own richer
+     focus-visible ring, this only catches anything that doesn't. */
+  :focus-visible {
+    outline: 2px solid var(--brand-cyan);
+    outline-offset: 2px;
+  }
 }
 
 /* Sitewide: scrolled-to sections and named anchors clear the sticky header. */
@@ -2504,6 +2511,7 @@ main > header,
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--text-main);
+  overflow-wrap: break-word;
 }
 
 .build-card__summary {
@@ -2655,6 +2663,7 @@ main > header,
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--text-main);
+  overflow-wrap: break-word;
 }
 
 .build-tier-card__desc {
@@ -3540,6 +3549,7 @@ main > header,
   line-height: 1.25;
   letter-spacing: 0.01em;
   color: var(--text-main);
+  overflow-wrap: break-word;
 }
 
 @media (min-width: 1024px) {
@@ -5127,6 +5137,7 @@ body {
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-main);
+  overflow-wrap: break-word;
 }
 
 .legal-section__body {
@@ -5263,6 +5274,7 @@ body {
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--text-main);
+  overflow-wrap: break-word;
 }
 
 .quote-builder-option__desc {

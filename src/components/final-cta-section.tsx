@@ -16,16 +16,16 @@ const BODY_PHRASES = [
 
 /** Soft cinematic ease — story beats, not snaps */
 const EASE = [0.16, 1, 0.3, 1] as const;
-const TYPE_MS = 72;
-const BEAT_MS = 780;
-const LEAD_STAGGER = 0.16;
-const LEAD_MS = 0.72;
+const TYPE_MS = 65;
+const BEAT_MS = 200;
+const LEAD_STAGGER = 0.09;
+const LEAD_MS = 0.55;
 const LETTER_STAGGER = 0.05;
 const LETTER_MS = 0.82;
 const WORD_STAGGER = 0.058;
 const WORD_MS = 0.64;
 const BODY_LINE_GAP = 0.28;
-const HERO_LEAD_GAP = 0.28;
+const HERO_LEAD_GAP = 0.12;
 
 const leadWordVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
