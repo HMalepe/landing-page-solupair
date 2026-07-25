@@ -1,13 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { ContactSection } from "@/components/contact-section";
 import { FinalCtaSection } from "@/components/final-cta-section";
 import type { LeadFormQuotePrefill } from "@/components/lead-form";
 import { ProjectsSection } from "@/components/projects-section";
 import { QuoteBuilderSection } from "@/components/quote-builder-section";
 import { SiteHeader } from "@/components/site-header";
+import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useHomeMotionEpoch } from "@/hooks/use-home-motion-epoch";
 import { useIdleReady } from "@/hooks/use-idle-ready";
+
+/** Safety net: force-reveal the logo if the ball's dissolve never fires. */
+const LOGO_REVEAL_FALLBACK_MS = 20_000;
 
 // Code-split: the headline + CTA must be interactive before the ball's
 // physics/motion code ever downloads. Only starts fetching once idle (see
@@ -23,6 +27,33 @@ export const Route = createFileRoute("/")({
 function Hero() {
   const heroGroundRef = useRef<HTMLElement>(null);
   const idleReady = useIdleReady();
+  const { prefersReducedMotion } = useDeviceProfile();
+
+  // The wordmark's smiley "O" stays masked until the hero ball's first
+  // dissolve, then reveals once — reduced motion skips the ball's animation
+  // entirely, so it just shows the O immediately like every other page.
+  // Both start `false` regardless of device profile (matching that hook's
+  // own SSR-safe default) — an effect below reveals right away once the
+  // real reduced-motion value is known, instead of seeding from a value
+  // that can only be trusted after mount.
+  const [logoRevealed, setLogoRevealed] = useState(false);
+  const hasRevealedRef = useRef(false);
+
+  const revealLogo = useCallback(() => {
+    if (hasRevealedRef.current) return;
+    hasRevealedRef.current = true;
+    setLogoRevealed(true);
+  }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion) revealLogo();
+  }, [prefersReducedMotion, revealLogo]);
+
+  useEffect(() => {
+    if (hasRevealedRef.current) return;
+    const timer = setTimeout(revealLogo, LOGO_REVEAL_FALLBACK_MS);
+    return () => clearTimeout(timer);
+  }, [revealLogo]);
 
   return (
     <section
@@ -82,12 +113,12 @@ function Hero() {
 
       {idleReady && (
         <Suspense fallback={null}>
-          <HeroFaceBall groundRef={heroGroundRef} />
+          <HeroFaceBall groundRef={heroGroundRef} onDissolve={revealLogo} />
         </Suspense>
       )}
 
       <div className="hero-reveal hero-reveal--header relative z-20 w-full shrink-0 safe-area-x">
-        <SiteHeader />
+        <SiteHeader maskLogo={!prefersReducedMotion} logoRevealed={logoRevealed} />
       </div>
 
       <div className="hero-content relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-start safe-area-x md:z-10 md:flex-1 md:justify-center">

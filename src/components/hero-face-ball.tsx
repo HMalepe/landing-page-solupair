@@ -11,7 +11,13 @@ import { useBallSimulation } from "@/hooks/use-ball-simulation";
 import { useHeroBallVisuals } from "@/hooks/use-hero-ball-visuals";
 import { BALL_SHADOW, BALL_SURFACE } from "@/lib/ball-physics";
 
-export function HeroFaceBall({ groundRef }: { groundRef: RefObject<HTMLElement | null> }) {
+type HeroFaceBallProps = {
+  groundRef: RefObject<HTMLElement | null>;
+  /** Fires the first time (and every time) the ball dissolves into the ambient cycle. */
+  onDissolve?: () => void;
+};
+
+export function HeroFaceBall({ groundRef, onDissolve }: HeroFaceBallProps) {
   const { scrollY } = useScroll();
   const { scrollYProgress: heroProgress } = useScroll({
     target: groundRef,
@@ -28,7 +34,7 @@ export function HeroFaceBall({ groundRef }: { groundRef: RefObject<HTMLElement |
     heroProgress,
     heroInView,
   });
-  const ambientCycle = useAmbientCycle(core);
+  const ambientCycle = useAmbientCycle(core, onDissolve);
   const choreography = useHeroChoreography(core, ambientCycle);
   useHeroEntrance(core, choreography);
   useBallSimulation(core, ambientCycle);

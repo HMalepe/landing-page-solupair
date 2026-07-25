@@ -8,7 +8,7 @@ import type { HeroBallCore } from "@/hooks/use-hero-ball-core";
  * respawn-at-random-top → live. Timer/promise driven (not a rAF loop); the
  * physics loop calls `beginFadeOut` once the ball has rested long enough.
  */
-export function useAmbientCycle(core: HeroBallCore) {
+export function useAmbientCycle(core: HeroBallCore, onDissolve?: () => void) {
   const {
     ballPresence,
     settleBreath,
@@ -92,6 +92,7 @@ export function useAmbientCycle(core: HeroBallCore) {
 
     cycleRef.current = "fading-out";
     restSinceRef.current = null;
+    onDissolve?.();
 
     fadeControlsRef.current = animate(ballPresence, 0, {
       duration: AMBIENT_CYCLE.fadeOutMs / 1000,
@@ -155,6 +156,7 @@ export function useAmbientCycle(core: HeroBallCore) {
     dormantTimerRef,
     fadeControlsRef,
     setFaceReveal,
+    onDissolve,
   ]);
 
   useEffect(() => {

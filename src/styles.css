@@ -837,6 +837,73 @@ main > header,
   overflow: visible;
   padding: 0;
   box-sizing: content-box;
+  position: relative;
+}
+
+/*
+ * The "O" reveal: the smiley circle is baked into the wordmark image, so on
+ * home this mask covers it (matching the header's own glass treatment) until
+ * the hero ball's first dissolve; the spark briefly "arrives" underneath as
+ * the mask lifts, implying a hand-off from the 3D ball to the flat 2D mark.
+ */
+.site-logo-o-mask {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--bg-deep);
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+  transition-delay: 0.3s;
+  pointer-events: none;
+}
+
+.site-logo-o-mask--revealed {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.site-logo-o-spark {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--gradient-brand);
+  opacity: 0;
+  transform: scale(0.5);
+  pointer-events: none;
+}
+
+.site-logo-o-spark--active {
+  animation: site-logo-o-spark-pulse 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes site-logo-o-spark-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  32% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  60% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-logo-o-mask {
+    transition: none;
+  }
+
+  .site-logo-o-spark--active {
+    animation: none;
+  }
 }
 
 .site-logo-wordmark {
