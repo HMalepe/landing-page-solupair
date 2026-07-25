@@ -15,6 +15,7 @@ import type { AmbientCycle } from "@/hooks/use-ambient-cycle";
 export function useBallSimulation(core: HeroBallCore, ambientCycle: AmbientCycle) {
   const {
     prefersReducedMotion,
+    heroInView,
     phaseRef,
     cycleRef,
     stateRef,
@@ -43,7 +44,10 @@ export function useBallSimulation(core: HeroBallCore, ambientCycle: AmbientCycle
   const { beginFadeOut } = ambientCycle;
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    // Scrolled off-screen — tear the loop down entirely rather than just
+    // fading its opacity. Re-running this effect when heroInView flips back
+    // restarts it fresh (no stale `last` causing a jumbo first-frame dt).
+    if (prefersReducedMotion || !heroInView) return;
 
     let raf = 0;
     let last = performance.now();
@@ -176,6 +180,7 @@ export function useBallSimulation(core: HeroBallCore, ambientCycle: AmbientCycle
     posX,
     posY,
     prefersReducedMotion,
+    heroInView,
     readSectionBounds,
     rollAngle,
     settleBreath,

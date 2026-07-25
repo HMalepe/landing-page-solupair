@@ -1,13 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { ContactSection } from "@/components/contact-section";
-import { HeroFaceBall } from "@/components/hero-face-ball";
 import { FinalCtaSection } from "@/components/final-cta-section";
 import type { LeadFormQuotePrefill } from "@/components/lead-form";
 import { ProjectsSection } from "@/components/projects-section";
 import { QuoteBuilderSection } from "@/components/quote-builder-section";
 import { SiteHeader } from "@/components/site-header";
 import { useHomeMotionEpoch } from "@/hooks/use-home-motion-epoch";
+import { useIdleReady } from "@/hooks/use-idle-ready";
+
+// Code-split: the headline + CTA must be interactive before the ball's
+// physics/motion code ever downloads. Only starts fetching once idle (see
+// useIdleReady below), not synchronously on initial render.
+const HeroFaceBall = lazy(() =>
+  import("@/components/hero-face-ball").then((m) => ({ default: m.HeroFaceBall })),
+);
 
 export const Route = createFileRoute("/")({
   component: NovaHome,
@@ -15,6 +22,7 @@ export const Route = createFileRoute("/")({
 
 function Hero() {
   const heroGroundRef = useRef<HTMLElement>(null);
+  const idleReady = useIdleReady();
 
   return (
     <section
@@ -72,7 +80,11 @@ function Hero() {
         <div className="hero-bg-grain" />
       </div>
 
-      <HeroFaceBall groundRef={heroGroundRef} />
+      {idleReady && (
+        <Suspense fallback={null}>
+          <HeroFaceBall groundRef={heroGroundRef} />
+        </Suspense>
+      )}
 
       <div className="hero-reveal hero-reveal--header relative z-20 w-full shrink-0 safe-area-x">
         <SiteHeader />

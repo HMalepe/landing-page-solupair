@@ -31,6 +31,8 @@ export type HeroBallCoreInput = {
   isPhone: boolean;
   scrollY: MotionValue<number>;
   heroProgress: MotionValue<number>;
+  /** True while the hero section is scrolled into the viewport. */
+  heroInView: boolean;
 };
 
 /**
@@ -46,6 +48,7 @@ export function useHeroBallCore({
   isPhone,
   scrollY,
   heroProgress,
+  heroInView,
 }: HeroBallCoreInput) {
   const ballRef = useRef<HTMLDivElement>(null);
   const playfieldRef = useRef<HTMLDivElement>(null);
@@ -191,6 +194,7 @@ export function useHeroBallCore({
     isPhone,
     scrollY,
     heroProgress,
+    heroInView,
     // element refs
     ballRef,
     playfieldRef,

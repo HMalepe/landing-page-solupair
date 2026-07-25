@@ -14,7 +14,14 @@ import { DevicePreview } from "@/components/dev/device-preview";
 import { RouteLoadingSkeleton } from "@/components/route-loading-skeleton";
 import { Toaster } from "@/components/ui/sonner";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "../lib/site-seo";
+import {
+  SITE_DESCRIPTION,
+  SITE_OG_IMAGE,
+  SITE_OG_IMAGE_HEIGHT,
+  SITE_OG_IMAGE_WIDTH,
+  SITE_TITLE,
+  SITE_URL,
+} from "../lib/site-seo";
 
 function NotFoundComponent() {
   return (
@@ -95,12 +102,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { property: "og:url", content: SITE_URL },
       { property: "og:site_name", content: "Solupair" },
-      { name: "twitter:card", content: "summary" },
+      { property: "og:image", content: `${SITE_URL}${SITE_OG_IMAGE}` },
+      { property: "og:image:width", content: String(SITE_OG_IMAGE_WIDTH) },
+      { property: "og:image:height", content: String(SITE_OG_IMAGE_HEIGHT) },
+      { property: "og:image:alt", content: SITE_TITLE },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: SITE_TITLE },
       {
         name: "twitter:description",
         content: SITE_DESCRIPTION,
       },
+      { name: "twitter:image", content: `${SITE_URL}${SITE_OG_IMAGE}` },
     ],
     links: [
       {

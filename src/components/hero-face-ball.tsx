@@ -3,6 +3,7 @@ import type { RefObject } from "react";
 import { BallSphere } from "@/components/ball-sphere";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useHeroBallCore } from "@/hooks/use-hero-ball-core";
+import { useInViewport } from "@/hooks/use-in-viewport";
 import { useAmbientCycle } from "@/hooks/use-ambient-cycle";
 import { useHeroChoreography } from "@/hooks/use-hero-choreography";
 import { useHeroEntrance } from "@/hooks/use-hero-entrance";
@@ -16,9 +17,17 @@ export function HeroFaceBall({ groundRef }: { groundRef: RefObject<HTMLElement |
     target: groundRef,
     offset: ["start start", "end start"],
   });
-  const { prefersReducedMotion, isPhone } = useDeviceProfile();
+  const { prefersReducedMotion, isPhone, coarsePointer } = useDeviceProfile();
+  const heroInView = useInViewport(groundRef);
 
-  const core = useHeroBallCore({ groundRef, prefersReducedMotion, isPhone, scrollY, heroProgress });
+  const core = useHeroBallCore({
+    groundRef,
+    prefersReducedMotion,
+    isPhone,
+    scrollY,
+    heroProgress,
+    heroInView,
+  });
   const ambientCycle = useAmbientCycle(core);
   const choreography = useHeroChoreography(core, ambientCycle);
   useHeroEntrance(core, choreography);
@@ -61,6 +70,9 @@ export function HeroFaceBall({ groundRef }: { groundRef: RefObject<HTMLElement |
 
   const isInteractive = phase === "entering" || phase === "simulating";
   const ballLayerZ = isInteractive ? "z-[18]" : "z-[8]";
+  // The glow layer is a large, heavily-blurred, separately-composited element —
+  // skip it on phones/coarse pointers where GPU headroom is thinnest.
+  const showAmbientGlow = !isPhone && !coarsePointer;
 
   return (
     <div
@@ -68,19 +80,21 @@ export function HeroFaceBall({ groundRef }: { groundRef: RefObject<HTMLElement |
       className="hero-ball-playfield pointer-events-none fixed inset-0 z-[8] overflow-hidden"
       style={{ width: "100vw", height: "100dvh" }}
     >
-      <motion.div
-        aria-hidden
-        className={`hero-ball-ambient-glow pointer-events-none absolute left-0 top-0 ${ballLayerZ}`}
-        style={{
-          width: diameter * 1.5,
-          height: diameter * 1.5,
-          x: visuals.glowRenderX,
-          y: visuals.glowRenderY,
-          opacity: visuals.glowOpacity,
-          scale: visuals.glowScale,
-          willChange: "transform, opacity",
-        }}
-      />
+      {showAmbientGlow && (
+        <motion.div
+          aria-hidden
+          className={`hero-ball-ambient-glow pointer-events-none absolute left-0 top-0 ${ballLayerZ}`}
+          style={{
+            width: diameter * 1.5,
+            height: diameter * 1.5,
+            x: visuals.glowRenderX,
+            y: visuals.glowRenderY,
+            opacity: visuals.glowOpacity,
+            scale: visuals.glowScale,
+            willChange: "transform, opacity",
+          }}
+        />
+      )}
 
       <motion.div
         aria-hidden
