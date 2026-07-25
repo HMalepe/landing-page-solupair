@@ -68,7 +68,7 @@
   }
 
   .site-logo-wordmark {
-    max-width: min(38vw, 9.25rem);
+    max-width: min(28vw, 7.5rem);
     height: 100%;
   }
 
@@ -560,7 +560,7 @@
   }
 
   .site-logo-wordmark {
-    max-width: min(34vw, 7.5rem);
+    max-width: min(24vw, 6rem);
   }
 
   .site-nav-link {

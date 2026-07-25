@@ -1098,7 +1098,7 @@ main > header,
   }
 
   .site-logo-wordmark {
-    max-width: min(38vw, 9.5rem);
+    max-width: min(28vw, 7.75rem);
   }
 
   .site-nav {
@@ -1116,7 +1116,7 @@ main > header,
 
 @media (max-width: 379px) {
   .site-logo-wordmark {
-    max-width: min(36vw, 9rem);
+    max-width: min(24vw, 6.5rem);
   }
 
   .site-nav-link {
@@ -4888,7 +4888,7 @@ body {
   }
 
   .site-logo-wordmark {
-    max-width: min(40vw, 9.5rem);
+    max-width: min(27vw, 7.25rem);
   }
 
   .site-nav-link {
