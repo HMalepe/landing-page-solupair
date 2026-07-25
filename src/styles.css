@@ -5543,4 +5543,136 @@ body {
   color: color-mix(in srgb, var(--text-dim) 92%, transparent);
 }
 
+/* ── Quote builder ── */
+.quote-builder-eyebrow {
+  margin: 0 0 0.6rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-cyan) 78%, var(--text-soft));
+}
+
+.quote-builder-heading {
+  font-size: clamp(1.5rem, 5.5vw, 2.6rem);
+  line-height: 0.95;
+}
+
+.quote-builder-subhead {
+  margin: 0.75rem auto 0;
+  max-width: 32rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
+.quote-builder-panel {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.6vh, 1.75rem);
+  padding: clamp(1.5rem, 3.5vh, 2.25rem) clamp(1.25rem, 3vw, 2rem);
+  border-radius: 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+  background: color-mix(in srgb, var(--bg-deep) 46%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.quote-builder-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.quote-builder-field-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-soft) 82%, transparent);
+}
+
+.quote-builder-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--text-main) 12%, transparent);
+  background: color-mix(in srgb, var(--bg-deep) 34%, transparent);
+  cursor: pointer;
+  transition:
+    border-color 0.22s var(--nav-ease),
+    background 0.22s var(--nav-ease);
+}
+
+.quote-builder-option:hover {
+  border-color: color-mix(in srgb, var(--brand-cyan) 32%, transparent);
+}
+
+.quote-builder-option--active {
+  border-color: color-mix(in srgb, var(--brand-cyan) 55%, var(--brand-pink) 30%);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--brand-cyan) 14%, transparent),
+    color-mix(in srgb, var(--brand-pink) 10%, transparent)
+  );
+}
+
+.quote-builder-option__title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.quote-builder-option__desc {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--text-soft) 82%, transparent);
+}
+
+.quote-builder-range {
+  padding: clamp(1rem, 2.5vh, 1.5rem);
+  border-radius: 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 22%, transparent);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--brand-cyan) 10%, transparent),
+    color-mix(in srgb, var(--brand-pink) 8%, transparent)
+  );
+  text-align: center;
+}
+
+.quote-builder-range__label {
+  margin: 0 0 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-soft) 82%, transparent);
+}
+
+.quote-builder-range__amount {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.quote-builder-range__value {
+  font-variant-numeric: tabular-nums;
+}
+
+.quote-builder-range__note {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--text-dim) 90%, transparent);
+}
+
+.quote-builder-cta {
+  align-self: center;
+}
+
 @import "./styles-mobile.css";

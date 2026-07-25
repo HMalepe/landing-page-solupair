@@ -95,8 +95,8 @@ export function SiteHeader({ sticky = false }: SiteHeaderProps) {
               <span className="site-nav-label site-nav-label--full">Pricing</span>
             </Link>
             <a href="/#contact" className="site-nav-link site-nav-link--primary">
-              <span className="site-nav-label site-nav-label--short">Start</span>
-              <span className="site-nav-label site-nav-label--full">Start a project</span>
+              <span className="site-nav-label site-nav-label--short">Book</span>
+              <span className="site-nav-label site-nav-label--full">Book a call</span>
             </a>
           </nav>
         </div>

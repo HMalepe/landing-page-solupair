@@ -1,10 +1,6 @@
 import { PricingCategoriesSection } from "@/components/pricing-categories-section";
 import { useSectionInView } from "@/hooks/use-section-in-view";
-import {
-  PRICING_FACTORS,
-  PRICING_GENERAL_POINTS,
-  PRICING_TIERS,
-} from "@/lib/pricing-tiers";
+import { PRICING_FACTORS, PRICING_GENERAL_POINTS, PRICING_TIERS } from "@/lib/pricing-tiers";
 
 export function PricingPageContent() {
   const { sectionRef, sectionInView } = useSectionInView();
@@ -26,25 +22,29 @@ export function PricingPageContent() {
         </h1>
         <p className="pricing-direction-subtitle pricing-reveal pricing-reveal--subtitle">
           Indicative costs for the digital solutions we build — by business type and by project
-          tier. Every figure is a starting estimate; your final quote is scoped after we
-          understand your workflow.
+          tier. Every figure is a starting estimate; your final quote is scoped after we understand
+          your workflow.
         </p>
       </header>
 
       <aside className="pricing-estimate-banner pricing-reveal pricing-reveal--subtitle">
         <p className="pricing-estimate-banner__title">How to read these numbers</p>
         <p className="pricing-estimate-banner__body">
-          Prices differ from client to client. What you see here are <strong>estimates</strong>,
-          not final invoices. Setup fees, monthly running costs and year-one totals are
-          generalisations based on similar builds — your quote reflects team size, tools,
-          content, integrations and how much automation you actually need. We confirm everything
-          in writing before work begins.
+          Prices differ from client to client. What you see here are <strong>estimates</strong>, not
+          final invoices. Setup fees, monthly running costs and year-one totals are generalisations
+          based on similar builds — your quote reflects team size, tools, content, integrations and
+          how much automation you actually need. We confirm everything in writing before work
+          begins.
         </p>
       </aside>
 
       <PricingCategoriesSection />
 
-      <header id="pricing-tiers" className="pricing-direction-header pricing-direction-header--tiers" data-anchor-target>
+      <header
+        id="pricing-tiers"
+        className="pricing-direction-header pricing-direction-header--tiers"
+        data-anchor-target
+      >
         <p className="pricing-page-eyebrow pricing-reveal pricing-reveal--heading">
           Build tiers · starting points
         </p>
@@ -146,11 +146,11 @@ export function PricingPageContent() {
 
       <div className="pricing-page-cta pricing-reveal pricing-reveal--note">
         <p className="pricing-page-cta__text">
-          Not sure which tier fits? Send a short message — we will suggest the leanest path and
-          a realistic estimate for your situation.
+          Not sure which tier fits? Send a short message — we will suggest the leanest path and a
+          realistic estimate for your situation.
         </p>
         <a href="/#contact" className="hero-btn hero-btn--primary touch-target">
-          <span>Get a tailored estimate</span>
+          <span>Book a call</span>
         </a>
       </div>
     </div>

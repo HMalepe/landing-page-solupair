@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ContactSection } from "@/components/contact-section";
 import { HeroFaceBall } from "@/components/hero-face-ball";
 import { FinalCtaSection } from "@/components/final-cta-section";
+import type { LeadFormQuotePrefill } from "@/components/lead-form";
 import { ProjectsSection } from "@/components/projects-section";
+import { QuoteBuilderSection } from "@/components/quote-builder-section";
 import { SiteHeader } from "@/components/site-header";
 import { useHomeMotionEpoch } from "@/hooks/use-home-motion-epoch";
 
@@ -112,8 +114,8 @@ function Hero() {
           </div>
 
           <p className="hero-subheading hero-reveal hero-reveal--subheading text-center">
-            Patients book, reschedule and confirm over WhatsApp all day — we automate the replies
-            so your calendar fills itself and you're never stuck typing between patients.
+            Patients book, reschedule and confirm over WhatsApp all day — we automate the replies so
+            your calendar fills itself and you're never stuck typing between patients.
           </p>
         </div>
       </div>
@@ -123,13 +125,19 @@ function Hero() {
 
 function NovaHome() {
   const motionEpoch = useHomeMotionEpoch();
+  const [pendingQuote, setPendingQuote] = useState<LeadFormQuotePrefill | undefined>();
 
   return (
     <main className="scroll-snap-canvas min-h-[100dvh] bg-background font-sans text-foreground">
       <Hero key={`hero-${motionEpoch}`} />
       <ProjectsSection key={`projects-${motionEpoch}`} />
+      <QuoteBuilderSection key={`quote-${motionEpoch}`} onLockQuote={setPendingQuote} />
       <FinalCtaSection key={`cta-${motionEpoch}`} />
-      <ContactSection key={`contact-${motionEpoch}`} />
+      <ContactSection
+        key={`contact-${motionEpoch}`}
+        pendingQuote={pendingQuote}
+        onQuoteConsumed={() => setPendingQuote(undefined)}
+      />
     </main>
   );
 }

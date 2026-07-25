@@ -16,12 +16,7 @@ const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const MOTION_DURATION = 0.45;
 const projects = PROJECT_SHOWCASES;
 
-function revealProps(
-  reduceMotion: boolean,
-  inView: boolean,
-  delay = 0,
-  withScale = false,
-) {
+function revealProps(reduceMotion: boolean, inView: boolean, delay = 0, withScale = false) {
   if (reduceMotion) {
     return { initial: false as const, animate: undefined, transition: undefined };
   }
@@ -133,7 +128,10 @@ export function ProjectsSection() {
           </motion.p>
         </header>
 
-        <motion.div className="projects-stage" {...revealProps(reduceMotion, sectionInView, 0.08, true)}>
+        <motion.div
+          className="projects-stage"
+          {...revealProps(reduceMotion, sectionInView, 0.08, true)}
+        >
           <div className="projects-showcase-shell">
             <div
               className="projects-carousel-region"
@@ -168,10 +166,7 @@ export function ProjectsSection() {
                   className="projects-showcase-mockup relative z-[0]"
                 />
 
-                <div
-                  className="projects-showcase-scrim"
-                  aria-hidden
-                />
+                <div className="projects-showcase-scrim" aria-hidden />
 
                 <div className="projects-card-overlay--desktop flex-col justify-end">
                   <AnimatePresence mode="wait" initial={false}>
@@ -205,7 +200,7 @@ export function ProjectsSection() {
                           }}
                           className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex shrink-0 self-start sm:self-auto"
                         >
-                          <span>Discuss this build</span>
+                          <span>Book a call</span>
                           <ArrowUpRight className="size-4" aria-hidden />
                         </a>
                       </div>
@@ -226,7 +221,8 @@ export function ProjectsSection() {
               >
                 <div className="projects-mobile-caption__meta">
                   <span className="projects-mobile-caption__index">
-                    {String(carousel.index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+                    {String(carousel.index + 1).padStart(2, "0")} /{" "}
+                    {String(projects.length).padStart(2, "0")}
                   </span>
                   <span className="projects-mobile-caption__tag">{project.tag}</span>
                 </div>
@@ -239,7 +235,7 @@ export function ProjectsSection() {
                   }}
                   className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex w-full justify-center sm:w-auto"
                 >
-                  <span>Discuss this build</span>
+                  <span>Book a call</span>
                   <ArrowUpRight className="size-4" aria-hidden />
                 </a>
               </motion.div>

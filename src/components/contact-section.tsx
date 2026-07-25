@@ -1,9 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { ViewportPhysicsBalls } from "@/components/viewport-physics-balls";
 import { ContactHelixBackground } from "@/components/contact-helix-background";
+import { LeadForm, type LeadFormQuotePrefill } from "@/components/lead-form";
 import { useSectionInView } from "@/hooks/use-section-in-view";
 
-export function ContactSection() {
+type ContactSectionProps = {
+  /** Set when a visitor arrives here via "Lock this quote & book a call". */
+  pendingQuote?: LeadFormQuotePrefill;
+  /** Called once the lead form successfully submits, to clear the pending quote. */
+  onQuoteConsumed?: () => void;
+};
+
+export function ContactSection({ pendingQuote, onQuoteConsumed }: ContactSectionProps) {
   const { sectionRef, sectionInView } = useSectionInView();
 
   return (
@@ -52,62 +60,9 @@ export function ContactSection() {
             </div>
           </aside>
 
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="contact-form contact-reveal contact-reveal--form"
-          >
-            <div className="contact-field">
-              <label htmlFor="contact-name" className="contact-field-label">
-                Your name
-              </label>
-              <input
-                id="contact-name"
-                type="text"
-                name="name"
-                autoComplete="name"
-                placeholder="Your name"
-                className="contact-form-input mobile-input"
-              />
-            </div>
-
-            <div className="contact-field">
-              <label htmlFor="contact-email" className="contact-field-label">
-                Your email
-              </label>
-              <input
-                id="contact-email"
-                type="email"
-                name="email"
-                autoComplete="email"
-                placeholder="you@company.com"
-                className="contact-form-input mobile-input"
-              />
-            </div>
-
-            <div className="contact-field">
-              <label htmlFor="contact-message" className="contact-field-label">
-                Tell us about your project
-              </label>
-              <textarea
-                id="contact-message"
-                name="message"
-                rows={4}
-                placeholder="What are you building? Timeline, goals, current pain points…"
-                className="contact-form-input contact-form-input--message mobile-input"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="contact-submit-btn hero-btn hero-btn--primary touch-target"
-            >
-              <span>Send project request</span>
-            </button>
-
-            <p className="contact-form-reassurance">
-              No spam — we reply within 1–2 business days with scope and a starting price range.
-            </p>
-          </form>
+          <div className="contact-reveal contact-reveal--form">
+            <LeadForm initialQuote={pendingQuote} onSubmitted={onQuoteConsumed} />
+          </div>
         </div>
 
         <div className="safe-area-bottom contact-footer">

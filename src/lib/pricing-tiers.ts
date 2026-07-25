@@ -4,15 +4,14 @@ export const PRICING_TIERS = [
     title: "Starter Website",
     price: "From R3,500",
     estimateNote: "Typical starting estimate for a focused one-page build",
-    description:
-      "A clean premium landing page for businesses that need a sharper online presence.",
+    description: "A clean premium landing page for businesses that need a sharper online presence.",
     includes: [
       "Mobile-first landing page",
       "Contact or enquiry form",
       "Basic SEO structure",
       "Fast modern build",
     ],
-    cta: "Start here",
+    cta: "Book a call",
     featured: false,
   },
   {
@@ -28,7 +27,7 @@ export const PRICING_TIERS = [
       "Forms and automations",
       "Admin-friendly structure",
     ],
-    cta: "Build a system",
+    cta: "Book a call",
     featured: true,
   },
   {
@@ -36,15 +35,14 @@ export const PRICING_TIERS = [
     title: "Custom Operations Tool",
     price: "Custom quote",
     estimateNote: "Scoped after discovery — every workflow is different",
-    description:
-      "For businesses with a specific process, internal tool or multi-step workflow.",
+    description: "For businesses with a specific process, internal tool or multi-step workflow.",
     includes: [
       "Custom planning",
       "Data/workflow mapping",
       "Tailored interface",
       "Integration-ready structure",
     ],
-    cta: "Discuss project",
+    cta: "Book a call",
     featured: false,
   },
 ] as const;

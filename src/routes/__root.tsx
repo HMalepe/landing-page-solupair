@@ -12,6 +12,7 @@ import { Suspense, useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { DevicePreview } from "@/components/dev/device-preview";
 import { RouteLoadingSkeleton } from "@/components/route-loading-skeleton";
+import { Toaster } from "@/components/ui/sonner";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "../lib/site-seo";
 
@@ -168,6 +169,7 @@ function RootComponent() {
       <Suspense fallback={<RouteLoadingSkeleton />}>
         <Outlet />
       </Suspense>
+      <Toaster />
       <DevicePreview />
     </QueryClientProvider>
   );

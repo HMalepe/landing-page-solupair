@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  type Variants,
-} from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useSectionInView } from "@/hooks/use-section-in-view";
 import { CONTACT_EMAIL } from "@/lib/site";
@@ -287,7 +282,9 @@ export function FinalCtaSection() {
       setAccentSheen(true);
       return;
     }
-    const leadMs = Math.round((SOLUTION_LEAD.length * LEAD_STAGGER + LEAD_MS + HERO_LEAD_GAP) * 1000);
+    const leadMs = Math.round(
+      (SOLUTION_LEAD.length * LEAD_STAGGER + LEAD_MS + HERO_LEAD_GAP) * 1000,
+    );
     const t = window.setTimeout(() => setPhase("hero"), leadMs);
     return () => window.clearTimeout(t);
   }, [phase, reduceMotion]);
@@ -422,11 +419,7 @@ export function FinalCtaSection() {
         <motion.div
           className="final-cta-actions"
           initial={false}
-          animate={
-            showRest || reduceMotion
-              ? { opacity: 1, y: 0 }
-              : { opacity: 0, y: 14 }
-          }
+          animate={showRest || reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
           transition={{ duration: 0.85, ease: EASE, delay: reduceMotion ? 0 : 0.08 }}
         >
           <a
@@ -434,7 +427,7 @@ export function FinalCtaSection() {
             onClick={goToContact}
             className="final-cta-btn hero-btn hero-btn--primary touch-target"
           >
-            <span>Start with a quick message</span>
+            <span>Book a call</span>
           </a>
           <a href={`mailto:${CONTACT_EMAIL}`} className="final-cta-email">
             Or email {CONTACT_EMAIL}
