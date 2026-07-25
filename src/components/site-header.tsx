@@ -4,7 +4,7 @@ import solupairLogo from "@/assets/solupair-logo.png";
 import solupairWordmark from "@/assets/solupair-wordmark.png";
 
 type SiteHeaderProps = {
-  /** Sticky bar for inner pages (pricing, etc.) */
+  /** Sticky bar for inner pages (what-we-build, etc.) */
   sticky?: boolean;
 };
 
@@ -85,14 +85,14 @@ export function SiteHeader({ sticky = false }: SiteHeaderProps) {
               <span className="site-nav-label site-nav-label--full">Projects</span>
             </a>
             <Link
-              to="/pricing"
+              to="/what-we-build"
               className="site-nav-link site-nav-link--secondary"
               activeProps={{
                 className: "site-nav-link site-nav-link--secondary site-nav-link--active",
               }}
             >
-              <span className="site-nav-label site-nav-label--short">Price</span>
-              <span className="site-nav-label site-nav-label--full">Pricing</span>
+              <span className="site-nav-label site-nav-label--short">Build</span>
+              <span className="site-nav-label site-nav-label--full">What We Build</span>
             </Link>
             <a href="/#contact" className="site-nav-link site-nav-link--primary">
               <span className="site-nav-label site-nav-label--short">Book</span>

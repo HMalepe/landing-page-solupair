@@ -5,7 +5,7 @@
 export function RouteLoadingSkeleton({
   variant = "page",
 }: {
-  variant?: "page" | "pricing";
+  variant?: "page" | "build";
 }) {
   return (
     <div
@@ -32,7 +32,7 @@ export function RouteLoadingSkeleton({
       </div>
 
       <div
-        className={`route-skeleton__body${variant === "pricing" ? " route-skeleton__body--pricing" : ""}`}
+        className={`route-skeleton__body${variant === "build" ? " route-skeleton__body--build" : ""}`}
         aria-hidden
       >
         <div className="route-skeleton__glow route-skeleton__glow--left" />
@@ -45,7 +45,7 @@ export function RouteLoadingSkeleton({
           <span className="route-skeleton__block route-skeleton__lede" />
           <span className="route-skeleton__block route-skeleton__lede route-skeleton__lede--short" />
 
-          {variant === "pricing" ? (
+          {variant === "build" ? (
             <>
               <div className="route-skeleton__chips">
                 {Array.from({ length: 5 }, (_, i) => (
@@ -73,6 +73,6 @@ export function RouteLoadingSkeleton({
   );
 }
 
-export function PricingRouteSkeleton() {
-  return <RouteLoadingSkeleton variant="pricing" />;
+export function WhatWeBuildRouteSkeleton() {
+  return <RouteLoadingSkeleton variant="build" />;
 }

@@ -92,9 +92,9 @@ function ServicesPage() {
           Brief us — 24h response
         </Link>
         <p className="mt-4 text-sm text-muted-foreground">
-          Looking for numbers? See{" "}
-          <Link to="/pricing" className="font-medium text-sage hover:underline">
-            indicative pricing
+          Curious what this looks like? See{" "}
+          <Link to="/what-we-build" className="font-medium text-sage hover:underline">
+            what we build
           </Link>
           .
         </p>

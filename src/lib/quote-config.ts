@@ -1,8 +1,7 @@
 /**
  * ZAR quote-builder pricing model — a data file, edit ranges here without
- * touching the configurator UI. Anchored to the real tiers in
- * src/lib/pricing-tiers.ts (Starter R3,500 / Business R7,500 / Custom) so
- * the two surfaces never contradict each other.
+ * touching the configurator UI. This is the only place price figures live
+ * on the site now — the "What We Build" page shows services, not numbers.
  */
 
 export type ProjectTypeId = "website" | "dashboard" | "whatsapp" | "internal-tool";
