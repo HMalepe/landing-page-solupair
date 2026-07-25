@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useSectionInView } from "@/hooks/use-section-in-view";
 import { CONTACT_EMAIL } from "@/lib/site";
@@ -80,18 +80,14 @@ function TypeLine({
   className?: string;
   onDone?: () => void;
 }) {
+  // Only ever mounted in the !reduceMotion branch (see the caller below),
+  // so there's no reduced-motion path to handle here.
   const [count, setCount] = useState(0);
-  const reduceMotion = useReducedMotion();
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
 
   useEffect(() => {
     if (!active) return;
-    if (reduceMotion) {
-      setCount(text.length);
-      onDoneRef.current?.();
-      return;
-    }
     setCount(0);
     let i = 0;
     const id = window.setInterval(() => {
@@ -103,7 +99,7 @@ function TypeLine({
       }
     }, TYPE_MS);
     return () => window.clearInterval(id);
-  }, [active, text, reduceMotion]);
+  }, [active, text]);
 
   return (
     <span className={className}>
@@ -258,8 +254,11 @@ type PitchPhase = "idle" | "question" | "beat" | "solution" | "hero" | "body" | 
 
 export function FinalCtaSection() {
   const { sectionRef, sectionInView } = useSectionInView();
+  // useDeviceProfile() alone: framer-motion's useReducedMotion() reads
+  // matchMedia synchronously on the client's first render, mismatching the
+  // server's always-false output whenever a visitor has OS reduced motion on.
   const { prefersReducedMotion } = useDeviceProfile();
-  const reduceMotion = !!(useReducedMotion() || prefersReducedMotion);
+  const reduceMotion = prefersReducedMotion;
   const [phase, setPhase] = useState<PitchPhase>("idle");
   const [accentSheen, setAccentSheen] = useState(false);
 

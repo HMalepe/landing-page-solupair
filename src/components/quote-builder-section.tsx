@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Slider } from "@/components/ui/slider";
@@ -29,8 +29,7 @@ type QuoteBuilderSectionProps = {
   onLockQuote: (quote: LeadFormQuotePrefill) => void;
 };
 
-function AnimatedZAR({ value }: { value: number }) {
-  const reduceMotion = useReducedMotion();
+function AnimatedZAR({ value, reduceMotion }: { value: number; reduceMotion: boolean }) {
   const motionValue = useMotionValue(value);
   const spring = useSpring(motionValue, { stiffness: 140, damping: 24, mass: 0.6 });
   const [display, setDisplay] = useState(() => formatZAR(value));
@@ -198,7 +197,8 @@ export function QuoteBuilderSection({ onLockQuote }: QuoteBuilderSectionProps) {
           <div className="quote-builder-range">
             <p className="quote-builder-range__label">Your estimate</p>
             <p className="quote-builder-range__amount" aria-hidden="true">
-              <AnimatedZAR value={range.min} /> – <AnimatedZAR value={range.max} />
+              <AnimatedZAR value={range.min} reduceMotion={prefersReducedMotion} /> –{" "}
+              <AnimatedZAR value={range.max} reduceMotion={prefersReducedMotion} />
             </p>
             <span className="sr-only" aria-live="polite" aria-atomic="true">
               Estimated range: {formatZAR(range.min)} to {formatZAR(range.max)}.

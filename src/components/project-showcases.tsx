@@ -1,5 +1,6 @@
 import { type ReactNode, Fragment } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -94,7 +95,7 @@ function ChatBubble({
   time?: string;
   delay?: number;
 }) {
-  const reduce = useReducedMotion();
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
   const isBot = from === "bot";
 
   return (
@@ -135,7 +136,7 @@ function KpiCard({
   tone: string;
   delay?: number;
 }) {
-  const reduce = useReducedMotion();
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
   return (
     <motion.div
       className={`rounded-xl border px-2.5 py-2 sm:px-3 sm:py-2.5 ${tone}`}
@@ -159,7 +160,7 @@ function KpiCard({
 
 /** ExpiryDesk PRO — pharmacy inventory mock. */
 export function ExpiryDeskDashboardPreview({ isActive = true }: { isActive?: boolean }) {
-  const reduce = useReducedMotion();
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
   const animate = isActive && !reduce;
 
   const rows = [
@@ -341,7 +342,7 @@ const LIVE_WA_THREADS: WaThread[] = [
 
 /** Solupair Live Pulse — owner dashboard with WhatsApp inbox. */
 export function LivePulseDashboardPreview({ isActive = true }: { isActive?: boolean }) {
-  const reduce = useReducedMotion();
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
   const animate = isActive && !reduce;
 
   return (
@@ -543,7 +544,7 @@ export function LivePulseDashboardPreview({ isActive = true }: { isActive?: bool
 
 /** MarineFlow WhatsApp booking agent — phone mock. */
 export function WhatsAppChatbotPreview({ isActive = true }: { isActive?: boolean }) {
-  const reduce = useReducedMotion();
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
   const animate = isActive && !reduce;
 
   return (

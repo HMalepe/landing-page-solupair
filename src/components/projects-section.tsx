@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useRef, useState, type KeyboardEvent } from "react";
 import {
@@ -38,8 +38,12 @@ export function ProjectsSection() {
     canScrollPrev: projects.length > 1,
     canScrollNext: projects.length > 1,
   });
-  const { prefersReducedMotion } = useDeviceProfile();
-  const reduceMotion = useReducedMotion() || prefersReducedMotion;
+  // Framer Motion's own useReducedMotion() reads matchMedia synchronously on
+  // the client's first render, before hydration reconciles against the
+  // server's (always-false) output — a guaranteed mismatch whenever a real
+  // visitor has OS-level reduced motion on. useDeviceProfile()'s value stays
+  // false until a post-mount effect confirms it, matching SSR safely.
+  const { prefersReducedMotion: reduceMotion } = useDeviceProfile();
 
   const project = projects[carousel.index];
 
