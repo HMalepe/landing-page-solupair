@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/brand/Reveal";
 import { NatureImage } from "@/components/brand/NatureImage";
-import { IMAGES, TEAM_IMAGES } from "@/lib/images";
+import { IMAGES } from "@/lib/images";
 import { LEGAL_NAME, SITE_NAME, pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/about")({
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/about")({
   head: () =>
     pageHead({
       title: `About — ${LEGAL_NAME}`,
-      description: `${LEGAL_NAME} is a South African company. Six people, twelve combined years of senior craft — design that ships beats design that wins awards.`,
+      description: `${LEGAL_NAME} is a South African studio building websites, dashboards and WhatsApp automation for SME owners — design that ships beats design that wins awards.`,
       path: "/about",
     }),
 });
@@ -21,12 +21,6 @@ const PRINCIPLES = [
   { n: "IV.", t: "Design is downstream of decisions.", d: "Most design problems are product decisions in disguise. We help you make them." },
   { n: "V.", t: "Code is craft.", d: "We ship production React, Tailwind, Motion. The handoff is a commit, not a Figma link." },
   { n: "VI.", t: "Quiet over loud.", d: "We don't post our process on Twitter. The work is the proof." },
-];
-
-const TEAM = [
-  { name: "Naledi Khumalo", role: "Founder · Design Director", bio: "Product design for SA fintech and SaaS startups. Based in Johannesburg." },
-  { name: "Sipho Ndlovu", role: "Design Engineer", bio: "Ships production React for local teams — remote-first across ZA." },
-  { name: "Amira Patel", role: "Brand Director", bio: "Brand systems for software companies from Cape Town to the continent." },
 ];
 
 function AboutPage() {
@@ -65,35 +59,6 @@ function AboutPage() {
                 <div>
                   <h3 className="font-display text-xl tracking-tight">{p.t}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{p.d}</p>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      <section className="relative mx-auto mt-24 max-w-[1100px] px-6">
-        <Reveal>
-          <p className="text-sm font-medium text-sage">The team</p>
-          <h2 className="mt-3 font-display text-3xl tracking-tight md:text-4xl">
-            Who you'll actually <span className="font-serif italic gradient-nature-text">be working with.</span>
-          </h2>
-        </Reveal>
-
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-          {TEAM.map((p, i) => (
-            <Reveal key={p.name} delay={i * 80}>
-              <div className="group overflow-hidden rounded-2xl border border-border bg-surface/40 lift">
-                <NatureImage
-                  src={TEAM_IMAGES[i].src}
-                  alt={TEAM_IMAGES[i].alt}
-                  className="aspect-[4/5] w-full"
-                  overlay="light"
-                />
-                <div className="p-6">
-                  <h3 className="font-display text-xl tracking-tight">{p.name}</h3>
-                  <p className="mt-1 text-sm font-medium text-sage">{p.role}</p>
-                  <p className="mt-3 text-sm text-muted-foreground">{p.bio}</p>
                 </div>
               </div>
             </Reveal>

@@ -1,26 +1,47 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/brand/Reveal";
 import { NatureImage } from "@/components/brand/NatureImage";
-import { IMAGES, WORK_IMAGES } from "@/lib/images";
+import { IMAGES } from "@/lib/images";
 import { LEGAL_NAME, pageHead } from "@/lib/site";
+import expiryDeskImg from "@/assets/project-expiry-desk.png";
+import livePulseImg from "@/assets/project-live-pulse.png";
+import whatsappAgentImg from "@/assets/project-whatsapp-agent.png";
 
 export const Route = createFileRoute("/work")({
   component: WorkPage,
   head: () =>
     pageHead({
       title: `Work — ${LEGAL_NAME}`,
-      description: "Selected case studies in product UI, brand, landing pages and internal tools.",
+      description: "Selected builds: pharmacy inventory dashboards, owner dashboards and WhatsApp booking automation.",
       path: "/work",
     }),
 });
 
 const CASES = [
-  { n: "01", client: "Payflow", scope: "Product UI · Design System", year: "2025", tag: "SA Fintech", size: "lg" },
-  { n: "02", client: "Ledger Rhino", scope: "Brand + Landing", year: "2025", tag: "B2B SaaS", size: "md" },
-  { n: "03", client: "AgriSense", scope: "Ops Dashboard", year: "2024", tag: "Agtech · CPT", size: "md" },
-  { n: "04", client: "Northwind Mail", scope: "Marketing UI redesign", year: "2024", tag: "Communications", size: "lg" },
-  { n: "05", client: "Verge Studio", scope: "Brand + Identity", year: "2024", tag: "Creative", size: "sm" },
-  { n: "06", client: "Pinecone HR", scope: "Internal admin tools", year: "2023", tag: "HR Tech", size: "sm" },
+  {
+    n: "01",
+    client: "ExpiryDesk PRO",
+    scope: "Pharmacy inventory dashboard · expiry tracking",
+    tag: "Inventory intelligence",
+    size: "lg",
+    img: expiryDeskImg,
+  },
+  {
+    n: "02",
+    client: "Live Pulse",
+    scope: "Owner dashboard · bookings, revenue, WhatsApp inbox",
+    tag: "Business visibility",
+    size: "md",
+    img: livePulseImg,
+  },
+  {
+    n: "03",
+    client: "WhatsApp Agent",
+    scope: "WhatsApp booking automation",
+    tag: "Customer automation",
+    size: "md",
+    img: whatsappAgentImg,
+  },
 ];
 
 function WorkPage() {
@@ -48,15 +69,14 @@ function WorkPage() {
 
       <div className="relative mx-auto mt-16 grid max-w-[1100px] grid-cols-1 gap-5 px-6 md:grid-cols-6">
         {CASES.map((c, i) => {
-          const span = c.size === "lg" ? "md:col-span-4" : c.size === "md" ? "md:col-span-3" : "md:col-span-2";
-          const ratio = c.size === "lg" ? "aspect-[16/10]" : c.size === "md" ? "aspect-[4/3]" : "aspect-square";
-          const img = WORK_IMAGES[i];
+          const span = c.size === "lg" ? "md:col-span-4" : "md:col-span-3";
+          const ratio = c.size === "lg" ? "aspect-[16/10]" : "aspect-[4/3]";
           return (
             <Reveal key={c.n} delay={i * 60} className={span}>
-              <Link to="/work" className="group block lift overflow-hidden rounded-2xl border border-border bg-surface/40">
+              <div className="group block lift overflow-hidden rounded-2xl border border-border bg-surface/40">
                 <NatureImage
-                  src={img.src}
-                  alt={img.alt}
+                  src={c.img}
+                  alt={`${c.client} preview`}
                   className={`${ratio} w-full`}
                   overlay="dark"
                 />
@@ -65,9 +85,9 @@ function WorkPage() {
                     <h2 className="font-display text-xl tracking-tight group-hover:gradient-nature-text md:text-2xl">{c.client}</h2>
                     <p className="text-xs text-muted-foreground">{c.scope}</p>
                   </div>
-                  <span className="text-xs text-text-tertiary">{c.year}</span>
+                  <span className="text-xs text-text-tertiary">{c.tag}</span>
                 </div>
-              </Link>
+              </div>
             </Reveal>
           );
         })}
@@ -76,11 +96,11 @@ function WorkPage() {
       <div className="relative mx-auto mt-20 max-w-[1100px] px-6">
         <div className="rounded-2xl border border-border bg-surface/40 p-10 text-center md:p-16">
           <h3 className="font-display text-3xl tracking-tight md:text-4xl">
-            Want the <span className="font-serif italic gradient-nature-text">NDA work?</span>
+            Got something <span className="font-serif italic gradient-nature-text">like this?</span>
           </h3>
-          <p className="mt-4 text-muted-foreground">We share private case studies on call. Most of what we ship never makes the archive.</p>
+          <p className="mt-4 text-muted-foreground">Tell us what you're building — we'll tell you honestly if we're the right fit.</p>
           <Link to="/contact" className="btn-nature-outline mt-8 inline-flex">
-            Request portfolio
+            Tell us about it
           </Link>
         </div>
       </div>
