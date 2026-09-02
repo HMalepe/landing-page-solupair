@@ -10,7 +10,7 @@ import {
   pageHead,
 } from "@/lib/site";
 
-const UPDATED = "22 July 2026";
+const UPDATED = "2 September 2026";
 
 export const Route = createFileRoute("/terms")({
   component: TermsPage,
@@ -62,7 +62,42 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="acceptable-use" title="3. Acceptable use">
+      <LegalSection id="payments-cancellations-delivery" title="3. Payments, cancellations, refunds and delivery">
+        <p>
+          We deliver work as a project-based digital product, design and automation studio — not as
+          physical goods or ticketed events. The terms below apply to project engagements booked
+          through the site, alongside the specific commercial terms in your signed proposal or
+          statement of work (“SOW”), which take precedence where they differ.
+        </p>
+        <p>
+          <strong>Payment.</strong> Projects are billed in milestones or deposits as set out in the
+          SOW. Work on a milestone begins once the associated payment is received, unless we agree
+          otherwise in writing.
+        </p>
+        <p>
+          <strong>Cancellations.</strong> You may cancel a project at any time by written notice. If
+          you cancel after work has started, you remain liable for fees corresponding to work
+          completed or in progress up to the cancellation date; any remaining, unearned balance of a
+          deposit for milestones not yet started is returned to you.
+        </p>
+        <p>
+          <strong>Refunds.</strong> Deposits and payments for milestones that have already been
+          delivered or substantially completed are non-refundable. Where we are unable to deliver an
+          agreed milestone at all, we will either remedy the issue or refund the fee paid for that
+          specific milestone, at our discretion. Refunds, where due, are processed to the original
+          payment method within a reasonable time and are not automatic — contact us using the
+          details below to request one.
+        </p>
+        <p>
+          <strong>Delivery.</strong> Deliverables (such as designs, source code, automations and
+          documentation) are delivered electronically — for example via email, GitHub, cloud storage
+          or a shared platform — as each milestone in the SOW is completed. Delivery dates on the
+          site or in an estimate are indicative; actual timelines depend on the agreed scope and on
+          timely feedback and inputs from you.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="acceptable-use" title="4. Acceptable use">
         <p>You agree not to:</p>
         <ul>
           <li>Misuse forms for spam, phishing or unrelated solicitation</li>
@@ -73,7 +108,7 @@ function TermsPage() {
         <p>We may block access or ignore submissions that appear abusive or automated.</p>
       </LegalSection>
 
-      <LegalSection id="ip" title="4. Intellectual property">
+      <LegalSection id="ip" title="5. Intellectual property">
         <p>
           Unless otherwise stated, the site’s branding, copy, layout, graphics and code are owned
           by {LEGAL_NAME} or our licensors. You may view and share links to public pages for
@@ -86,7 +121,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="third-parties" title="5. Third-party links and tools">
+      <LegalSection id="third-parties" title="6. Third-party links and tools">
         <p>
           The site may link to third-party products, demos or references. We are not responsible
           for their content, availability or privacy practices. Your use of third-party services is
@@ -94,7 +129,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="disclaimer" title="6. Disclaimers">
+      <LegalSection id="disclaimer" title="7. Disclaimers">
         <p>
           The site is provided on an “as available” basis. We aim for accuracy but do not warrant
           that all content is complete, current or error-free. Estimates, case descriptions and
@@ -107,7 +142,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="liability" title="7. Limitation of liability">
+      <LegalSection id="liability" title="8. Limitation of liability">
         <p>
           Nothing in these Terms excludes liability that cannot lawfully be excluded, including for
           gross negligence or fraud where such exclusion is prohibited. For website use, our
@@ -117,7 +152,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="privacy" title="8. Privacy">
+      <LegalSection id="privacy" title="9. Privacy">
         <p>
           Personal information submitted through the site is handled as described in our{" "}
           <Link to="/privacy" className="legal-page-inline-link">
@@ -127,7 +162,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="changes-terms" title="9. Changes">
+      <LegalSection id="changes-terms" title="10. Changes">
         <p>
           We may revise these Terms periodically. The “Last updated” date will change when we do.
           Continued use of the site after changes constitutes acceptance of the updated Terms for
@@ -135,7 +170,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="law" title="10. Governing law">
+      <LegalSection id="law" title="11. Governing law">
         <p>
           These Terms are governed by the laws of the Republic of South Africa. Courts of South
           Africa have exclusive jurisdiction over disputes arising from website use under these
@@ -143,7 +178,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="contact-terms" title="11. Contact">
+      <LegalSection id="contact-terms" title="12. Contact">
         <p>
           Questions about these Terms:{" "}
           <a href={`mailto:${CONTACT_EMAIL}`} className="legal-page-inline-link">
