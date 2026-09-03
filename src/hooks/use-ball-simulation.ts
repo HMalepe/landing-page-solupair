@@ -15,6 +15,7 @@ import type { AmbientCycle } from "@/hooks/use-ambient-cycle";
 export function useBallSimulation(core: HeroBallCore, ambientCycle: AmbientCycle) {
   const {
     prefersReducedMotion,
+    isPhone,
     heroInView,
     phaseRef,
     cycleRef,
@@ -54,8 +55,18 @@ export function useBallSimulation(core: HeroBallCore, ambientCycle: AmbientCycle
     let prevX = stateRef.current.x;
     let prevY = stateRef.current.y;
 
+    // Phones don't need this rAF loop stepping at full display refresh rate —
+    // capping it to ~30fps roughly halves the main-thread cost of dragging/
+    // ambient physics with no visible difference (dt still reflects real
+    // elapsed time, just measured less often).
+    const FRAME_INTERVAL = isPhone ? 1000 / 30 : 0;
+    let lastFrameAt = 0;
+
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
+      if (FRAME_INTERVAL && now - lastFrameAt < FRAME_INTERVAL) return;
+      lastFrameAt = now;
+
       const phase = phaseRef.current;
       const cycle = cycleRef.current;
 
@@ -63,7 +74,7 @@ export function useBallSimulation(core: HeroBallCore, ambientCycle: AmbientCycle
       // Frozen during dissolve / still blur-in — never step physics then.
       if (phase === "ambient" && cycle !== "live") return;
 
-      const dt = Math.min(now - last, 24);
+      const dt = Math.min(now - last, isPhone ? 40 : 24);
       last = now;
 
       const { bounds } = readSectionBounds();
@@ -180,6 +191,7 @@ export function useBallSimulation(core: HeroBallCore, ambientCycle: AmbientCycle
     posX,
     posY,
     prefersReducedMotion,
+    isPhone,
     heroInView,
     readSectionBounds,
     rollAngle,

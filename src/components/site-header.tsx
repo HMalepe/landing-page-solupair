@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import solupairLogo from "@/assets/solupair-logo.png";
+import solupairLogoMobile from "@/assets/solupair-logo-mobile.png";
 import solupairWordmark from "@/assets/solupair-wordmark.png";
+import solupairWordmarkMobile from "@/assets/solupair-wordmark-mobile.png";
 import { useWordmarkORect } from "@/hooks/use-wordmark-o-rect";
 
 type SiteHeaderProps = {
@@ -30,6 +32,8 @@ function SolupairLogo({
     >
       <img
         src={solupairLogo}
+        srcSet={`${solupairLogoMobile} 200w, ${solupairLogo} 1536w`}
+        sizes="(max-width: 639px) 90px, 1536px"
         alt=""
         aria-hidden
         width={1536}
@@ -41,6 +45,8 @@ function SolupairLogo({
         <img
           ref={wordmarkRef}
           src={solupairWordmark}
+          srcSet={`${solupairWordmarkMobile} 500w, ${solupairWordmark} 1448w`}
+          sizes="(max-width: 639px) 200px, 1448px"
           alt="Solupair"
           width={1448}
           height={176}

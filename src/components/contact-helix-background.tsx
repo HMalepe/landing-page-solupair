@@ -242,8 +242,20 @@ export function ContactHelixBackground() {
       group.rotation.x = -0.14;
       scene.add(group);
 
-      const render = () => {
+      // Phones re-render this WebGL scene at ~30fps instead of full display
+      // refresh rate — halves the per-frame instance-matrix recompute cost
+      // for no visible difference in an ambient background.
+      const FRAME_INTERVAL = isPhone ? 1000 / 30 : 0;
+      let lastFrameAt = 0;
+
+      const render = (now?: number) => {
         if (disposed) return;
+        if (FRAME_INTERVAL && now !== undefined && now - lastFrameAt < FRAME_INTERVAL) {
+          frameId = window.requestAnimationFrame(render);
+          return;
+        }
+        if (now !== undefined) lastFrameAt = now;
+
         const elapsed = clock.getElapsedTime();
         updateInstances(elapsed);
 
