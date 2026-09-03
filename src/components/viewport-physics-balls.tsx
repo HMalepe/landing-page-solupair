@@ -83,7 +83,10 @@ export function ViewportPhysicsBalls({ variant }: { variant: "projects" | "conta
     };
   }, [travel, variant]);
 
-  if (prefersReducedMotion) return null;
+  // Purely decorative on phones — a continuously-animated, heavily-blurred
+  // layer is a real battery/scroll-jank cost for no perceptible benefit at
+  // that size, so skip it there entirely. Desktop/tablet unchanged.
+  if (prefersReducedMotion || isPhone) return null;
 
   return (
     <AmbientBlurBall size={size} drift={config.drift} bounds={bounds} className={config.className} />
