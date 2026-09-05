@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   ENTRANCE_PHYSICS,
   getEntranceInitialState,
@@ -39,6 +39,17 @@ export function useHeroEntrance(core: HeroBallCore, choreography: HeroChoreograp
   } = core;
   const { finishEntrance } = choreography;
 
+  // `isPhone` starts `false` (the SSR-safe default from useDeviceProfile) and
+  // flips to its real value in an effect shortly after mount on phones —
+  // read the latest value via this ref rather than the effect's own
+  // dependency array below, so that transition can't tear the entrance rAF
+  // loop down. The `entranceStartedRef` guard below is a run-once-ever
+  // latch: if `isPhone` were a dependency, the teardown from that one
+  // post-mount change would never be allowed to restart, silently freezing
+  // the ball's opening flight on every phone.
+  const isPhoneRef = useRef(isPhone);
+  isPhoneRef.current = isPhone;
+
   useEffect(() => {
     if (prefersReducedMotion || entranceStartedRef.current) return;
     entranceStartedRef.current = true;
@@ -47,7 +58,7 @@ export function useHeroEntrance(core: HeroBallCore, choreography: HeroChoreograp
     let cancelled = false;
     let last = performance.now();
     let startTime = performance.now();
-    const maxDuration = getEntranceMaxDurationMs(isPhone);
+    const maxDuration = getEntranceMaxDurationMs(isPhoneRef.current);
     const preferred = getPreferredDiameter();
 
     const boot = () => {
@@ -145,7 +156,6 @@ export function useHeroEntrance(core: HeroBallCore, choreography: HeroChoreograp
     finishEntrance,
     fitDiameter,
     floorProximity,
-    isPhone,
     posX,
     posY,
     prefersReducedMotion,
