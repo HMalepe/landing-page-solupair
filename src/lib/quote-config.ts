@@ -1,8 +1,8 @@
 /**
  * ZAR quote-builder pricing model — a data file, edit ranges here without
- * touching the configurator UI. This is the only place price figures live
- * on the site now — the "What We Build" page shows services, not numbers.
+ * touching the configurator UI. Figures live on the pricing page.
  */
+export const PENDING_QUOTE_STORAGE_KEY = "solupair-pending-quote";
 
 export type ProjectTypeId = "website" | "dashboard" | "whatsapp" | "internal-tool";
 

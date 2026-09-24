@@ -6,7 +6,6 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useSectionInView } from "@/hooks/use-section-in-view";
-import { navigateToSection } from "@/lib/section-nav";
 import {
   ADD_ONS,
   computeQuoteRange,
@@ -70,16 +69,14 @@ export function QuoteBuilderSection({ onLockQuote }: QuoteBuilderSectionProps) {
 
   const handleLockQuote = () => {
     onLockQuote({ selection, range });
-    navigateToSection("contact", prefersReducedMotion);
   };
 
   return (
     <section
       ref={sectionRef}
       id="quote"
-      data-scroll-snap="quote"
       aria-labelledby="quote-heading"
-      className={`quote-builder-section safe-area-x section-surface snap-section-flow relative isolate overflow-x-clip px-4 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-14${sectionInView ? " quote-builder-in-view" : ""}`}
+      className={`quote-builder-section safe-area-x relative isolate overflow-x-clip px-4 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-14${sectionInView ? " quote-builder-in-view" : ""}`}
     >
       <div className="relative z-10 mx-auto w-full max-w-4xl">
         <motion.header

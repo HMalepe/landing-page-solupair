@@ -15,6 +15,7 @@ import { navigateToSection } from "@/lib/section-nav";
 const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const MOTION_DURATION = 0.45;
 const projects = PROJECT_SHOWCASES;
+const WHATSAPP_PITCH_IDS = new Set(["live-pulse", "bot-faqs", "whatsapp-agent"]);
 
 function revealProps(reduceMotion: boolean, inView: boolean, delay = 0, withScale = false) {
   if (reduceMotion) {
@@ -46,6 +47,7 @@ export function ProjectsSection() {
   const { prefersReducedMotion: reduceMotion } = useDeviceProfile();
 
   const project = projects[carousel.index];
+  const showWhatsappPitch = WHATSAPP_PITCH_IDS.has(project.id);
 
   const syncCarousel = useCallback((state: ShowcaseCarouselState) => {
     setCarousel(state);
@@ -268,6 +270,28 @@ export function ProjectsSection() {
               ))}
             </div>
           </div>
+
+          <AnimatePresence initial={false}>
+            {showWhatsappPitch ? (
+              <motion.div
+                key="whatsapp-pitch"
+                className="projects-whatsapp-pitch"
+                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
+                transition={{ duration: 0.4, ease: REVEAL_EASE }}
+              >
+                <p className="projects-whatsapp-pitch__headline">
+                  <span>Bookings handled</span>
+                  <span className="projects-whatsapp-pitch__accent">while you treat</span>
+                </p>
+                <p className="projects-whatsapp-pitch__body">
+                  Patients book, reschedule and confirm over WhatsApp all day — we automate the replies
+                  so your calendar fills itself and you're never stuck typing between patients.
+                </p>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
 
           <div className="projects-carousel-controls safe-area-bottom mt-2 flex items-center justify-center sm:mt-3">
             <div

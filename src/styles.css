@@ -3118,6 +3118,43 @@ main > header,
   }
 }
 
+.projects-whatsapp-pitch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 46rem;
+  margin-top: clamp(0.85rem, 2vh, 1.15rem);
+}
+
+.projects-whatsapp-pitch__headline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em 0.45em;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.4vw, 1.65rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--text-main);
+}
+
+.projects-whatsapp-pitch__accent {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.projects-whatsapp-pitch__body {
+  margin: 0;
+  max-width: 42rem;
+  font-size: clamp(0.8125rem, 1.6vw, 0.9375rem);
+  line-height: 1.55;
+  color: var(--text-soft);
+}
+
 .projects-description {
   max-width: 20rem;
   font-size: 0.8125rem;

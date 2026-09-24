@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ContactSection } from "@/components/contact-section";
 import { FinalCtaSection } from "@/components/final-cta-section";
 import type { LeadFormQuotePrefill } from "@/components/lead-form";
 import { ProjectsSection } from "@/components/projects-section";
-import { QuoteBuilderSection } from "@/components/quote-builder-section";
 import { SiteHeader } from "@/components/site-header";
+import { PENDING_QUOTE_STORAGE_KEY } from "@/lib/quote-config";
 
 export const Route = createFileRoute("/")({
   component: NovaHome,
@@ -75,19 +75,19 @@ function Hero() {
         <div className="hero-copy-stack w-full min-w-0">
           <div className="hero-reveal hero-reveal--eyebrow flex justify-center">
             <p className="hero-eyebrow">
-              WhatsApp
-              <span className="hero-eyebrow-sep" aria-hidden>
-                ·
-              </span>
-              Automation
-              <span className="hero-eyebrow-sep" aria-hidden>
-                ·
-              </span>
               Websites
               <span className="hero-eyebrow-sep" aria-hidden>
                 ·
               </span>
               Dashboards
+              <span className="hero-eyebrow-sep" aria-hidden>
+                ·
+              </span>
+              WhatsApp
+              <span className="hero-eyebrow-sep" aria-hidden>
+                ·
+              </span>
+              Automation
             </p>
           </div>
 
@@ -96,19 +96,19 @@ function Hero() {
 
             <h1 className="relative z-[1] w-full min-w-0 text-center">
               <span className="hero-headline hero-headline-text hero-headline-text--a hero-reveal hero-reveal--headline-a">
-                <span className="hero-headline-line">BOOKINGS</span>{" "}
-                <span className="hero-headline-line hero-headline-gradient">HANDLED</span>
+                <span className="hero-headline-line">DIGITAL</span>{" "}
+                <span className="hero-headline-line hero-headline-gradient">SOLUTIONS</span>
               </span>
               <span className="hero-headline hero-headline-text hero-headline-text--b hero-reveal hero-reveal--headline-b">
-                <span className="hero-headline-line hero-headline-phrase">WHILE YOU</span>{" "}
-                <span className="hero-headline-line hero-headline-phrase">TREAT</span>
+                <span className="hero-headline-line hero-headline-phrase">FOR YOUR</span>{" "}
+                <span className="hero-headline-line hero-headline-phrase">BUSINESS</span>
               </span>
             </h1>
           </div>
 
           <p className="hero-subheading hero-reveal hero-reveal--subheading text-center">
-            Patients book, reschedule and confirm over WhatsApp all day — we automate the replies so
-            your calendar fills itself and you're never stuck typing between patients.
+            Premium websites, dashboards and automated workflows for teams that need smoother
+            bookings, sharper visibility and faster operations.
           </p>
         </div>
       </div>
@@ -119,11 +119,21 @@ function Hero() {
 function NovaHome() {
   const [pendingQuote, setPendingQuote] = useState<LeadFormQuotePrefill | undefined>();
 
+  useEffect(() => {
+    const raw = sessionStorage.getItem(PENDING_QUOTE_STORAGE_KEY);
+    if (!raw) return;
+    sessionStorage.removeItem(PENDING_QUOTE_STORAGE_KEY);
+    try {
+      setPendingQuote(JSON.parse(raw) as LeadFormQuotePrefill);
+    } catch {
+      setPendingQuote(undefined);
+    }
+  }, []);
+
   return (
     <main className="scroll-snap-canvas min-h-[100dvh] bg-background font-sans text-foreground">
       <Hero />
       <ProjectsSection />
-      <QuoteBuilderSection onLockQuote={setPendingQuote} />
       <FinalCtaSection />
       <ContactSection
         pendingQuote={pendingQuote}
