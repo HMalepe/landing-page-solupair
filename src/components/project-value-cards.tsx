@@ -7,29 +7,6 @@ type ProjectValueCardsProps = {
 
 const TAG_ACCENTS = ["cyan", "purple", "magenta"] as const;
 
-/** Outcome-first case copy: the number (or honest ask) leads, before → intervention follows. */
-function caseCopy(project: (typeof PROJECT_SHOWCASES)[number]) {
-  const { outcome } = project;
-  const outcomeLine =
-    outcome.status === "pending" ? (
-      <>Outcome: {outcome.value}.</>
-    ) : (
-      <>
-        Outcome: {outcome.value}
-        {outcome.status === "estimate" ? " (estimate)" : ""}.
-      </>
-    );
-
-  return (
-    <>
-      <strong className="projects-value-card__outcome">{outcomeLine}</strong>{" "}
-      <span className="projects-value-card__case">
-        {project.before} Now: {project.intervention.charAt(0).toLowerCase() + project.intervention.slice(1)}
-      </span>
-    </>
-  );
-}
-
 export function ProjectValueCards({ activeIndex, onSelect }: ProjectValueCardsProps) {
   return (
     <ul className="projects-value-cards" aria-label="Project highlights">
@@ -50,7 +27,7 @@ export function ProjectValueCards({ activeIndex, onSelect }: ProjectValueCardsPr
           >
             <span className="projects-value-card__tag">{project.valueTag}</span>
             <span className="projects-value-card__title">{project.cardTitle}</span>
-            <p className="projects-value-card__desc">{caseCopy(project)}</p>
+            <p className="projects-value-card__desc">{project.cardLine}</p>
           </button>
         </li>
       ))}

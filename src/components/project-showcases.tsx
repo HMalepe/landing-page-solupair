@@ -954,12 +954,18 @@ export const PROJECT_SHOWCASES = [
     name: "ExpiryDesk Dashboard",
     cardTitle: "ExpiryDesk PRO",
     valueTag: "Inventory intelligence",
+    cardLine: "Flags stock by expiry date before it becomes a write-off.",
     before: "Stock expired on the shelf before anyone caught it — write-offs found out too late.",
     intervention:
       "A live dashboard that flags at-risk stock by expiry date and tracks recovered value automatically.",
     // TODO(owner): replace with the confirmed write-off/recovery number for this build.
     outcome: { status: "pending", value: "ask us for the write-off numbers on this build" } as CaseOutcome,
     tag: "Pharmacy inventory · expiry tracking",
+    explainer: {
+      lead: "Stock seen",
+      accent: "before it expires",
+      body: "Dates sit on one live board, so at-risk stock is flagged while it can still be used instead of written off as a surprise.",
+    },
     Preview: ExpiryDeskDashboardPreview,
   },
   {
@@ -967,12 +973,18 @@ export const PROJECT_SHOWCASES = [
     name: "Live Pulse",
     cardTitle: "Live Pulse Dashboard",
     valueTag: "Business visibility",
+    cardLine: "Bookings, revenue and WhatsApp, together in one live view.",
     before:
       "Bookings, revenue and WhatsApp messages lived in three different places — nothing added up in one glance.",
     intervention: "One live dashboard showing bookings, revenue and the WhatsApp inbox side by side.",
     // TODO(owner): replace with the confirmed hours-saved / admin-time number for this build.
     outcome: { status: "pending", value: "ask us for the hours saved on this build" } as CaseOutcome,
     tag: "Solupair · WhatsApp booking engine",
+    explainer: {
+      lead: "Bookings handled",
+      accent: "while you treat",
+      body: "Patients book, reschedule and confirm over WhatsApp all day — we automate the replies so your calendar fills itself and you're never stuck typing between patients.",
+    },
     Preview: LivePulseDashboardPreview,
   },
   {
@@ -980,12 +992,18 @@ export const PROJECT_SHOWCASES = [
     name: "Bot FAQs",
     cardTitle: "Bot FAQ Dashboard",
     valueTag: "Answer control",
+    cardLine: "Each WhatsApp answer is approved before it goes live.",
     before:
       "WhatsApp answers were typed by hand, so the bot and the shop sometimes said different things.",
     intervention:
       "A dashboard where the team approves each answer before it goes live on WhatsApp.",
     outcome: { status: "pending", value: "ask us for the FAQ numbers on this build" } as CaseOutcome,
     tag: "Solupair · WhatsApp booking engine",
+    explainer: {
+      lead: "Answers",
+      accent: "you approve",
+      body: "The team signs off each reply before it goes live, so WhatsApp and the shop always say the same thing.",
+    },
     Preview: BotFaqsDashboardPreview,
   },
   {
@@ -993,12 +1011,18 @@ export const PROJECT_SHOWCASES = [
     name: WHATSAPP_AGENT_NAME,
     cardTitle: "WhatsApp Booking Agent",
     valueTag: "Customer automation",
+    cardLine: "Books, reschedules and replies without waiting on staff.",
     before:
       "Customers messaged to book, reschedule and ask questions — replies waited until someone had a free minute.",
     intervention: "A WhatsApp agent that books, reschedules, answers FAQs and sends reminders automatically.",
     // TODO(owner): replace with the confirmed response-time / booking-recovery number for this build.
     outcome: { status: "pending", value: "ask us for the response-time numbers on this build" } as CaseOutcome,
     tag: "WhatsApp booking bot",
+    explainer: {
+      lead: "Replies",
+      accent: "while you work",
+      body: "The agent books, reschedules, answers questions and sends reminders, so customers are not waiting on a free minute.",
+    },
     Preview: WhatsAppChatbotPreview,
   },
   {
@@ -1006,12 +1030,18 @@ export const PROJECT_SHOWCASES = [
     name: "Florida Day Hospital",
     cardTitle: "Florida Day Hospital",
     valueTag: "Hospital website",
+    cardLine: "One page for the hospital, the care, and how to enquire.",
     before:
       "People looking for same-day surgery had no clear page for the hospital, the care, or how to enquire.",
     intervention:
       "A calm hospital website that explains the visit and gives patients a direct way to get in touch.",
     outcome: { status: "pending", value: "ask us for the enquiry numbers on this build" } as CaseOutcome,
     tag: "Private day hospital · Florida Park",
+    explainer: {
+      lead: "The visit",
+      accent: "made clear",
+      body: "People looking for same-day surgery get one page for the hospital, the care, and how to enquire.",
+    },
     Preview: FloridaDayHospitalPreview,
   },
   {
@@ -1019,12 +1049,18 @@ export const PROJECT_SHOWCASES = [
     name: "Selantra Beauty Studio",
     cardTitle: "Selantra Beauty",
     valueTag: "Studio website",
+    cardLine: "The studio, the menu, and a clear way to reserve.",
     before:
       "The studio's booking lived in messages, with no single page for the ritual, the menu, or how to reserve.",
     intervention:
       "A quiet studio website that introduces the ritual and lets guests reserve by appointment.",
     outcome: { status: "pending", value: "ask us for the booking numbers on this build" } as CaseOutcome,
     tag: "Beauty studio · Clifton Hill",
+    explainer: {
+      lead: "Reserve",
+      accent: "the ritual",
+      body: "The studio, the menu, and a way to book live on one page, instead of starting inside a message.",
+    },
     Preview: SelantraBeautyPreview,
   },
 ] as const;
