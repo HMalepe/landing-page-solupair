@@ -1,5 +1,6 @@
 import { type ReactNode, Fragment } from "react";
 import { motion } from "framer-motion";
+import hospitalPortrait from "@/assets/florida-day-hospital-portrait.webp";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   ArrowDownRight,
@@ -7,6 +8,7 @@ import {
   Calendar,
   Clock,
   GripVertical,
+  Mail,
   MessageCircle,
   Plus,
   Radio,
@@ -773,6 +775,91 @@ export function WhatsAppChatbotPreview({ isActive = true }: { isActive?: boolean
   );
 }
 
+/** Florida Day Hospital — private day-hospital marketing site. */
+export function FloridaDayHospitalPreview({ isActive = true }: { isActive?: boolean }) {
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
+  const animate = isActive && !reduce;
+
+  return (
+    <ShowcaseFrame surface="light">
+      <WindowDots title="floridadayhospital.co.za" />
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white text-[#1c2b33]">
+        <header className="flex shrink-0 items-center justify-between gap-2 border-b border-black/[0.06] px-3 py-2 sm:px-4">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <span className="relative flex size-4 shrink-0 items-center justify-center" aria-hidden>
+              <span className="absolute h-3.5 w-[3px] rounded-sm bg-[#1d7a8c]" />
+              <span className="absolute h-[3px] w-3.5 rounded-sm bg-[#1d7a8c]" />
+              <span className="absolute -right-0.5 -top-0.5 size-1.5 rounded-full bg-[#e23b4a]" />
+            </span>
+            <span className="truncate font-serif text-[11px] italic text-[#24343c] sm:text-xs">
+              Florida
+            </span>
+            <span className="hidden truncate text-[7px] font-semibold tracking-[0.16em] text-black/45 sm:inline">
+              DAY HOSPITAL
+            </span>
+          </div>
+          <nav className="hidden items-center gap-3 text-[8px] font-medium text-black/55 sm:flex">
+            <span className="border-b-2 border-[#1d7a8c] pb-0.5 text-black/80">Home</span>
+            <span>About</span>
+            <span>Services</span>
+            <span>Find us</span>
+          </nav>
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-black/15 px-2 py-1 text-[7px] font-semibold tracking-[0.08em] text-black/70 sm:text-[8px]">
+            <Mail className="size-2.5" />
+            CONTACT US
+          </span>
+        </header>
+
+        <div className="grid min-h-0 flex-1 grid-cols-[1.05fr_0.95fr]">
+          <div className="flex min-w-0 flex-col justify-center px-3 py-3 sm:px-5">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="h-px w-5 bg-[#1d7a8c]" />
+              <p className="truncate text-[6px] font-semibold tracking-[0.14em] text-black/45 sm:text-[7px]">
+                PRIVATE DAY HOSPITAL · FLORIDA PARK
+              </p>
+            </div>
+            <motion.h3
+              className="font-serif text-[15px] leading-[1.05] tracking-tight text-[#1a2a32] sm:text-[22px]"
+              initial={{ opacity: animate ? 0 : 1, y: animate ? 8 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: animate ? 0.45 : 0 }}
+            >
+              Surgical care,
+              <br />
+              measured in
+              <br />
+              <span className="italic">hours</span> — not days.
+            </motion.h3>
+            <span className="mt-2 h-px w-8 bg-black/20" />
+            <p className="mt-2 max-w-[22ch] text-[8px] leading-snug text-black/55 sm:text-[9px]">
+              One visit. One theatre. <strong className="font-semibold text-black/75">Home the same day</strong> —
+              planned from arrival through to discharge.
+            </p>
+            <span className="mt-3 inline-flex w-fit rounded-full bg-[#3c5560] px-3 py-1.5 text-[8px] font-semibold text-white sm:text-[9px]">
+              Contact us
+            </span>
+          </div>
+
+          <motion.div
+            className="relative min-h-0 overflow-hidden"
+            initial={{ opacity: animate ? 0 : 1 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: animate ? 0.5 : 0 }}
+          >
+            <img
+              src={hospitalPortrait}
+              alt=""
+              className="h-full w-full object-cover object-[62%_center]"
+              draggable={false}
+            />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white to-transparent" />
+          </motion.div>
+        </div>
+      </div>
+    </ShowcaseFrame>
+  );
+}
+
 /**
  * Case-study fields, outcome-first per Solupair's portfolio brief:
  * `before` (buyer's situation), `intervention` (what we built), `outcome`
@@ -837,5 +924,18 @@ export const PROJECT_SHOWCASES = [
     outcome: { status: "pending", value: "ask us for the response-time numbers on this build" } as CaseOutcome,
     tag: "WhatsApp booking bot",
     Preview: WhatsAppChatbotPreview,
+  },
+  {
+    id: "florida-day-hospital",
+    name: "Florida Day Hospital",
+    cardTitle: "Florida Day Hospital",
+    valueTag: "Hospital website",
+    before:
+      "People looking for same-day surgery had no clear page for the hospital, the care, or how to enquire.",
+    intervention:
+      "A calm hospital website that explains the visit and gives patients a direct way to get in touch.",
+    outcome: { status: "pending", value: "ask us for the enquiry numbers on this build" } as CaseOutcome,
+    tag: "Private day hospital · Florida Park",
+    Preview: FloridaDayHospitalPreview,
   },
 ] as const;

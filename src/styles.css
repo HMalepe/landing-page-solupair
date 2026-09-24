@@ -3507,7 +3507,7 @@ main > header,
 
 @media (min-width: 1024px) {
   .projects-value-cards {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: clamp(0.65rem, 1.4vh, 0.85rem);
   }
 }
