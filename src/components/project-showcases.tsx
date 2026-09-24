@@ -6,7 +6,9 @@ import {
   ArrowUpRight,
   Calendar,
   Clock,
+  GripVertical,
   MessageCircle,
+  Plus,
   Radio,
   Search,
   User,
@@ -542,6 +544,158 @@ export function LivePulseDashboardPreview({ isActive = true }: { isActive?: bool
   );
 }
 
+/** Solupair Bot FAQs — answers the WhatsApp booking engine is allowed to share. */
+export function BotFaqsDashboardPreview({ isActive = true }: { isActive?: boolean }) {
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
+  const animate = isActive && !reduce;
+
+  const faqs = [
+    {
+      n: "1",
+      q: "Do you deliver?",
+      a: "Yes — we deliver across Tshwane. Delivery is free over R400 this week, and a fee applies under that.",
+    },
+    {
+      n: "2",
+      q: "What is the minimum order?",
+      a: "Minimum order is R150 before delivery fees.",
+    },
+  ];
+
+  return (
+    <ShowcaseFrame surface="light">
+      <WindowDots title="dashboard.solupair.co.za — Bot FAQs" />
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <aside className="hidden w-[24%] shrink-0 flex-col border-r border-black/[0.06] bg-[oklch(0.985_0.01_145)] p-2.5 sm:flex">
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex size-8 items-center justify-center rounded-xl bg-[oklch(0.62_0.08_150)] text-[9px] font-black text-white">
+              DM
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-[10px] font-bold text-black/80">Dispensary</p>
+              <p className="truncate text-[8px] text-black/45">Dr Marley · Owner</p>
+            </div>
+          </div>
+          <div className="mb-2.5 flex items-center gap-1.5 rounded-lg border border-black/[0.06] bg-white px-2.5 py-2 text-[9px] text-black/35">
+            <Search className="size-3 shrink-0" />
+            Search pages…
+          </div>
+          {[
+            { label: "Today", active: false },
+            { label: "Products", active: true },
+            { label: "Delivery", active: false },
+            { label: "Growth", active: false },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className={`mb-1 rounded-lg px-2.5 py-1.5 text-[9px] font-medium sm:text-[10px] ${
+                item.active
+                  ? "bg-[oklch(0.93_0.04_150)] font-semibold text-[oklch(0.38_0.06_150)]"
+                  : "text-black/45"
+              }`}
+            >
+              {item.label}
+            </div>
+          ))}
+        </aside>
+
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[oklch(0.992_0.004_140)] p-3 pr-11 sm:p-3.5 sm:pr-12">
+          <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="font-display text-xs font-bold text-black/85 sm:text-sm">Bot FAQs</p>
+              <p className="text-[8px] text-black/40 sm:text-[9px]">
+                Approved answers go live on WhatsApp.
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="rounded-full bg-amber-50 px-2 py-1 text-[8px] font-bold text-amber-800 sm:text-[9px]">
+                1 awaiting review
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-[oklch(0.48_0.11_150)] px-2.5 py-1 text-[8px] font-bold text-white sm:text-[9px]">
+                <Plus className="size-3" />
+                Add FAQ
+              </span>
+            </div>
+          </div>
+
+          <div className="mb-2 flex items-center gap-2">
+            <span className="h-4 w-0.5 rounded-full bg-[oklch(0.55_0.12_150)]" />
+            <p className="text-[9px] font-bold text-black/70 sm:text-[10px]">Overview</p>
+          </div>
+
+          <div className="mb-3 grid grid-cols-4 gap-1.5 sm:gap-2">
+            {[
+              { label: "Total", value: "5", tone: "border-black/[0.06] bg-white text-black/80" },
+              { label: "Approved", value: "4", tone: "border-emerald-100 bg-emerald-50 text-emerald-800" },
+              { label: "Pending", value: "1", tone: "border-amber-100 bg-amber-50 text-amber-800" },
+              { label: "Rejected", value: "0", tone: "border-black/[0.06] bg-white text-black/45" },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                className={`rounded-xl border px-2 py-2 ${stat.tone}`}
+                initial={{ opacity: animate ? 0 : 1, y: animate ? 6 : 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: animate ? i * 0.04 : 0, duration: 0.35 }}
+              >
+                <p className="text-[7px] font-bold uppercase tracking-wide opacity-70 sm:text-[8px]">
+                  {stat.label}
+                </p>
+                <p className="text-sm font-black tabular-nums sm:text-base">{stat.value}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className="h-4 w-0.5 rounded-full bg-[oklch(0.55_0.12_150)]" />
+            <p className="text-[9px] font-bold text-black/70 sm:text-[10px]">FAQ library</p>
+            <div className="flex gap-1">
+              {["All", "Pending", "Approved"].map((filter) => (
+                <span
+                  key={filter}
+                  className={`rounded-full px-2 py-0.5 text-[7px] font-bold sm:text-[8px] ${
+                    filter === "All"
+                      ? "bg-[oklch(0.48_0.11_150)] text-white"
+                      : "bg-black/[0.04] text-black/45"
+                  }`}
+                >
+                  {filter}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
+            {faqs.map((faq, i) => (
+              <motion.div
+                key={faq.n}
+                className="rounded-xl border border-black/[0.06] bg-white px-2.5 py-2 shadow-sm"
+                initial={{ opacity: animate ? 0 : 1, y: animate ? 8 : 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: animate ? 0.12 + i * 0.06 : 0, duration: 0.35 }}
+              >
+                <div className="flex items-start gap-2">
+                  <GripVertical className="mt-0.5 size-3 shrink-0 text-black/25" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-[10px] font-bold text-black/80 sm:text-[11px]">
+                        #{faq.n} {faq.q}
+                      </p>
+                      <span className="shrink-0 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[7px] font-bold text-emerald-700 sm:text-[8px]">
+                        Live on WhatsApp
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-[8px] leading-snug text-black/50 sm:text-[9px]">{faq.a}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </ShowcaseFrame>
+  );
+}
+
 /** MarineFlow WhatsApp booking agent — phone mock. */
 export function WhatsAppChatbotPreview({ isActive = true }: { isActive?: boolean }) {
   const { prefersReducedMotion: reduce } = useDeviceProfile();
@@ -657,6 +811,19 @@ export const PROJECT_SHOWCASES = [
     outcome: { status: "pending", value: "ask us for the hours saved on this build" } as CaseOutcome,
     tag: "Solupair · WhatsApp booking engine",
     Preview: LivePulseDashboardPreview,
+  },
+  {
+    id: "bot-faqs",
+    name: "Bot FAQs",
+    cardTitle: "Bot FAQ Dashboard",
+    valueTag: "Answer control",
+    before:
+      "WhatsApp answers were typed by hand, so the bot and the shop sometimes said different things.",
+    intervention:
+      "A dashboard where the team approves each answer before it goes live on WhatsApp.",
+    outcome: { status: "pending", value: "ask us for the FAQ numbers on this build" } as CaseOutcome,
+    tag: "Solupair · WhatsApp booking engine",
+    Preview: BotFaqsDashboardPreview,
   },
   {
     id: "whatsapp-agent",
