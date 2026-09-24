@@ -13,7 +13,7 @@ export function WhatWeBuildPageContent() {
     >
       <header className="build-direction-header">
         <p className="build-page-eyebrow build-reveal build-reveal--heading">
-          Websites · Dashboards · WhatsApp automation
+          Websites · Dashboards · WhatsApp · PayFast
         </p>
         <h1
           id="build-heading"

@@ -127,8 +127,8 @@ export function ProjectsSection() {
             className="projects-description"
             {...revealProps(reduceMotion, sectionInView, 0.06)}
           >
-            Live dashboards, booking flows and automation tools built to reduce admin, missed
-            bookings and messy operations.
+            Websites and WhatsApp bots that take PayFast payments, plus dashboards and booking
+            flows that cut missed messages and messy admin.
           </motion.p>
         </header>
 

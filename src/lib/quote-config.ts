@@ -52,7 +52,11 @@ export type AddOnConfig = {
 };
 
 export const ADD_ONS: readonly AddOnConfig[] = [
-  { id: "payments", label: "Payment integration", delta: { min: 1500, max: 4000 } },
+  {
+    id: "payments",
+    label: "PayFast on the website or in WhatsApp",
+    delta: { min: 1500, max: 4000 },
+  },
   { id: "booking-system", label: "Booking / calendar system", delta: { min: 2000, max: 5000 } },
   {
     id: "third-party-integration",

@@ -1011,7 +1011,7 @@ export const PROJECT_SHOWCASES = [
     name: WHATSAPP_AGENT_NAME,
     cardTitle: "WhatsApp Booking Agent",
     valueTag: "Customer automation",
-    cardLine: "Books, reschedules and replies without waiting on staff.",
+    cardLine: "Books, replies, and takes PayFast payment inside the chat.",
     before:
       "Customers messaged to book, reschedule and ask questions — replies waited until someone had a free minute.",
     intervention: "A WhatsApp agent that books, reschedules, answers FAQs and sends reminders automatically.",
@@ -1019,9 +1019,9 @@ export const PROJECT_SHOWCASES = [
     outcome: { status: "pending", value: "ask us for the response-time numbers on this build" } as CaseOutcome,
     tag: "WhatsApp booking bot",
     explainer: {
-      lead: "Replies",
-      accent: "while you work",
-      body: "The agent books, reschedules, answers questions and sends reminders, so customers are not waiting on a free minute.",
+      lead: "PayFast",
+      accent: "in the chat",
+      body: "Customers book and pay with PayFast inside WhatsApp, without waiting for someone to send a payment link.",
     },
     Preview: WhatsAppChatbotPreview,
   },
@@ -1049,7 +1049,7 @@ export const PROJECT_SHOWCASES = [
     name: "Selantra Beauty Studio",
     cardTitle: "Selantra Beauty",
     valueTag: "Studio website",
-    cardLine: "The studio, the menu, and a clear way to reserve.",
+    cardLine: "Skin, hair and hand treatments, with PayFast checkout on the site.",
     before:
       "The studio's booking lived in messages, with no single page for the ritual, the menu, or how to reserve.",
     intervention:
@@ -1057,9 +1057,9 @@ export const PROJECT_SHOWCASES = [
     outcome: { status: "pending", value: "ask us for the booking numbers on this build" } as CaseOutcome,
     tag: "Beauty studio · Clifton Hill",
     explainer: {
-      lead: "Reserve",
-      accent: "the ritual",
-      body: "The studio, the menu, and a way to book live on one page, instead of starting inside a message.",
+      lead: "PayFast",
+      accent: "on the site",
+      body: "Guests see skin, hair and hand care, then pay with PayFast when they reserve a visit.",
     },
     Preview: SelantraBeautyPreview,
   },

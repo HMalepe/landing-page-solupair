@@ -17,8 +17,8 @@ export const BUILD_TIERS: readonly BuildTier[] = [
     description: "A clean premium landing page for businesses that need a sharper online presence.",
     includes: [
       "Mobile-first landing page",
+      "PayFast payment gateway",
       "Contact or enquiry form",
-      "Basic SEO structure",
       "Fast modern build",
     ],
     cta: "Book a call",
@@ -31,7 +31,7 @@ export const BUILD_TIERS: readonly BuildTier[] = [
       "Dashboards, booking flows and automations for teams that need smoother operations.",
     includes: [
       "Dashboard or workflow build",
-      "WhatsApp/customer flow planning",
+      "PayFast inside WhatsApp chatbots",
       "Forms and automations",
       "Admin-friendly structure",
     ],
@@ -44,9 +44,9 @@ export const BUILD_TIERS: readonly BuildTier[] = [
     description: "For businesses with a specific process, internal tool or multi-step workflow.",
     includes: [
       "Custom planning",
+      "PayFast on the website or in the bot",
       "Data/workflow mapping",
       "Tailored interface",
-      "Integration-ready structure",
     ],
     cta: "Book a call",
     featured: false,
