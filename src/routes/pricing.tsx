@@ -1,9 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { LeadForm, type LeadFormQuotePrefill } from "@/components/lead-form";
 import { QuoteBuilderSection } from "@/components/quote-builder-section";
 import { RouteLoadingSkeleton } from "@/components/route-loading-skeleton";
 import { SiteHeader } from "@/components/site-header";
-import type { LeadFormQuotePrefill } from "@/components/lead-form";
-import { PENDING_QUOTE_STORAGE_KEY } from "@/lib/quote-config";
 import { pageHead } from "@/lib/site";
 
 export const Route = createFileRoute("/pricing")({
@@ -21,11 +21,11 @@ export const Route = createFileRoute("/pricing")({
 });
 
 function PricingPage() {
-  const navigate = useNavigate();
+  const [quote, setQuote] = useState<LeadFormQuotePrefill | undefined>();
 
-  const lockQuote = (quote: LeadFormQuotePrefill) => {
-    sessionStorage.setItem(PENDING_QUOTE_STORAGE_KEY, JSON.stringify(quote));
-    void navigate({ to: "/", hash: "contact" });
+  const lockQuote = (next: LeadFormQuotePrefill) => {
+    setQuote(next);
+    document.getElementById("pricing-booking")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -33,6 +33,14 @@ function PricingPage() {
       <div className="relative isolate min-h-[100dvh] overflow-x-clip">
         <SiteHeader sticky />
         <QuoteBuilderSection onLockQuote={lockQuote} />
+        <section
+          id="pricing-booking"
+          className="pricing-booking safe-area-x px-4 pb-16 sm:px-10 sm:pb-20 lg:px-14 lg:pb-24"
+        >
+          <div className="mx-auto w-full max-w-4xl">
+            <LeadForm initialQuote={quote} />
+          </div>
+        </section>
       </div>
     </main>
   );

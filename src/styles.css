@@ -1139,7 +1139,7 @@ main > header,
 }
 
 .hero-eyebrow-sep {
-  margin-inline: 0.45em;
+  margin-inline: 0 0.55em;
   color: color-mix(in srgb, var(--brand-cyan) 45%, var(--text-dim));
   letter-spacing: 0;
 }
@@ -1662,7 +1662,7 @@ main > header,
   }
 
   .hero-eyebrow-sep {
-    margin-inline: 0.28em;
+    margin-inline: 0 0.4em;
   }
 
   .hero-bg-glow {
@@ -3116,6 +3116,10 @@ main > header,
     font-size: 0.625rem;
     letter-spacing: 0.36em;
   }
+}
+
+.pricing-booking {
+  scroll-margin-top: calc(var(--site-header-height, 5rem) + 1rem);
 }
 
 .projects-whatsapp-pitch {

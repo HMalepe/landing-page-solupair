@@ -1,11 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { ContactSection } from "@/components/contact-section";
 import { FinalCtaSection } from "@/components/final-cta-section";
-import type { LeadFormQuotePrefill } from "@/components/lead-form";
 import { ProjectsSection } from "@/components/projects-section";
 import { SiteHeader } from "@/components/site-header";
-import { PENDING_QUOTE_STORAGE_KEY } from "@/lib/quote-config";
 
 export const Route = createFileRoute("/")({
   component: NovaHome,
@@ -75,19 +72,19 @@ function Hero() {
         <div className="hero-copy-stack w-full min-w-0">
           <div className="hero-reveal hero-reveal--eyebrow flex justify-center">
             <p className="hero-eyebrow">
-              Websites
+              Automation
               <span className="hero-eyebrow-sep" aria-hidden>
-                ·
+                .
               </span>
               Dashboards
               <span className="hero-eyebrow-sep" aria-hidden>
-                ·
+                .
+              </span>
+              Websites
+              <span className="hero-eyebrow-sep" aria-hidden>
+                .
               </span>
               WhatsApp
-              <span className="hero-eyebrow-sep" aria-hidden>
-                ·
-              </span>
-              Automation
             </p>
           </div>
 
@@ -117,28 +114,12 @@ function Hero() {
 }
 
 function NovaHome() {
-  const [pendingQuote, setPendingQuote] = useState<LeadFormQuotePrefill | undefined>();
-
-  useEffect(() => {
-    const raw = sessionStorage.getItem(PENDING_QUOTE_STORAGE_KEY);
-    if (!raw) return;
-    sessionStorage.removeItem(PENDING_QUOTE_STORAGE_KEY);
-    try {
-      setPendingQuote(JSON.parse(raw) as LeadFormQuotePrefill);
-    } catch {
-      setPendingQuote(undefined);
-    }
-  }, []);
-
   return (
     <main className="scroll-snap-canvas min-h-[100dvh] bg-background font-sans text-foreground">
       <Hero />
       <ProjectsSection />
       <FinalCtaSection />
-      <ContactSection
-        pendingQuote={pendingQuote}
-        onQuoteConsumed={() => setPendingQuote(undefined)}
-      />
+      <ContactSection />
     </main>
   );
 }

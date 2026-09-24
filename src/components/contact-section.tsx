@@ -1,16 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ContactHelixBackground } from "@/components/contact-helix-background";
-import { LeadForm, type LeadFormQuotePrefill } from "@/components/lead-form";
 import { useSectionInView } from "@/hooks/use-section-in-view";
 
-type ContactSectionProps = {
-  /** Set when a visitor arrives here via "Lock this quote & book a call". */
-  pendingQuote?: LeadFormQuotePrefill;
-  /** Called once the lead form successfully submits, to clear the pending quote. */
-  onQuoteConsumed?: () => void;
-};
-
-export function ContactSection({ pendingQuote, onQuoteConsumed }: ContactSectionProps) {
+export function ContactSection() {
   const { sectionRef, sectionInView } = useSectionInView();
 
   return (
@@ -35,8 +27,8 @@ export function ContactSection({ pendingQuote, onQuoteConsumed }: ContactSection
               Let&apos;s Talk
             </h2>
             <p className="contact-lead contact-reveal contact-reveal--lead">
-              Tell us what you need. We&apos;ll reply with the best next step, rough scope and
-              starting price range.
+              Want a starting price? Build an estimate on the pricing page, then book a call from
+              there.
             </p>
           </div>
 
@@ -58,8 +50,10 @@ export function ContactSection({ pendingQuote, onQuoteConsumed }: ContactSection
             </div>
           </aside>
 
-          <div className="contact-reveal contact-reveal--form">
-            <LeadForm initialQuote={pendingQuote} onSubmitted={onQuoteConsumed} />
+          <div className="contact-form contact-reveal contact-reveal--form">
+            <Link to="/pricing" className="hero-btn hero-btn--primary touch-target inline-flex w-fit">
+              <span>Get a price</span>
+            </Link>
           </div>
         </div>
 
