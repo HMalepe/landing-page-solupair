@@ -26,6 +26,8 @@ const WORD_STAGGER = 0.05;
 const WORD_MS = 0.46;
 const BODY_LINE_GAP = 0.14;
 const HERO_LEAD_GAP = 0.12;
+/** Bring the gradient line in sooner than the lead-word landing. */
+const HERO_PULL_FORWARD_MS = 600;
 
 const leadWordVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -281,8 +283,10 @@ export function FinalCtaSection() {
       setAccentSheen(true);
       return;
     }
-    const leadMs = Math.round(
-      (SOLUTION_LEAD.length * LEAD_STAGGER + LEAD_MS + HERO_LEAD_GAP) * 1000,
+    const leadMs = Math.max(
+      0,
+      Math.round((SOLUTION_LEAD.length * LEAD_STAGGER + LEAD_MS + HERO_LEAD_GAP) * 1000) -
+        HERO_PULL_FORWARD_MS,
     );
     const t = window.setTimeout(() => setPhase("hero"), leadMs);
     return () => window.clearTimeout(t);
