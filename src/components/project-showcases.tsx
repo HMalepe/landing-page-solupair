@@ -1,6 +1,7 @@
 import { type ReactNode, Fragment } from "react";
 import { motion } from "framer-motion";
 import hospitalPortrait from "@/assets/florida-day-hospital-portrait.webp";
+import selantraPortrait from "@/assets/selantra-portrait.webp";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   ArrowDownRight,
@@ -860,6 +861,81 @@ export function FloridaDayHospitalPreview({ isActive = true }: { isActive?: bool
   );
 }
 
+/** Selantra Beauty Studio — appointment-only studio site. */
+export function SelantraBeautyPreview({ isActive = true }: { isActive?: boolean }) {
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
+  const animate = isActive && !reduce;
+
+  return (
+    <ShowcaseFrame surface="light">
+      <WindowDots title="beauty.selantra.co.za" />
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#f7f3ec] text-[#2a241c]">
+        <header className="flex shrink-0 items-center justify-between gap-2 px-3 py-2 sm:px-4">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <span className="flex size-7 shrink-0 flex-col items-center justify-center rounded-sm bg-[#efe6d8] font-serif leading-none text-[#3a3126]">
+              <span className="text-[11px] italic">S</span>
+            </span>
+            <span className="truncate font-serif text-[11px] italic lowercase sm:text-xs">selantra</span>
+          </div>
+          <nav className="hidden items-center gap-3 text-[7px] font-medium tracking-[0.16em] text-black/45 sm:flex">
+            <span>MENU</span>
+            <span>RITUAL</span>
+            <span>STUDIO</span>
+            <span>GIFT</span>
+          </nav>
+          <span className="inline-flex shrink-0 rounded-full border border-black/20 px-2.5 py-1 text-[7px] font-semibold tracking-[0.14em] sm:text-[8px]">
+            RESERVE
+          </span>
+        </header>
+
+        <div className="grid min-h-0 flex-1 grid-cols-[1.05fr_0.95fr] items-center px-3 pb-3 sm:px-5">
+          <div className="flex min-w-0 flex-col justify-center pr-2">
+            <p className="mb-2 truncate text-[6px] font-medium tracking-[0.16em] text-[#8a7b64] sm:text-[7px]">
+              + BEAUTY STUDIO · CLIFTON HILL
+            </p>
+            <motion.h3
+              className="font-serif text-[28px] lowercase italic leading-none tracking-tight text-[#241c16] sm:text-[40px]"
+              initial={{ opacity: animate ? 0 : 1, y: animate ? 8 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: animate ? 0.45 : 0 }}
+            >
+              selantra
+            </motion.h3>
+            <p className="mt-2 text-[6px] font-medium tracking-[0.18em] text-black/40 sm:text-[7px]">
+              ENHANCE · ELEVATE · EMPOWER
+            </p>
+            <p className="mt-2 max-w-[24ch] text-[8px] leading-snug text-black/55 sm:text-[9px]">
+              Beauty, done slowly — a modern ritual for skin, hair, and hands.
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="inline-flex rounded-full bg-[#1c1c1c] px-3 py-1.5 text-[8px] font-medium text-white sm:text-[9px]">
+                Reserve a ritual
+              </span>
+              <span className="hidden text-[7px] font-medium tracking-[0.14em] text-black/55 sm:inline">
+                EXPLORE THE MENU
+              </span>
+            </div>
+          </div>
+
+          <motion.div
+            className="relative h-full min-h-0 overflow-hidden"
+            initial={{ opacity: animate ? 0 : 1 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: animate ? 0.5 : 0 }}
+          >
+            <img
+              src={selantraPortrait}
+              alt=""
+              className="h-full w-full object-cover object-center"
+              draggable={false}
+            />
+          </motion.div>
+        </div>
+      </div>
+    </ShowcaseFrame>
+  );
+}
+
 /**
  * Case-study fields, outcome-first per Solupair's portfolio brief:
  * `before` (buyer's situation), `intervention` (what we built), `outcome`
@@ -937,5 +1013,18 @@ export const PROJECT_SHOWCASES = [
     outcome: { status: "pending", value: "ask us for the enquiry numbers on this build" } as CaseOutcome,
     tag: "Private day hospital · Florida Park",
     Preview: FloridaDayHospitalPreview,
+  },
+  {
+    id: "selantra-beauty",
+    name: "Selantra Beauty Studio",
+    cardTitle: "Selantra Beauty",
+    valueTag: "Studio website",
+    before:
+      "The studio's booking lived in messages, with no single page for the ritual, the menu, or how to reserve.",
+    intervention:
+      "A quiet studio website that introduces the ritual and lets guests reserve by appointment.",
+    outcome: { status: "pending", value: "ask us for the booking numbers on this build" } as CaseOutcome,
+    tag: "Beauty studio · Clifton Hill",
+    Preview: SelantraBeautyPreview,
   },
 ] as const;
