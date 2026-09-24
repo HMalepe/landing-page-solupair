@@ -22,9 +22,9 @@ const LEAD_STAGGER = 0.09;
 const LEAD_MS = 0.55;
 const LETTER_STAGGER = 0.05;
 const LETTER_MS = 0.82;
-const WORD_STAGGER = 0.058;
-const WORD_MS = 0.64;
-const BODY_LINE_GAP = 0.28;
+const WORD_STAGGER = 0.05;
+const WORD_MS = 0.46;
+const BODY_LINE_GAP = 0.14;
 const HERO_LEAD_GAP = 0.12;
 
 const leadWordVariants: Variants = {
@@ -55,7 +55,7 @@ const accentLetterVariants: Variants = {
 };
 
 const supportWordVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
@@ -205,7 +205,7 @@ function SupportStory({
   onDoneRef.current = onDone;
 
   const lastIndex = flat[flat.length - 1]?.index ?? 0;
-  const totalMs = Math.round((lastIndex * WORD_STAGGER + WORD_MS) * 1000) + 200;
+  const totalMs = Math.round((lastIndex * WORD_STAGGER + WORD_MS) * 1000) + 90;
 
   useEffect(() => {
     doneRef.current = false;

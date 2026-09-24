@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { ViewportPhysicsBalls } from "@/components/viewport-physics-balls";
 import { ContactHelixBackground } from "@/components/contact-helix-background";
 import { LeadForm, type LeadFormQuotePrefill } from "@/components/lead-form";
 import { useSectionInView } from "@/hooks/use-section-in-view";
@@ -26,7 +25,6 @@ export function ContactSection({ pendingQuote, onQuoteConsumed }: ContactSection
         <ContactHelixBackground />
         <div className="contact-helix-glow-line" />
       </div>
-      <ViewportPhysicsBalls variant="contact" />
       <div className="contact-shell relative z-10 mx-auto w-full max-w-7xl border-t border-subtle pt-6 sm:pt-8 lg:pt-10">
         <div className="contact-grid">
           <div className="contact-intro">

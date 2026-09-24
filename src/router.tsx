@@ -13,9 +13,9 @@ export const getRouter = () => {
     defaultPreload: "intent",
     defaultPreloadStaleTime: 30_000,
     defaultPendingComponent: RouteLoadingSkeleton,
-    // Show the skeleton immediately — never sit on a blank document.
-    defaultPendingMs: 0,
-    defaultPendingMinMs: 180,
+    // Fast navigations stay instant. The skeleton only appears if a route is actually slow.
+    defaultPendingMs: 200,
+    defaultPendingMinMs: 0,
   });
 
   return router;

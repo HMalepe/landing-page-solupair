@@ -17,6 +17,30 @@
     scroll-snap-type: none;
   }
 
+  /* Opaque bar is cheaper while scrolling than a live backdrop blur. */
+  .site-header-bar,
+  .route-skeleton__header-bar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: color-mix(in srgb, var(--bg-deep) 94%, transparent);
+  }
+
+  .site-logo-mark,
+  .site-logo:hover .site-logo-mark {
+    filter: none;
+  }
+
+  .contact-helix-fallback,
+  .contact-in-view .contact-helix-fallback {
+    animation: none;
+    will-change: auto;
+  }
+
+  .final-cta.final-cta-in-view .final-cta-btn.hero-btn--primary,
+  .final-cta-answer__accent--line.is-sheen {
+    animation: none;
+  }
+
   .snap-section-panel,
   .projects-section.snap-section-flow,
   .final-cta.snap-section-anchor {
