@@ -155,13 +155,16 @@
     margin-bottom: 0.15rem;
   }
 
+  /* closest-side keeps the whole ellipse inside the box, so it reaches
+     transparent before any edge. The old 115% x 95% ellipse overflowed its
+     own box and got cut off while still ~40-70% opaque — a hard-edged dark
+     rectangle whose top edge landed right on the eyebrow line. */
   .hero-headline-scrim {
     inset: -18% -8%;
     background: radial-gradient(
-      ellipse 115% 95% at 50% 55%,
-      color-mix(in srgb, var(--bg-main) 92%, transparent) 0%,
-      color-mix(in srgb, var(--bg-main) 72%, transparent) 48%,
-      color-mix(in srgb, var(--bg-main) 35%, transparent) 72%,
+      closest-side at 50% 55%,
+      color-mix(in srgb, var(--bg-main) 88%, transparent) 0%,
+      color-mix(in srgb, var(--bg-main) 60%, transparent) 55%,
       transparent 100%
     );
   }
@@ -196,10 +199,14 @@
   }
 
   .hero-eyebrow {
-    font-size: 0.5625rem;
-    letter-spacing: 0.16em;
+    position: relative;
+    z-index: 1;
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
     line-height: 1.4;
-    max-width: 18rem;
+    max-width: 100%;
+    color: var(--text-soft);
+    text-shadow: 0 1px 8px color-mix(in srgb, var(--bg-deep) 90%, transparent);
     text-wrap: balance;
   }
 
