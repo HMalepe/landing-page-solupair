@@ -1031,16 +1031,20 @@ main > header,
   box-shadow: 0 0 16px color-mix(in srgb, var(--glow-cyan) 35%, transparent);
 }
 
+/* Clean pill. The gradient must be sized to the border box
+   (background-origin) — by default it's sized to the padding box but still
+   painted under the 1px border, so it repeats into it and shows a pink
+   sliver on the left edge and a cyan one on the right. Also: no semi-white
+   border over the gradient, one soft glow instead of stacked cyan + pink
+   shadows (the pink bled out as a red fringe), and no overflow:hidden — the
+   highlight below already inherits the radius. */
 .site-nav-link--primary {
   position: relative;
-  overflow: hidden;
   isolation: isolate;
   color: var(--bg-deep);
-  background: var(--gradient-brand);
-  border: 1px solid color-mix(in srgb, var(--text-main) 14%, transparent);
-  box-shadow:
-    0 2px 12px color-mix(in srgb, var(--glow-cyan) 65%, transparent),
-    0 4px 18px color-mix(in srgb, var(--glow-pink) 45%, transparent);
+  background: var(--gradient-brand) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 16px -4px color-mix(in srgb, var(--brand-cyan) 45%, transparent);
 }
 
 .site-nav-link--primary::before {
@@ -1050,16 +1054,14 @@ main > header,
   border-radius: inherit;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--text-main) 16%, transparent) 0%,
+    color-mix(in srgb, var(--text-main) 10%, transparent) 0%,
     transparent 52%
   );
   pointer-events: none;
 }
 
 .site-nav-link--primary:hover {
-  box-shadow:
-    0 4px 18px color-mix(in srgb, var(--glow-cyan) 75%, transparent),
-    0 6px 24px color-mix(in srgb, var(--glow-pink) 55%, transparent);
+  box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--brand-cyan) 60%, transparent);
 }
 
 .site-nav-link--primary > span {
@@ -1482,16 +1484,16 @@ main > header,
   outline-offset: 3px;
 }
 
+/* Same fix as .site-nav-link--primary: border-box gradient (no repeated
+   pink/cyan slivers in the border), transparent border, single soft glow. */
 .hero-btn--primary {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   color: var(--bg-deep);
-  background: var(--gradient-brand);
-  border: 1px solid color-mix(in srgb, var(--text-main) 14%, transparent);
-  box-shadow:
-    0 3px 14px color-mix(in srgb, var(--glow-cyan) 65%, transparent),
-    0 5px 20px color-mix(in srgb, var(--glow-pink) 45%, transparent);
+  background: var(--gradient-brand) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 6px 20px -6px color-mix(in srgb, var(--brand-cyan) 45%, transparent);
 }
 
 .hero-btn--primary::before {
@@ -1525,9 +1527,7 @@ main > header,
 
 .hero-btn--primary:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 5px 20px color-mix(in srgb, var(--glow-cyan) 75%, transparent),
-    0 8px 28px color-mix(in srgb, var(--glow-pink) 55%, transparent);
+  box-shadow: 0 8px 24px -6px color-mix(in srgb, var(--brand-cyan) 60%, transparent);
 }
 
 .hero-btn--primary:hover::after {
@@ -3790,36 +3790,32 @@ main > header,
   outline-offset: 2px;
 }
 
+/* Opacity-only: these fire mid-scroll, where any translate/scale reads as a
+   bounce against the scroll direction (see revealProps in projects-section). */
 @keyframes projects-value-card-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes projects-reveal-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes projects-mockup-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0) scale(0.992);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
