@@ -15,9 +15,9 @@ export const BUILD_CATEGORIES: readonly BuildCategory[] = [
     summary: "Booking-heavy teams juggling WhatsApp enquiries, walk-ins and stylist schedules.",
     solutions: [
       "WhatsApp booking and menu flows",
+      "PayFast checkout on the site or inside WhatsApp",
       "Owner dashboard for appointments and clients",
       "Automated reminders and follow-ups",
-      "Optional loyalty or rebooking nudges",
     ],
   },
   {
@@ -26,9 +26,9 @@ export const BUILD_CATEGORIES: readonly BuildCategory[] = [
     summary: "Practices that need clearer appointment handling without replacing clinical systems.",
     solutions: [
       "Patient enquiry and booking capture",
+      "PayFast for deposits on the site or in WhatsApp",
       "Reminder and recall automations",
       "Simple admin dashboards",
-      "Forms and consent-friendly flows",
     ],
   },
   {
@@ -37,9 +37,9 @@ export const BUILD_CATEGORIES: readonly BuildCategory[] = [
     summary: "Food businesses tired of missed calls, scattered orders and manual specials lists.",
     solutions: [
       "Menu-led landing pages or ordering enquiry flows",
+      "PayFast checkout on the site or in the WhatsApp order bot",
       "WhatsApp order capture and FAQs",
       "Daily specials or hours updates",
-      "Light reporting for busy periods",
     ],
   },
   {
@@ -48,9 +48,9 @@ export const BUILD_CATEGORIES: readonly BuildCategory[] = [
     summary: "Plumbers, cleaners, installers and similar teams quoting and scheduling on the fly.",
     solutions: [
       "Enquiry forms tied to job pipelines",
+      "PayFast deposits on the site or in WhatsApp",
       "Quote request and follow-up automations",
       "Field-friendly mobile dashboards",
-      "Customer status updates via WhatsApp or email",
     ],
   },
   {
@@ -59,9 +59,9 @@ export const BUILD_CATEGORIES: readonly BuildCategory[] = [
     summary: "Shops balancing stock questions, orders and staff coordination across channels.",
     solutions: [
       "Product enquiry and catalogue pages",
+      "PayFast checkout on the shop site or in WhatsApp",
       "Order or stock-request workflows",
       "Staff-facing admin views",
-      "Customer follow-up after purchase",
     ],
   },
 ] as const;

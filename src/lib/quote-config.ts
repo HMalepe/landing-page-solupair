@@ -1,7 +1,6 @@
 /**
  * ZAR quote-builder pricing model — a data file, edit ranges here without
- * touching the configurator UI. This is the only place price figures live
- * on the site now — the "What We Build" page shows services, not numbers.
+ * touching the configurator UI. Figures live on the pricing page.
  */
 
 export type ProjectTypeId = "website" | "dashboard" | "whatsapp" | "internal-tool";
@@ -53,7 +52,11 @@ export type AddOnConfig = {
 };
 
 export const ADD_ONS: readonly AddOnConfig[] = [
-  { id: "payments", label: "Payment integration", delta: { min: 1500, max: 4000 } },
+  {
+    id: "payments",
+    label: "PayFast on the website or in WhatsApp",
+    delta: { min: 1500, max: 4000 },
+  },
   { id: "booking-system", label: "Booking / calendar system", delta: { min: 2000, max: 5000 } },
   {
     id: "third-party-integration",

@@ -207,6 +207,9 @@
     scroll-behavior: auto;
     /* Hash / scrollIntoView clearance under the sticky header + breathing room. */
     scroll-padding-top: var(--site-header-offset);
+    /* Instant taps, no grey flash — closer to a native app. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -506,45 +509,37 @@ main > header,
 .hero-bg-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(72px);
-  opacity: 0.2;
+  opacity: 0.28;
 }
 
 .hero-bg-glow--cyan {
-  width: min(44vw, 24rem);
-  height: min(44vw, 24rem);
-  left: -12%;
-  top: 8%;
-  background: radial-gradient(circle, var(--glow-cyan) 0%, transparent 70%);
-  animation: hero-glow-drift 36s linear infinite;
+  width: min(52vw, 28rem);
+  height: min(52vw, 28rem);
+  left: -14%;
+  top: 6%;
+  background: radial-gradient(circle, var(--glow-cyan) 0%, transparent 68%);
 }
 
 .hero-bg-glow--pink {
-  width: min(40vw, 22rem);
-  height: min(40vw, 22rem);
-  right: -10%;
-  top: 4%;
-  background: radial-gradient(circle, var(--glow-pink) 0%, transparent 72%);
-  animation: hero-glow-drift-alt 42s linear infinite;
+  width: min(48vw, 26rem);
+  height: min(48vw, 26rem);
+  right: -12%;
+  top: 2%;
+  background: radial-gradient(circle, var(--glow-pink) 0%, transparent 70%);
 }
 
 .hero-bg-glow--purple {
-  width: min(50vw, 26rem);
-  height: min(34vw, 18rem);
+  width: min(58vw, 30rem);
+  height: min(40vw, 20rem);
   left: 50%;
-  bottom: 4%;
+  bottom: 2%;
   translate: -50% 0;
-  background: radial-gradient(ellipse, var(--glow-purple) 0%, transparent 68%);
-  animation: hero-glow-drift 40s linear infinite reverse;
-  opacity: 0.14;
+  background: radial-gradient(ellipse, var(--glow-purple) 0%, transparent 66%);
+  opacity: 0.2;
 }
 
 .hero-bg-grain {
-  position: absolute;
-  inset: 0;
-  opacity: 0.045;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  display: none;
 }
 
 /* ── Site header / navigation ── */
@@ -559,8 +554,8 @@ main > header,
   background: var(--header-glass);
   border-bottom: 1px solid color-mix(in srgb, var(--text-main) 6%, transparent);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--text-main) 4%, transparent) inset;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   overflow: visible;
 }
 
@@ -691,8 +686,7 @@ main > header,
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(72px);
-  opacity: 0.28;
+  opacity: 0.32;
 }
 
 .route-skeleton__glow--left {
@@ -1037,16 +1031,20 @@ main > header,
   box-shadow: 0 0 16px color-mix(in srgb, var(--glow-cyan) 35%, transparent);
 }
 
+/* Clean pill. The gradient must be sized to the border box
+   (background-origin) — by default it's sized to the padding box but still
+   painted under the 1px border, so it repeats into it and shows a pink
+   sliver on the left edge and a cyan one on the right. Also: no semi-white
+   border over the gradient, one soft glow instead of stacked cyan + pink
+   shadows (the pink bled out as a red fringe), and no overflow:hidden — the
+   highlight below already inherits the radius. */
 .site-nav-link--primary {
   position: relative;
-  overflow: hidden;
   isolation: isolate;
   color: var(--bg-deep);
-  background: var(--gradient-brand);
-  border: 1px solid color-mix(in srgb, var(--text-main) 14%, transparent);
-  box-shadow:
-    0 2px 12px color-mix(in srgb, var(--glow-cyan) 65%, transparent),
-    0 4px 18px color-mix(in srgb, var(--glow-pink) 45%, transparent);
+  background: var(--gradient-brand) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 16px -4px color-mix(in srgb, var(--brand-cyan) 45%, transparent);
 }
 
 .site-nav-link--primary::before {
@@ -1056,16 +1054,14 @@ main > header,
   border-radius: inherit;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--text-main) 16%, transparent) 0%,
+    color-mix(in srgb, var(--text-main) 10%, transparent) 0%,
     transparent 52%
   );
   pointer-events: none;
 }
 
 .site-nav-link--primary:hover {
-  box-shadow:
-    0 4px 18px color-mix(in srgb, var(--glow-cyan) 75%, transparent),
-    0 6px 24px color-mix(in srgb, var(--glow-pink) 55%, transparent);
+  box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--brand-cyan) 60%, transparent);
 }
 
 .site-nav-link--primary > span {
@@ -1145,7 +1141,7 @@ main > header,
 }
 
 .hero-eyebrow-sep {
-  margin-inline: 0.45em;
+  margin-inline: 0 0.55em;
   color: color-mix(in srgb, var(--brand-cyan) 45%, var(--text-dim));
   letter-spacing: 0;
 }
@@ -1488,16 +1484,16 @@ main > header,
   outline-offset: 3px;
 }
 
+/* Same fix as .site-nav-link--primary: border-box gradient (no repeated
+   pink/cyan slivers in the border), transparent border, single soft glow. */
 .hero-btn--primary {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   color: var(--bg-deep);
-  background: var(--gradient-brand);
-  border: 1px solid color-mix(in srgb, var(--text-main) 14%, transparent);
-  box-shadow:
-    0 3px 14px color-mix(in srgb, var(--glow-cyan) 65%, transparent),
-    0 5px 20px color-mix(in srgb, var(--glow-pink) 45%, transparent);
+  background: var(--gradient-brand) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 6px 20px -6px color-mix(in srgb, var(--brand-cyan) 45%, transparent);
 }
 
 .hero-btn--primary::before {
@@ -1531,9 +1527,7 @@ main > header,
 
 .hero-btn--primary:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 5px 20px color-mix(in srgb, var(--glow-cyan) 75%, transparent),
-    0 8px 28px color-mix(in srgb, var(--glow-pink) 55%, transparent);
+  box-shadow: 0 8px 24px -6px color-mix(in srgb, var(--brand-cyan) 60%, transparent);
 }
 
 .hero-btn--primary:hover::after {
@@ -1668,19 +1662,63 @@ main > header,
   }
 
   .hero-eyebrow-sep {
-    margin-inline: 0.28em;
+    margin-inline: 0 0.4em;
   }
 
   .hero-bg-glow {
-    opacity: 0.16;
+    opacity: 0.55;
+  }
+
+  .hero-bg-glow--cyan {
+    width: min(85vw, 30rem);
+    height: min(85vw, 30rem);
+    left: -22%;
+    top: 12%;
+  }
+
+  .hero-bg-glow--pink {
+    width: min(78vw, 28rem);
+    height: min(78vw, 28rem);
+    right: -20%;
+    top: 32%;
+  }
+
+  .hero-bg-glow--purple {
+    width: min(95vw, 32rem);
+    height: min(60vw, 22rem);
+    bottom: 14%;
+    opacity: 0.5;
+  }
+
+  /* The container opacity alone can't rescue this — each path carries its
+     own low inline opacity (0.18–0.28), and SVG presentation attributes
+     lose to any real CSS rule, so override them directly for mobile. */
+  .hero-bg-circuit {
+    opacity: 0.6;
+  }
+
+  .hero-bg-circuit path {
+    opacity: 0.7;
+  }
+
+  .hero-bg-circuit circle {
+    opacity: 0.85;
   }
 
   .hero-bg-circuit {
-    opacity: 0.16;
+    mask-image: radial-gradient(ellipse 130% 150% at 50% 45%, black 8%, transparent 88%);
   }
 
+  /* Same story for the grid: the line color itself is a 3.5% cyan tint
+     baked into the gradient, so boosting element opacity alone was
+     multiplying an already-invisible color. Use a visibly stronger tint
+     here instead of just cranking opacity further. */
   .hero-bg-grid {
-    opacity: 0.18;
+    opacity: 0.6;
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--brand-cyan) 14%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--brand-cyan) 14%, transparent) 1px, transparent 1px);
+    mask-image: radial-gradient(ellipse 140% 160% at 50% 48%, black 15%, transparent 88%);
   }
 
   .hero-headline-scrim {
@@ -1747,8 +1785,7 @@ main > header,
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(96px);
-  opacity: 0.18;
+  opacity: 0.22;
 }
 
 .what-we-build-glow--left {
@@ -2175,7 +2212,6 @@ main > header,
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(88px);
 }
 
 .who-for-glow--center {
@@ -2403,8 +2439,7 @@ main > header,
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(92px);
-  opacity: 0.18;
+  opacity: 0.22;
 }
 
 .build-direction-glow--left {
@@ -2457,6 +2492,27 @@ main > header,
     font-size: 1rem;
     line-height: 1.7;
   }
+}
+
+.build-page-pricing-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: clamp(0.9rem, 2vh, 1.35rem);
+  padding: 0.55em 1.1em;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 30%, transparent);
+  background: color-mix(in srgb, var(--brand-cyan) 8%, transparent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--brand-cyan) 85%, var(--text-main));
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.build-page-pricing-link:hover {
+  color: var(--brand-cyan);
+  background: color-mix(in srgb, var(--brand-cyan) 14%, transparent);
+  border-color: color-mix(in srgb, var(--brand-cyan) 50%, transparent);
 }
 
 .build-page-shell {
@@ -2861,8 +2917,7 @@ main > header,
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(88px);
-  opacity: 0.2;
+  opacity: 0.26;
 }
 
 .projects-glow--cyan {
@@ -3126,6 +3181,47 @@ main > header,
     font-size: 0.625rem;
     letter-spacing: 0.36em;
   }
+}
+
+.pricing-booking {
+  scroll-margin-top: calc(var(--site-header-height, 5rem) + 1rem);
+}
+
+.projects-whatsapp-pitch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 46rem;
+  margin-top: clamp(0.85rem, 2vh, 1.15rem);
+}
+
+.projects-whatsapp-pitch__headline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em 0.45em;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.4vw, 1.65rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--text-main);
+}
+
+.projects-whatsapp-pitch__accent {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.projects-whatsapp-pitch__body {
+  margin: 0;
+  max-width: 42rem;
+  font-size: clamp(0.8125rem, 1.6vw, 0.9375rem);
+  line-height: 1.55;
+  color: var(--text-soft);
 }
 
 .projects-description {
@@ -3513,24 +3609,12 @@ main > header,
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(0.55rem, 1.2vh, 0.75rem);
   }
-
-  .projects-value-cards__item:last-child {
-    grid-column: 1 / -1;
-    max-width: calc(50% - 0.375rem);
-    justify-self: center;
-  }
 }
 
 @media (min-width: 1024px) {
   .projects-value-cards {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: clamp(0.65rem, 1.4vh, 0.85rem);
-  }
-
-  .projects-value-cards__item:last-child {
-    grid-column: auto;
-    max-width: none;
-    justify-self: stretch;
   }
 }
 
@@ -3632,7 +3716,7 @@ main > header,
   letter-spacing: 0.01em;
   color: color-mix(in srgb, var(--text-soft) 72%, transparent);
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -3706,36 +3790,32 @@ main > header,
   outline-offset: 2px;
 }
 
+/* Opacity-only: these fire mid-scroll, where any translate/scale reads as a
+   bounce against the scroll direction (see revealProps in projects-section). */
 @keyframes projects-value-card-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes projects-reveal-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes projects-mockup-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0) scale(0.992);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
@@ -3770,7 +3850,6 @@ main > header,
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(96px);
 }
 
 .final-cta-glow--cyan {
@@ -3999,48 +4078,28 @@ main > header,
   0%,
   100% {
     transform: scale(1);
-    filter: brightness(0.94) saturate(0.95);
     box-shadow:
       0 0 10px color-mix(in srgb, var(--glow-cyan) 28%, transparent),
-      0 0 22px color-mix(in srgb, var(--glow-pink) 16%, transparent),
-      0 0 0 0 color-mix(in srgb, var(--brand-cyan) 0%, transparent);
+      0 0 22px color-mix(in srgb, var(--glow-pink) 16%, transparent);
   }
-  /* boom */
   10% {
-    transform: scale(1.028);
-    filter: brightness(1.12) saturate(1.15);
+    transform: scale(1.02);
     box-shadow:
-      0 0 18px color-mix(in srgb, var(--glow-cyan) 78%, transparent),
-      0 0 42px color-mix(in srgb, var(--glow-pink) 52%, transparent),
-      0 0 68px color-mix(in srgb, var(--glow-cyan) 28%, transparent),
-      0 0 0 1px color-mix(in srgb, var(--text-main) 22%, transparent);
+      0 0 16px color-mix(in srgb, var(--glow-cyan) 70%, transparent),
+      0 0 28px color-mix(in srgb, var(--glow-pink) 40%, transparent);
   }
-  18% {
-    transform: scale(1.006);
-    filter: brightness(0.97) saturate(1);
-    box-shadow:
-      0 0 12px color-mix(in srgb, var(--glow-cyan) 40%, transparent),
-      0 0 26px color-mix(in srgb, var(--glow-pink) 24%, transparent),
-      0 0 0 0 transparent;
-  }
-  /* boom */
   28% {
-    transform: scale(1.022);
-    filter: brightness(1.1) saturate(1.12);
+    transform: scale(1.015);
     box-shadow:
-      0 0 20px color-mix(in srgb, var(--glow-cyan) 72%, transparent),
-      0 0 46px color-mix(in srgb, var(--glow-pink) 48%, transparent),
-      0 0 72px color-mix(in srgb, var(--glow-pink) 22%, transparent),
-      0 0 0 1px color-mix(in srgb, var(--text-main) 18%, transparent);
+      0 0 16px color-mix(in srgb, var(--glow-cyan) 64%, transparent),
+      0 0 28px color-mix(in srgb, var(--glow-pink) 36%, transparent);
   }
   40%,
   100% {
     transform: scale(1);
-    filter: brightness(0.94) saturate(0.95);
     box-shadow:
       0 0 10px color-mix(in srgb, var(--glow-cyan) 28%, transparent),
-      0 0 22px color-mix(in srgb, var(--glow-pink) 16%, transparent),
-      0 0 0 0 transparent;
+      0 0 22px color-mix(in srgb, var(--glow-pink) 16%, transparent);
   }
 }
 
@@ -4548,21 +4607,18 @@ main > header,
       color-mix(in srgb, var(--brand-pink) 12%, transparent) 100%
     );
   opacity: 0.72;
-  animation: contact-helix-fallback-drift 14s ease-in-out infinite alternate;
+}
+
+.contact-in-view .contact-helix-fallback {
+  animation: contact-helix-fallback-drift 18s ease-in-out infinite alternate;
 }
 
 @keyframes contact-helix-fallback-drift {
   0% {
-    transform: translate3d(-2%, 0, 0) scale(1);
-    filter: hue-rotate(0deg) saturate(1);
-  }
-  50% {
-    transform: translate3d(1%, -1.5%, 0) scale(1.04);
-    filter: hue-rotate(8deg) saturate(1.12);
+    transform: translate3d(-1.5%, 0, 0) scale(1);
   }
   100% {
-    transform: translate3d(2%, 0, 0) scale(1.06);
-    filter: hue-rotate(-6deg) saturate(1.08);
+    transform: translate3d(1.5%, 0, 0) scale(1.03);
   }
 }
 
@@ -4789,9 +4845,11 @@ body {
     opacity: 0;
   }
 
-  .contact-helix-fallback {
+  .contact-helix-fallback,
+  .contact-in-view .contact-helix-fallback {
     animation: none;
     transform: none;
+    will-change: auto;
   }
 
   .projects-showcase-arrow:hover {
@@ -4857,13 +4915,17 @@ body {
   .build-direction-glow,
   .projects-glow,
   .final-cta-glow {
-    opacity: 0.1;
-    filter: blur(56px);
+    opacity: 0.16;
+    filter: none;
   }
 
+  /* The hero's tech background is the whole first impression on mobile —
+     give it more presence than the other pages' subtler section glows.
+     (This rule wins the cascade over the earlier .hero-bg-glow block for
+     shared properties — keep both in sync rather than relying on order.) */
   .hero-bg-glow {
-    opacity: 0.14;
-    filter: blur(56px);
+    opacity: 0.55;
+    filter: none;
   }
 
   .site-header {
@@ -5130,8 +5192,7 @@ body {
   width: min(42rem, 70vw);
   height: min(42rem, 70vw);
   border-radius: 50%;
-  filter: blur(72px);
-  opacity: 0.35;
+  opacity: 0.4;
 }
 
 .legal-page-glow--left {

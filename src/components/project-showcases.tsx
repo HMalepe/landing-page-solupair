@@ -1,12 +1,17 @@
 import { type ReactNode, Fragment } from "react";
 import { motion } from "framer-motion";
+import hospitalPortrait from "@/assets/florida-day-hospital-portrait.webp";
+import selantraPortrait from "@/assets/selantra-portrait.webp";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   ArrowDownRight,
   ArrowUpRight,
   Calendar,
   Clock,
+  GripVertical,
+  Mail,
   MessageCircle,
+  Plus,
   Radio,
   Search,
   User,
@@ -542,6 +547,158 @@ export function LivePulseDashboardPreview({ isActive = true }: { isActive?: bool
   );
 }
 
+/** Solupair Bot FAQs — answers the WhatsApp booking engine is allowed to share. */
+export function BotFaqsDashboardPreview({ isActive = true }: { isActive?: boolean }) {
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
+  const animate = isActive && !reduce;
+
+  const faqs = [
+    {
+      n: "1",
+      q: "Do you deliver?",
+      a: "Yes — we deliver across Tshwane. Delivery is free over R400 this week, and a fee applies under that.",
+    },
+    {
+      n: "2",
+      q: "What is the minimum order?",
+      a: "Minimum order is R150 before delivery fees.",
+    },
+  ];
+
+  return (
+    <ShowcaseFrame surface="light">
+      <WindowDots title="dashboard.solupair.co.za — Bot FAQs" />
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <aside className="hidden w-[24%] shrink-0 flex-col border-r border-black/[0.06] bg-[oklch(0.985_0.01_145)] p-2.5 sm:flex">
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex size-8 items-center justify-center rounded-xl bg-[oklch(0.62_0.08_150)] text-[9px] font-black text-white">
+              DM
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-[10px] font-bold text-black/80">Dispensary</p>
+              <p className="truncate text-[8px] text-black/45">Dr Marley · Owner</p>
+            </div>
+          </div>
+          <div className="mb-2.5 flex items-center gap-1.5 rounded-lg border border-black/[0.06] bg-white px-2.5 py-2 text-[9px] text-black/35">
+            <Search className="size-3 shrink-0" />
+            Search pages…
+          </div>
+          {[
+            { label: "Today", active: false },
+            { label: "Products", active: true },
+            { label: "Delivery", active: false },
+            { label: "Growth", active: false },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className={`mb-1 rounded-lg px-2.5 py-1.5 text-[9px] font-medium sm:text-[10px] ${
+                item.active
+                  ? "bg-[oklch(0.93_0.04_150)] font-semibold text-[oklch(0.38_0.06_150)]"
+                  : "text-black/45"
+              }`}
+            >
+              {item.label}
+            </div>
+          ))}
+        </aside>
+
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[oklch(0.992_0.004_140)] p-3 pr-11 sm:p-3.5 sm:pr-12">
+          <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="font-display text-xs font-bold text-black/85 sm:text-sm">Bot FAQs</p>
+              <p className="text-[8px] text-black/40 sm:text-[9px]">
+                Approved answers go live on WhatsApp.
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="rounded-full bg-amber-50 px-2 py-1 text-[8px] font-bold text-amber-800 sm:text-[9px]">
+                1 awaiting review
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-[oklch(0.48_0.11_150)] px-2.5 py-1 text-[8px] font-bold text-white sm:text-[9px]">
+                <Plus className="size-3" />
+                Add FAQ
+              </span>
+            </div>
+          </div>
+
+          <div className="mb-2 flex items-center gap-2">
+            <span className="h-4 w-0.5 rounded-full bg-[oklch(0.55_0.12_150)]" />
+            <p className="text-[9px] font-bold text-black/70 sm:text-[10px]">Overview</p>
+          </div>
+
+          <div className="mb-3 grid grid-cols-4 gap-1.5 sm:gap-2">
+            {[
+              { label: "Total", value: "5", tone: "border-black/[0.06] bg-white text-black/80" },
+              { label: "Approved", value: "4", tone: "border-emerald-100 bg-emerald-50 text-emerald-800" },
+              { label: "Pending", value: "1", tone: "border-amber-100 bg-amber-50 text-amber-800" },
+              { label: "Rejected", value: "0", tone: "border-black/[0.06] bg-white text-black/45" },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                className={`rounded-xl border px-2 py-2 ${stat.tone}`}
+                initial={{ opacity: animate ? 0 : 1, y: animate ? 6 : 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: animate ? i * 0.04 : 0, duration: 0.35 }}
+              >
+                <p className="text-[7px] font-bold uppercase tracking-wide opacity-70 sm:text-[8px]">
+                  {stat.label}
+                </p>
+                <p className="text-sm font-black tabular-nums sm:text-base">{stat.value}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className="h-4 w-0.5 rounded-full bg-[oklch(0.55_0.12_150)]" />
+            <p className="text-[9px] font-bold text-black/70 sm:text-[10px]">FAQ library</p>
+            <div className="flex gap-1">
+              {["All", "Pending", "Approved"].map((filter) => (
+                <span
+                  key={filter}
+                  className={`rounded-full px-2 py-0.5 text-[7px] font-bold sm:text-[8px] ${
+                    filter === "All"
+                      ? "bg-[oklch(0.48_0.11_150)] text-white"
+                      : "bg-black/[0.04] text-black/45"
+                  }`}
+                >
+                  {filter}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
+            {faqs.map((faq, i) => (
+              <motion.div
+                key={faq.n}
+                className="rounded-xl border border-black/[0.06] bg-white px-2.5 py-2 shadow-sm"
+                initial={{ opacity: animate ? 0 : 1, y: animate ? 8 : 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: animate ? 0.12 + i * 0.06 : 0, duration: 0.35 }}
+              >
+                <div className="flex items-start gap-2">
+                  <GripVertical className="mt-0.5 size-3 shrink-0 text-black/25" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-[10px] font-bold text-black/80 sm:text-[11px]">
+                        #{faq.n} {faq.q}
+                      </p>
+                      <span className="shrink-0 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[7px] font-bold text-emerald-700 sm:text-[8px]">
+                        Live on WhatsApp
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-[8px] leading-snug text-black/50 sm:text-[9px]">{faq.a}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </ShowcaseFrame>
+  );
+}
+
 /** MarineFlow WhatsApp booking agent — phone mock. */
 export function WhatsAppChatbotPreview({ isActive = true }: { isActive?: boolean }) {
   const { prefersReducedMotion: reduce } = useDeviceProfile();
@@ -619,6 +776,166 @@ export function WhatsAppChatbotPreview({ isActive = true }: { isActive?: boolean
   );
 }
 
+/** Florida Day Hospital — private day-hospital marketing site. */
+export function FloridaDayHospitalPreview({ isActive = true }: { isActive?: boolean }) {
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
+  const animate = isActive && !reduce;
+
+  return (
+    <ShowcaseFrame surface="light">
+      <WindowDots title="floridadayhospital.co.za" />
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white text-[#1c2b33]">
+        <header className="flex shrink-0 items-center justify-between gap-2 border-b border-black/[0.06] px-3 py-2 sm:px-4">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <span className="relative flex size-4 shrink-0 items-center justify-center" aria-hidden>
+              <span className="absolute h-3.5 w-[3px] rounded-sm bg-[#1d7a8c]" />
+              <span className="absolute h-[3px] w-3.5 rounded-sm bg-[#1d7a8c]" />
+              <span className="absolute -right-0.5 -top-0.5 size-1.5 rounded-full bg-[#e23b4a]" />
+            </span>
+            <span className="truncate font-serif text-[11px] italic text-[#24343c] sm:text-xs">
+              Florida
+            </span>
+            <span className="hidden truncate text-[7px] font-semibold tracking-[0.16em] text-black/45 sm:inline">
+              DAY HOSPITAL
+            </span>
+          </div>
+          <nav className="hidden items-center gap-3 text-[8px] font-medium text-black/55 sm:flex">
+            <span className="border-b-2 border-[#1d7a8c] pb-0.5 text-black/80">Home</span>
+            <span>About</span>
+            <span>Services</span>
+            <span>Find us</span>
+          </nav>
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-black/15 px-2 py-1 text-[7px] font-semibold tracking-[0.08em] text-black/70 sm:text-[8px]">
+            <Mail className="size-2.5" />
+            CONTACT US
+          </span>
+        </header>
+
+        <div className="grid min-h-0 flex-1 grid-cols-[1.05fr_0.95fr]">
+          <div className="flex min-w-0 flex-col justify-center px-3 py-3 sm:px-5">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="h-px w-5 bg-[#1d7a8c]" />
+              <p className="truncate text-[6px] font-semibold tracking-[0.14em] text-black/45 sm:text-[7px]">
+                PRIVATE DAY HOSPITAL · FLORIDA PARK
+              </p>
+            </div>
+            <motion.h3
+              className="font-serif text-[15px] leading-[1.05] tracking-tight text-[#1a2a32] sm:text-[22px]"
+              initial={{ opacity: animate ? 0 : 1, y: animate ? 8 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: animate ? 0.45 : 0 }}
+            >
+              Surgical care,
+              <br />
+              measured in
+              <br />
+              <span className="italic">hours</span> — not days.
+            </motion.h3>
+            <span className="mt-2 h-px w-8 bg-black/20" />
+            <p className="mt-2 max-w-[22ch] text-[8px] leading-snug text-black/55 sm:text-[9px]">
+              One visit. One theatre. <strong className="font-semibold text-black/75">Home the same day</strong> —
+              planned from arrival through to discharge.
+            </p>
+            <span className="mt-3 inline-flex w-fit rounded-full bg-[#3c5560] px-3 py-1.5 text-[8px] font-semibold text-white sm:text-[9px]">
+              Contact us
+            </span>
+          </div>
+
+          <motion.div
+            className="relative min-h-0 overflow-hidden"
+            initial={{ opacity: animate ? 0 : 1 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: animate ? 0.5 : 0 }}
+          >
+            <img
+              src={hospitalPortrait}
+              alt=""
+              className="h-full w-full object-cover object-[62%_center]"
+              draggable={false}
+            />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white to-transparent" />
+          </motion.div>
+        </div>
+      </div>
+    </ShowcaseFrame>
+  );
+}
+
+/** Selantra Beauty Studio — appointment-only studio site. */
+export function SelantraBeautyPreview({ isActive = true }: { isActive?: boolean }) {
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
+  const animate = isActive && !reduce;
+
+  return (
+    <ShowcaseFrame surface="light">
+      <WindowDots title="beauty.selantra.co.za" />
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#f7f3ec] text-[#2a241c]">
+        <header className="flex shrink-0 items-center justify-between gap-2 px-3 py-2 sm:px-4">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <span className="flex size-7 shrink-0 flex-col items-center justify-center rounded-sm bg-[#efe6d8] font-serif leading-none text-[#3a3126]">
+              <span className="text-[11px] italic">S</span>
+            </span>
+            <span className="truncate font-serif text-[11px] italic lowercase sm:text-xs">selantra</span>
+          </div>
+          <nav className="hidden items-center gap-3 text-[7px] font-medium tracking-[0.16em] text-black/45 sm:flex">
+            <span>MENU</span>
+            <span>RITUAL</span>
+            <span>STUDIO</span>
+            <span>GIFT</span>
+          </nav>
+          <span className="inline-flex shrink-0 rounded-full border border-black/20 px-2.5 py-1 text-[7px] font-semibold tracking-[0.14em] sm:text-[8px]">
+            RESERVE
+          </span>
+        </header>
+
+        <div className="grid min-h-0 flex-1 grid-cols-[1.05fr_0.95fr] items-center px-3 pb-3 sm:px-5">
+          <div className="flex min-w-0 flex-col justify-center pr-2">
+            <p className="mb-2 truncate text-[6px] font-medium tracking-[0.16em] text-[#8a7b64] sm:text-[7px]">
+              + BEAUTY STUDIO · CLIFTON HILL
+            </p>
+            <motion.h3
+              className="font-serif text-[28px] lowercase italic leading-none tracking-tight text-[#241c16] sm:text-[40px]"
+              initial={{ opacity: animate ? 0 : 1, y: animate ? 8 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: animate ? 0.45 : 0 }}
+            >
+              selantra
+            </motion.h3>
+            <p className="mt-2 text-[6px] font-medium tracking-[0.18em] text-black/40 sm:text-[7px]">
+              ENHANCE · ELEVATE · EMPOWER
+            </p>
+            <p className="mt-2 max-w-[24ch] text-[8px] leading-snug text-black/55 sm:text-[9px]">
+              Beauty, done slowly — a modern ritual for skin, hair, and hands.
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="inline-flex rounded-full bg-[#1c1c1c] px-3 py-1.5 text-[8px] font-medium text-white sm:text-[9px]">
+                Reserve a ritual
+              </span>
+              <span className="hidden text-[7px] font-medium tracking-[0.14em] text-black/55 sm:inline">
+                EXPLORE THE MENU
+              </span>
+            </div>
+          </div>
+
+          <motion.div
+            className="relative h-full min-h-0 overflow-hidden"
+            initial={{ opacity: animate ? 0 : 1 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: animate ? 0.5 : 0 }}
+          >
+            <img
+              src={selantraPortrait}
+              alt=""
+              className="h-full w-full object-cover object-center"
+              draggable={false}
+            />
+          </motion.div>
+        </div>
+      </div>
+    </ShowcaseFrame>
+  );
+}
+
 /**
  * Case-study fields, outcome-first per Solupair's portfolio brief:
  * `before` (buyer's situation), `intervention` (what we built), `outcome`
@@ -637,12 +954,18 @@ export const PROJECT_SHOWCASES = [
     name: "ExpiryDesk Dashboard",
     cardTitle: "ExpiryDesk PRO",
     valueTag: "Inventory intelligence",
+    cardLine: "Flags stock by expiry date before it becomes a write-off.",
     before: "Stock expired on the shelf before anyone caught it — write-offs found out too late.",
     intervention:
       "A live dashboard that flags at-risk stock by expiry date and tracks recovered value automatically.",
     // TODO(owner): replace with the confirmed write-off/recovery number for this build.
     outcome: { status: "pending", value: "ask us for the write-off numbers on this build" } as CaseOutcome,
     tag: "Pharmacy inventory · expiry tracking",
+    explainer: {
+      lead: "Stock seen",
+      accent: "before it expires",
+      body: "Dates sit on one live board, so at-risk stock is flagged while it can still be used instead of written off as a surprise.",
+    },
     Preview: ExpiryDeskDashboardPreview,
   },
   {
@@ -650,25 +973,94 @@ export const PROJECT_SHOWCASES = [
     name: "Live Pulse",
     cardTitle: "Live Pulse Dashboard",
     valueTag: "Business visibility",
+    cardLine: "Bookings, revenue and WhatsApp, together in one live view.",
     before:
       "Bookings, revenue and WhatsApp messages lived in three different places — nothing added up in one glance.",
     intervention: "One live dashboard showing bookings, revenue and the WhatsApp inbox side by side.",
     // TODO(owner): replace with the confirmed hours-saved / admin-time number for this build.
     outcome: { status: "pending", value: "ask us for the hours saved on this build" } as CaseOutcome,
     tag: "Solupair · WhatsApp booking engine",
+    explainer: {
+      lead: "Bookings handled",
+      accent: "while you treat",
+      body: "Patients book, reschedule and confirm over WhatsApp all day — we automate the replies so your calendar fills itself and you're never stuck typing between patients.",
+    },
     Preview: LivePulseDashboardPreview,
+  },
+  {
+    id: "bot-faqs",
+    name: "Bot FAQs",
+    cardTitle: "Bot FAQ Dashboard",
+    valueTag: "Answer control",
+    cardLine: "Each WhatsApp answer is approved before it goes live.",
+    before:
+      "WhatsApp answers were typed by hand, so the bot and the shop sometimes said different things.",
+    intervention:
+      "A dashboard where the team approves each answer before it goes live on WhatsApp.",
+    outcome: { status: "pending", value: "ask us for the FAQ numbers on this build" } as CaseOutcome,
+    tag: "Solupair · WhatsApp booking engine",
+    explainer: {
+      lead: "Answers",
+      accent: "you approve",
+      body: "The team signs off each reply before it goes live, so WhatsApp and the shop always say the same thing.",
+    },
+    Preview: BotFaqsDashboardPreview,
   },
   {
     id: "whatsapp-agent",
     name: WHATSAPP_AGENT_NAME,
     cardTitle: "WhatsApp Booking Agent",
     valueTag: "Customer automation",
+    cardLine: "Books, replies, and takes PayFast payment inside the chat.",
     before:
       "Customers messaged to book, reschedule and ask questions — replies waited until someone had a free minute.",
     intervention: "A WhatsApp agent that books, reschedules, answers FAQs and sends reminders automatically.",
     // TODO(owner): replace with the confirmed response-time / booking-recovery number for this build.
     outcome: { status: "pending", value: "ask us for the response-time numbers on this build" } as CaseOutcome,
     tag: "WhatsApp booking bot",
+    explainer: {
+      lead: "PayFast",
+      accent: "in the chat",
+      body: "Customers book and pay with PayFast inside WhatsApp, without waiting for someone to send a payment link.",
+    },
     Preview: WhatsAppChatbotPreview,
+  },
+  {
+    id: "florida-day-hospital",
+    name: "Florida Day Hospital",
+    cardTitle: "Florida Day Hospital",
+    valueTag: "Hospital website",
+    cardLine: "One page for the hospital, the care, and how to enquire.",
+    before:
+      "People looking for same-day surgery had no clear page for the hospital, the care, or how to enquire.",
+    intervention:
+      "A calm hospital website that explains the visit and gives patients a direct way to get in touch.",
+    outcome: { status: "pending", value: "ask us for the enquiry numbers on this build" } as CaseOutcome,
+    tag: "Private day hospital · Florida Park",
+    explainer: {
+      lead: "The visit",
+      accent: "made clear",
+      body: "People looking for same-day surgery get one page for the hospital, the care, and how to enquire.",
+    },
+    Preview: FloridaDayHospitalPreview,
+  },
+  {
+    id: "selantra-beauty",
+    name: "Selantra Beauty Studio",
+    cardTitle: "Selantra Beauty",
+    valueTag: "Studio website",
+    cardLine: "Skin, hair and hand treatments, with PayFast checkout on the site.",
+    before:
+      "The studio's booking lived in messages, with no single page for the ritual, the menu, or how to reserve.",
+    intervention:
+      "A quiet studio website that introduces the ritual and lets guests reserve by appointment.",
+    outcome: { status: "pending", value: "ask us for the booking numbers on this build" } as CaseOutcome,
+    tag: "Beauty studio · Clifton Hill",
+    explainer: {
+      lead: "PayFast",
+      accent: "on the site",
+      body: "Guests see skin, hair and hand care, then pay with PayFast when they reserve a visit.",
+    },
+    Preview: SelantraBeautyPreview,
   },
 ] as const;

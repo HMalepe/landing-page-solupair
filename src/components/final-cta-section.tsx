@@ -22,10 +22,12 @@ const LEAD_STAGGER = 0.09;
 const LEAD_MS = 0.55;
 const LETTER_STAGGER = 0.05;
 const LETTER_MS = 0.82;
-const WORD_STAGGER = 0.058;
-const WORD_MS = 0.64;
-const BODY_LINE_GAP = 0.28;
+const WORD_STAGGER = 0.05;
+const WORD_MS = 0.46;
+const BODY_LINE_GAP = 0.14;
 const HERO_LEAD_GAP = 0.12;
+/** Bring the gradient line in sooner than the lead-word landing. */
+const HERO_PULL_FORWARD_MS = 600;
 
 const leadWordVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -55,7 +57,7 @@ const accentLetterVariants: Variants = {
 };
 
 const supportWordVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
@@ -205,7 +207,7 @@ function SupportStory({
   onDoneRef.current = onDone;
 
   const lastIndex = flat[flat.length - 1]?.index ?? 0;
-  const totalMs = Math.round((lastIndex * WORD_STAGGER + WORD_MS) * 1000) + 200;
+  const totalMs = Math.round((lastIndex * WORD_STAGGER + WORD_MS) * 1000) + 90;
 
   useEffect(() => {
     doneRef.current = false;
@@ -281,8 +283,10 @@ export function FinalCtaSection() {
       setAccentSheen(true);
       return;
     }
-    const leadMs = Math.round(
-      (SOLUTION_LEAD.length * LEAD_STAGGER + LEAD_MS + HERO_LEAD_GAP) * 1000,
+    const leadMs = Math.max(
+      0,
+      Math.round((SOLUTION_LEAD.length * LEAD_STAGGER + LEAD_MS + HERO_LEAD_GAP) * 1000) -
+        HERO_PULL_FORWARD_MS,
     );
     const t = window.setTimeout(() => setPhase("hero"), leadMs);
     return () => window.clearTimeout(t);

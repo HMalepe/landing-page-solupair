@@ -16,16 +16,18 @@ const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const MOTION_DURATION = 0.45;
 const projects = PROJECT_SHOWCASES;
 
-function revealProps(reduceMotion: boolean, inView: boolean, delay = 0, withScale = false) {
+// Opacity-only on purpose: this reveal fires while the visitor is still
+// scrolling, and any translate/scale here moves content against the scroll
+// (reads as a bounce), while fractional scaling of the detailed project
+// mockups re-samples their text every frame (reads as shimmer).
+function revealProps(reduceMotion: boolean, inView: boolean, delay = 0) {
   if (reduceMotion) {
     return { initial: false as const, animate: undefined, transition: undefined };
   }
 
   return {
-    initial: { opacity: 0, y: 10, ...(withScale ? { scale: 0.992 } : {}) },
-    animate: inView
-      ? { opacity: 1, y: 0, ...(withScale ? { scale: 1 } : {}) }
-      : { opacity: 0, y: 10, ...(withScale ? { scale: 0.992 } : {}) },
+    initial: { opacity: 0 },
+    animate: { opacity: inView ? 1 : 0 },
     transition: { duration: MOTION_DURATION, ease: REVEAL_EASE, delay },
   };
 }
@@ -127,15 +129,12 @@ export function ProjectsSection() {
             className="projects-description"
             {...revealProps(reduceMotion, sectionInView, 0.06)}
           >
-            Live dashboards, booking flows and automation tools built to reduce admin, missed
-            bookings and messy operations.
+            Websites and WhatsApp bots that take PayFast payments, plus dashboards and booking flows
+            that cut missed messages and messy admin.
           </motion.p>
         </header>
 
-        <motion.div
-          className="projects-stage"
-          {...revealProps(reduceMotion, sectionInView, 0.08, true)}
-        >
+        <motion.div className="projects-stage" {...revealProps(reduceMotion, sectionInView, 0.08)}>
           <div className="projects-showcase-shell">
             <div
               className="projects-carousel-region"
@@ -268,6 +267,23 @@ export function ProjectsSection() {
               ))}
             </div>
           </div>
+
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={project.id}
+              className="projects-whatsapp-pitch"
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
+              transition={{ duration: 0.4, ease: REVEAL_EASE }}
+            >
+              <p className="projects-whatsapp-pitch__headline">
+                <span>{project.explainer.lead}</span>
+                <span className="projects-whatsapp-pitch__accent">{project.explainer.accent}</span>
+              </p>
+              <p className="projects-whatsapp-pitch__body">{project.explainer.body}</p>
+            </motion.div>
+          </AnimatePresence>
 
           <div className="projects-carousel-controls safe-area-bottom mt-2 flex items-center justify-center sm:mt-3">
             <div

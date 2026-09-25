@@ -39,6 +39,7 @@ function SolupairLogo({
         width={1536}
         height={1206}
         decoding="async"
+        fetchPriority="high"
         className="site-logo-mark w-auto shrink-0 object-contain object-left"
       />
       <div className="site-logo-wordmark-wrap" ref={wrapRef}>
@@ -51,6 +52,7 @@ function SolupairLogo({
           width={1448}
           height={176}
           decoding="async"
+          fetchPriority="high"
           className="site-logo-wordmark h-full w-auto object-contain object-left"
         />
         {maskLogo && oRect && (

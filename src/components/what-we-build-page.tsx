@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { BuildCategoriesSection } from "@/components/build-categories-section";
 import { BuildIllustration } from "@/components/build-illustrations";
 import { useSectionInView } from "@/hooks/use-section-in-view";
@@ -13,7 +14,7 @@ export function WhatWeBuildPageContent() {
     >
       <header className="build-direction-header">
         <p className="build-page-eyebrow build-reveal build-reveal--heading">
-          Websites · Dashboards · WhatsApp automation
+          Websites · Dashboards · WhatsApp · PayFast
         </p>
         <h1
           id="build-heading"
@@ -25,6 +26,10 @@ export function WhatWeBuildPageContent() {
           A look at the kind of work we do for South African SME owners — by business type and by
           project shape. Every build starts with a conversation, not a price list.
         </p>
+        <Link to="/pricing" className="build-page-pricing-link build-reveal build-reveal--subtitle">
+          <span>Want a live ZAR estimate instead? See pricing</span>
+          <span aria-hidden>→</span>
+        </Link>
       </header>
 
       <BuildCategoriesSection />

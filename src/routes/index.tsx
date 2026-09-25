@@ -1,65 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { ContactSection } from "@/components/contact-section";
 import { FinalCtaSection } from "@/components/final-cta-section";
-import type { LeadFormQuotePrefill } from "@/components/lead-form";
 import { ProjectsSection } from "@/components/projects-section";
-import { QuoteBuilderSection } from "@/components/quote-builder-section";
 import { SiteHeader } from "@/components/site-header";
-import { useDeviceProfile } from "@/hooks/use-device-profile";
-import { useHomeMotionEpoch } from "@/hooks/use-home-motion-epoch";
-import { useIdleReady } from "@/hooks/use-idle-ready";
-
-/** Safety net: force-reveal the logo if the ball's dissolve never fires. */
-const LOGO_REVEAL_FALLBACK_MS = 20_000;
-
-// Code-split: the headline + CTA must be interactive before the ball's
-// physics/motion code ever downloads. Only starts fetching once idle (see
-// useIdleReady below), not synchronously on initial render.
-const HeroFaceBall = lazy(() =>
-  import("@/components/hero-face-ball").then((m) => ({ default: m.HeroFaceBall })),
-);
 
 export const Route = createFileRoute("/")({
   component: NovaHome,
 });
 
 function Hero() {
-  const heroGroundRef = useRef<HTMLElement>(null);
-  const idleReady = useIdleReady();
-  const { prefersReducedMotion } = useDeviceProfile();
-
-  // The wordmark's smiley "O" stays masked until the hero ball's first
-  // dissolve, then reveals once — reduced motion skips the ball's animation
-  // entirely, so it just shows the O immediately like every other page.
-  // Both start `false` regardless of device profile (matching that hook's
-  // own SSR-safe default) — an effect below reveals right away once the
-  // real reduced-motion value is known, instead of seeding from a value
-  // that can only be trusted after mount.
-  const [logoRevealed, setLogoRevealed] = useState(false);
-  const hasRevealedRef = useRef(false);
-
-  const revealLogo = useCallback(() => {
-    if (hasRevealedRef.current) return;
-    hasRevealedRef.current = true;
-    setLogoRevealed(true);
-  }, []);
-
-  useEffect(() => {
-    if (prefersReducedMotion) revealLogo();
-  }, [prefersReducedMotion, revealLogo]);
-
-  useEffect(() => {
-    if (hasRevealedRef.current) return;
-    const timer = setTimeout(revealLogo, LOGO_REVEAL_FALLBACK_MS);
-    return () => clearTimeout(timer);
-  }, [revealLogo]);
-
   return (
     <section
       id="hero"
       data-scroll-snap="hero"
-      ref={heroGroundRef}
       className="hero-section snap-section-panel relative flex h-[100dvh] max-h-[100dvh] min-h-[100dvh] w-full flex-col overflow-x-clip overflow-y-clip"
     >
       <div className="hero-bg" aria-hidden>
@@ -111,33 +64,27 @@ function Hero() {
         <div className="hero-bg-grain" />
       </div>
 
-      {idleReady && (
-        <Suspense fallback={null}>
-          <HeroFaceBall groundRef={heroGroundRef} onDissolve={revealLogo} />
-        </Suspense>
-      )}
-
       <div className="hero-reveal hero-reveal--header relative z-20 w-full shrink-0 safe-area-x">
-        <SiteHeader maskLogo={!prefersReducedMotion} logoRevealed={logoRevealed} />
+        <SiteHeader />
       </div>
 
       <div className="hero-content relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-start safe-area-x md:z-10 md:flex-1 md:justify-center">
         <div className="hero-copy-stack w-full min-w-0">
           <div className="hero-reveal hero-reveal--eyebrow flex justify-center">
             <p className="hero-eyebrow">
-              WhatsApp
-              <span className="hero-eyebrow-sep" aria-hidden>
-                ·
-              </span>
               Automation
               <span className="hero-eyebrow-sep" aria-hidden>
-                ·
+                .
+              </span>
+              Dashboards
+              <span className="hero-eyebrow-sep" aria-hidden>
+                .
               </span>
               Websites
               <span className="hero-eyebrow-sep" aria-hidden>
-                ·
+                .
               </span>
-              Dashboards
+              WhatsApp
             </p>
           </div>
 
@@ -146,19 +93,19 @@ function Hero() {
 
             <h1 className="relative z-[1] w-full min-w-0 text-center">
               <span className="hero-headline hero-headline-text hero-headline-text--a hero-reveal hero-reveal--headline-a">
-                <span className="hero-headline-line">BOOKINGS</span>{" "}
-                <span className="hero-headline-line hero-headline-gradient">HANDLED</span>
+                <span className="hero-headline-line">DIGITAL</span>{" "}
+                <span className="hero-headline-line hero-headline-gradient">SOLUTIONS</span>
               </span>
               <span className="hero-headline hero-headline-text hero-headline-text--b hero-reveal hero-reveal--headline-b">
-                <span className="hero-headline-line hero-headline-phrase">WHILE YOU</span>{" "}
-                <span className="hero-headline-line hero-headline-phrase">TREAT</span>
+                <span className="hero-headline-line hero-headline-phrase">FOR YOUR</span>{" "}
+                <span className="hero-headline-line hero-headline-phrase">BUSINESS</span>
               </span>
             </h1>
           </div>
 
           <p className="hero-subheading hero-reveal hero-reveal--subheading text-center">
-            Patients book, reschedule and confirm over WhatsApp all day — we automate the replies so
-            your calendar fills itself and you're never stuck typing between patients.
+            Premium websites, dashboards and automated workflows for teams that need smoother
+            bookings, sharper visibility and faster operations.
           </p>
         </div>
       </div>
@@ -167,20 +114,12 @@ function Hero() {
 }
 
 function NovaHome() {
-  const motionEpoch = useHomeMotionEpoch();
-  const [pendingQuote, setPendingQuote] = useState<LeadFormQuotePrefill | undefined>();
-
   return (
     <main className="scroll-snap-canvas min-h-[100dvh] bg-background font-sans text-foreground">
-      <Hero key={`hero-${motionEpoch}`} />
-      <ProjectsSection key={`projects-${motionEpoch}`} />
-      <QuoteBuilderSection key={`quote-${motionEpoch}`} onLockQuote={setPendingQuote} />
-      <FinalCtaSection key={`cta-${motionEpoch}`} />
-      <ContactSection
-        key={`contact-${motionEpoch}`}
-        pendingQuote={pendingQuote}
-        onQuoteConsumed={() => setPendingQuote(undefined)}
-      />
+      <Hero />
+      <ProjectsSection />
+      <FinalCtaSection />
+      <ContactSection />
     </main>
   );
 }
