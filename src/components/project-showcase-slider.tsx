@@ -38,16 +38,29 @@ type ProjectShowcaseSliderProps = {
   className?: string;
 };
 
-type SliderEngineProps = ProjectShowcaseSliderProps & {
-  useFade: boolean;
-};
-
 const WHEEL_THRESHOLD = 18;
 const WHEEL_COOLDOWN_MS = 420;
 
-const ProjectShowcaseSliderEngine = forwardRef<ShowcaseSliderHandle, SliderEngineProps>(
-  function ProjectShowcaseSliderEngine({ slides, onSelect, className, useFade }, ref) {
-    const { prefersReducedMotion } = useDeviceProfile();
+/**
+ * `useDeviceProfile()` starts every device with the SSR-safe default
+ * `isMobileLanding: false`, then flips to the real value in an effect
+ * shortly after mount. `useFade` derives from that, so it's a real
+ * false -> true (or true -> false) transition on first mount for anyone
+ * whose real device doesn't match the default — i.e. real phones.
+ *
+ * That used to be the identity of a React `key` on this component, which
+ * fully unmounted and destroyed the Embla instance, then created a brand
+ * new one milliseconds later — a visible flash/reflow the moment the
+ * carousel scrolled into view. `useEmblaCarousel` already reconfigures an
+ * *existing* instance in place (via its own deep-compared reInit effect)
+ * whenever `options`/`plugins` change, so there's no need to force a
+ * remount at all — just let `useFade` flow through as an ordinary prop.
+ */
+export const ProjectShowcaseSlider = forwardRef<ShowcaseSliderHandle, ProjectShowcaseSliderProps>(
+  function ProjectShowcaseSlider({ slides, onSelect, className }, ref) {
+    const { prefersReducedMotion, isMobileLanding } = useDeviceProfile();
+    // Mobile: scroll-snap swipe. Desktop: fade crossfade (drag + trackpad still work).
+    const useFade = !prefersReducedMotion && !isMobileLanding;
     const plugins = useMemo(() => (useFade ? [Fade()] : []), [useFade]);
     const wheelLockRef = useRef(false);
 
@@ -178,23 +191,6 @@ const ProjectShowcaseSliderEngine = forwardRef<ShowcaseSliderHandle, SliderEngin
           {slides.length}
         </span>
       </div>
-    );
-  },
-);
-
-export const ProjectShowcaseSlider = forwardRef<ShowcaseSliderHandle, ProjectShowcaseSliderProps>(
-  function ProjectShowcaseSlider(props, ref) {
-    const { prefersReducedMotion, isMobileLanding } = useDeviceProfile();
-    // Mobile: scroll-snap swipe. Desktop: fade crossfade (drag + trackpad still work).
-    const useFade = !prefersReducedMotion && !isMobileLanding;
-
-    return (
-      <ProjectShowcaseSliderEngine
-        key={useFade ? "fade" : "scroll"}
-        ref={ref}
-        {...props}
-        useFade={useFade}
-      />
     );
   },
 );
