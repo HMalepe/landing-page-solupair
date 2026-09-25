@@ -1666,15 +1666,59 @@ main > header,
   }
 
   .hero-bg-glow {
-    opacity: 0.16;
+    opacity: 0.55;
+  }
+
+  .hero-bg-glow--cyan {
+    width: min(85vw, 30rem);
+    height: min(85vw, 30rem);
+    left: -22%;
+    top: 12%;
+  }
+
+  .hero-bg-glow--pink {
+    width: min(78vw, 28rem);
+    height: min(78vw, 28rem);
+    right: -20%;
+    top: 32%;
+  }
+
+  .hero-bg-glow--purple {
+    width: min(95vw, 32rem);
+    height: min(60vw, 22rem);
+    bottom: 14%;
+    opacity: 0.5;
+  }
+
+  /* The container opacity alone can't rescue this — each path carries its
+     own low inline opacity (0.18–0.28), and SVG presentation attributes
+     lose to any real CSS rule, so override them directly for mobile. */
+  .hero-bg-circuit {
+    opacity: 0.6;
+  }
+
+  .hero-bg-circuit path {
+    opacity: 0.7;
+  }
+
+  .hero-bg-circuit circle {
+    opacity: 0.85;
   }
 
   .hero-bg-circuit {
-    opacity: 0.16;
+    mask-image: radial-gradient(ellipse 130% 150% at 50% 45%, black 8%, transparent 88%);
   }
 
+  /* Same story for the grid: the line color itself is a 3.5% cyan tint
+     baked into the gradient, so boosting element opacity alone was
+     multiplying an already-invisible color. Use a visibly stronger tint
+     here instead of just cranking opacity further. */
   .hero-bg-grid {
-    opacity: 0.18;
+    opacity: 0.6;
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--brand-cyan) 14%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--brand-cyan) 14%, transparent) 1px, transparent 1px);
+    mask-image: radial-gradient(ellipse 140% 160% at 50% 48%, black 15%, transparent 88%);
   }
 
   .hero-headline-scrim {
@@ -2448,6 +2492,27 @@ main > header,
     font-size: 1rem;
     line-height: 1.7;
   }
+}
+
+.build-page-pricing-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: clamp(0.9rem, 2vh, 1.35rem);
+  padding: 0.55em 1.1em;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 30%, transparent);
+  background: color-mix(in srgb, var(--brand-cyan) 8%, transparent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--brand-cyan) 85%, var(--text-main));
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.build-page-pricing-link:hover {
+  color: var(--brand-cyan);
+  background: color-mix(in srgb, var(--brand-cyan) 14%, transparent);
+  border-color: color-mix(in srgb, var(--brand-cyan) 50%, transparent);
 }
 
 .build-page-shell {
@@ -4853,9 +4918,17 @@ body {
   .who-for-glow,
   .build-direction-glow,
   .projects-glow,
-  .final-cta-glow,
-  .hero-bg-glow {
+  .final-cta-glow {
     opacity: 0.16;
+    filter: none;
+  }
+
+  /* The hero's tech background is the whole first impression on mobile —
+     give it more presence than the other pages' subtler section glows.
+     (This rule wins the cascade over the earlier .hero-bg-glow block for
+     shared properties — keep both in sync rather than relying on order.) */
+  .hero-bg-glow {
+    opacity: 0.55;
     filter: none;
   }
 

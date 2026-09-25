@@ -133,16 +133,6 @@ export function SiteHeader({
               <span className="site-nav-label site-nav-label--full">Projects</span>
             </a>
             <Link
-              to="/pricing"
-              className="site-nav-link site-nav-link--secondary"
-              activeProps={{
-                className: "site-nav-link site-nav-link--secondary site-nav-link--active",
-              }}
-            >
-              <span className="site-nav-label site-nav-label--short">Price</span>
-              <span className="site-nav-label site-nav-label--full">Pricing</span>
-            </Link>
-            <Link
               to="/what-we-build"
               className="site-nav-link site-nav-link--secondary"
               activeProps={{
