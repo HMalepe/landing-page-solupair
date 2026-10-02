@@ -7,25 +7,19 @@
 // request in a given window — the origin only gets hit again once the
 // cache expires or is revalidated in the background.
 //
-// UNVERIFIED: this repo's nitro/@tanstack/react-start versions are pinned
-// betas, and this change has not been confirmed to actually serve content
-// (as opposed to a header-only empty response) end to end. Check the
-// preview deployment for this branch in a real browser before merging —
-// load "/", "/privacy", "/terms" and "/what-we-build" and confirm they
-// render normally, then check response headers (e.g. via browser devtools
-// Network tab) for "cache-control" and repeat the load to see it come from
-// cache. Do not merge to main on CI green alone.
+// Vercel strips s-maxage/stale-while-revalidate before the response reaches
+// the browser (visitors see just `cache-control: public`); check
+// `x-vercel-cache: HIT` on a repeat request to confirm it's working.
+const STATIC_PAGE_CACHE = {
+  headers: { "cache-control": "public, s-maxage=3600, stale-while-revalidate=86400" },
+};
+
 export default {
   routeRules: {
-    "/": { headers: { "cache-control": "public, s-maxage=3600, stale-while-revalidate=86400" } },
-    "/privacy": {
-      headers: { "cache-control": "public, s-maxage=3600, stale-while-revalidate=86400" },
-    },
-    "/terms": {
-      headers: { "cache-control": "public, s-maxage=3600, stale-while-revalidate=86400" },
-    },
-    "/what-we-build": {
-      headers: { "cache-control": "public, s-maxage=3600, stale-while-revalidate=86400" },
-    },
+    "/": STATIC_PAGE_CACHE,
+    "/pricing": STATIC_PAGE_CACHE,
+    "/privacy": STATIC_PAGE_CACHE,
+    "/terms": STATIC_PAGE_CACHE,
+    "/what-we-build": STATIC_PAGE_CACHE,
   },
 };
