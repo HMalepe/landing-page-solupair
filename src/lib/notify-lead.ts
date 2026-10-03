@@ -28,6 +28,8 @@ const leadEmailSchema = z.object({
   budgetBand: z.enum(BUDGET_OPTIONS),
   contact: z.string().trim().min(5).max(160),
   website: z.string().max(200).optional(),
+  // Why the browser could not save this lead to the database, if it could not.
+  saveError: z.string().max(300).optional(),
   quote: z
     .object({
       projectType: z.enum(PROJECT_TYPE_IDS),
@@ -43,7 +45,10 @@ const leadEmailSchema = z.object({
 type LeadEmail = z.infer<typeof leadEmailSchema>;
 
 function singleLine(value: string, max = 180) {
-  return value.replace(/[\r\n\u0000]/g, " ").trim().slice(0, max);
+  return value
+    .replace(/[\r\n\u0000]/g, " ")
+    .trim()
+    .slice(0, max);
 }
 
 function labelFor<T extends { id: string; label: string }>(items: readonly T[], id: string) {
@@ -75,6 +80,13 @@ function enquiryText(lead: LeadEmail) {
       `Add-ons: ${addOns}`,
       `Timing: ${urgency ? `${urgency.label} (${urgency.description})` : lead.quote.urgency}`,
       `Estimate: ${formatZAR(lead.quote.rangeMin)} – ${formatZAR(lead.quote.rangeMax)}`,
+    );
+  }
+
+  if (lead.saveError) {
+    lines.push(
+      "",
+      `Note: this enquiry was not saved to the database (${singleLine(lead.saveError, 300)}).`,
     );
   }
 
@@ -114,7 +126,9 @@ async function deliverLeadEmail(lead: LeadEmail) {
   // Zoho shows app passwords in groups of four. The spaces are not part of the password.
   const pass = readEnv("ZOHO_SMTP_PASS").replace(/\s+/g, "");
   if (!user || !pass) {
-    throw Object.assign(new Error("Mailbox delivery is not configured."), { code: "NOT_CONFIGURED" });
+    throw Object.assign(new Error("Mailbox delivery is not configured."), {
+      code: "NOT_CONFIGURED",
+    });
   }
 
   const nodemailer = await import("nodemailer");
@@ -163,6 +177,7 @@ export const notifyLead = createServerFn({ method: "POST" })
   .validator(leadEmailSchema)
   .handler(async ({ data }) => {
     if (data.website) return { ok: true as const };
+    if (data.saveError) console.error("Lead save failed in the browser:", data.saveError);
 
     try {
       await deliverLeadEmail(data);
