@@ -5,6 +5,7 @@ import solupairLogoMobile from "@/assets/solupair-logo-mobile.png";
 import solupairWordmark from "@/assets/solupair-wordmark.png";
 import solupairWordmarkMobile from "@/assets/solupair-wordmark-mobile.png";
 import { useWordmarkORect } from "@/hooks/use-wordmark-o-rect";
+import { openBookingForm } from "@/lib/open-booking-form";
 
 type SiteHeaderProps = {
   /** Sticky bar for inner pages (what-we-build, etc.) */
@@ -142,7 +143,28 @@ export function SiteHeader({
               <span className="site-nav-label site-nav-label--short">Build</span>
               <span className="site-nav-label site-nav-label--full">What We Build</span>
             </Link>
-            <a href="/#contact" className="site-nav-link site-nav-link--primary">
+            <a
+              href="/#book"
+              className="site-nav-link site-nav-link--primary"
+              onClick={(event) => {
+                const path = window.location.pathname;
+                if (path === "/pricing") {
+                  event.preventDefault();
+                  document.getElementById("pricing-booking")?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                  window.setTimeout(() => {
+                    document.getElementById("lead-name")?.focus({ preventScroll: true });
+                  }, 350);
+                  return;
+                }
+                if (path === "/") {
+                  event.preventDefault();
+                  openBookingForm();
+                }
+              }}
+            >
               <span className="site-nav-label site-nav-label--short">Book</span>
               <span className="site-nav-label site-nav-label--full">Book a call</span>
             </a>

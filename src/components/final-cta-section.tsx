@@ -3,7 +3,7 @@ import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useSectionInView } from "@/hooks/use-section-in-view";
 import { CONTACT_EMAIL } from "@/lib/site";
-import { navigateToSection } from "@/lib/section-nav";
+import { openBookingForm } from "@/lib/open-booking-form";
 
 const QUESTION = "HAVE A MESSY BUSINESS PROCESS?";
 const SOLUTION_LEAD = ["WE", "CAN", "TURN", "IT", "INTO", "A"] as const;
@@ -306,7 +306,7 @@ export function FinalCtaSection() {
 
   const goToContact = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    navigateToSection("contact", prefersReducedMotion);
+    openBookingForm();
   };
 
   return (
@@ -426,7 +426,7 @@ export function FinalCtaSection() {
           transition={{ duration: 0.85, ease: EASE, delay: reduceMotion ? 0 : 0.08 }}
         >
           <a
-            href="#contact"
+            href="#book"
             onClick={goToContact}
             className="final-cta-btn hero-btn hero-btn--primary touch-target"
           >

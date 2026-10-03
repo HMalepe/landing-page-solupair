@@ -10,7 +10,7 @@ import { PROJECT_SHOWCASES } from "@/components/project-showcases";
 import { ProjectValueCards } from "@/components/project-value-cards";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useSectionInView } from "@/hooks/use-section-in-view";
-import { navigateToSection } from "@/lib/section-nav";
+import { openBookingForm } from "@/lib/open-booking-form";
 
 const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const MOTION_DURATION = 0.45;
@@ -196,10 +196,10 @@ export function ProjectsSection() {
                           {project.name}
                         </h3>
                         <a
-                          href="#contact"
+                          href="#book"
                           onClick={(e) => {
                             e.preventDefault();
-                            navigateToSection("contact", reduceMotion);
+                            openBookingForm();
                           }}
                           className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex shrink-0 self-start sm:self-auto"
                         >
@@ -231,10 +231,10 @@ export function ProjectsSection() {
                 </div>
                 <h3 className="projects-mobile-caption__title">{project.name}</h3>
                 <a
-                  href="#contact"
+                  href="#book"
                   onClick={(e) => {
                     e.preventDefault();
-                    navigateToSection("contact", reduceMotion);
+                    openBookingForm();
                   }}
                   className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex w-full justify-center sm:w-auto"
                 >

@@ -32,6 +32,8 @@ export type LeadFormQuotePrefill = {
 type LeadFormProps = {
   initialQuote?: LeadFormQuotePrefill;
   onSubmitted?: () => void;
+  /** Home booking: name, reach-me, business, and what they need. Budget stays on Pricing. */
+  variant?: "full" | "quick";
 };
 
 function needsForProjectType(type: ProjectTypeId): CapabilityNeed[] {
@@ -49,12 +51,16 @@ function needsForProjectType(type: ProjectTypeId): CapabilityNeed[] {
   }
 }
 
-export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
+export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFormProps) {
+  const quick = variant === "quick";
   const { checkAllowed, markSubmitted } = useSubmitRateLimit();
+  const defaults: LeadFormValues = quick
+    ? { ...LEAD_FORM_DEFAULTS, budgetBand: "Not sure yet" }
+    : LEAD_FORM_DEFAULTS;
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
-    defaultValues: LEAD_FORM_DEFAULTS,
+    defaultValues: defaults,
   });
 
   useEffect(() => {
@@ -126,7 +132,7 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
       toast.success("Booked.", {
         description: "We'll call you back within 1–2 business days.",
       });
-      form.reset(LEAD_FORM_DEFAULTS);
+      form.reset(defaults);
       onSubmitted?.();
     } catch {
       toast.error("That didn't send.", {
@@ -151,7 +157,7 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
         </div>
       )}
 
-      <div className="contact-field">
+      <div className={`contact-field${quick ? " order-1" : ""}`}>
         <label htmlFor="lead-name" className="contact-field-label">
           Your name
         </label>
@@ -171,7 +177,7 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
         )}
       </div>
 
-      <div className="contact-field">
+      <div className={`contact-field${quick ? " order-3" : ""}`}>
         <label htmlFor="lead-business" className="contact-field-label">
           Your business
         </label>
@@ -191,7 +197,7 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
         )}
       </div>
 
-      <div className="contact-field">
+      <div className={`contact-field${quick ? " order-4" : ""}`}>
         <p className="contact-field-label" id="lead-needs-label">
           What do you need?
         </p>
@@ -222,6 +228,7 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
         )}
       </div>
 
+      {!quick && (
       <div className="contact-field">
         <p className="contact-field-label" id="lead-budget-label">
           Rough budget
@@ -255,15 +262,16 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
           </p>
         )}
       </div>
+      )}
 
-      <div className="contact-field">
+      <div className={`contact-field${quick ? " order-2" : ""}`}>
         <label htmlFor="lead-contact" className="contact-field-label">
-          Email or phone
+          {quick ? "Phone or email" : "Email or phone"}
         </label>
         <Input
           id="lead-contact"
-          autoComplete="email"
-          placeholder="you@business.co.za"
+          autoComplete="on"
+          placeholder={quick ? "Phone or email" : "you@business.co.za"}
           className="contact-form-input mobile-input"
           aria-invalid={!!errors.contact}
           aria-describedby={errors.contact ? "lead-contact-error" : undefined}
@@ -294,13 +302,15 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
       <button
         type="submit"
         disabled={form.formState.isSubmitting}
-        className="contact-submit-btn hero-btn hero-btn--primary touch-target disabled:opacity-60"
+        className={`contact-submit-btn hero-btn hero-btn--primary touch-target disabled:opacity-60${quick ? " order-5" : ""}`}
       >
         <span>{form.formState.isSubmitting ? "Booking…" : "Book a call"}</span>
       </button>
 
-      <p className="contact-form-reassurance">
-        No spam — we reply within 1–2 business days with scope and a starting price range.
+      <p className={`contact-form-reassurance${quick ? " order-6" : ""}`}>
+        {quick
+          ? "We'll call you within 1–2 business days."
+          : "No spam — we reply within 1–2 business days with scope and a starting price range."}
       </p>
     </form>
   );

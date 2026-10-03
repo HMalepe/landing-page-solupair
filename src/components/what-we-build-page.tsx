@@ -69,7 +69,7 @@ export function WhatWeBuildPageContent() {
             </ul>
 
             <a
-              href="/#contact"
+              href="/#book"
               className={`build-tier-card__cta hero-btn touch-target ${tier.featured ? "hero-btn--primary" : "hero-btn--secondary"}`}
             >
               <span>{tier.cta}</span>
@@ -83,7 +83,7 @@ export function WhatWeBuildPageContent() {
           Not sure which shape fits? Send a short message — we'll suggest the leanest path for your
           situation.
         </p>
-        <a href="/#contact" className="hero-btn hero-btn--primary touch-target">
+        <a href="/#book" className="hero-btn hero-btn--primary touch-target">
           <span>Book a call</span>
         </a>
       </div>
