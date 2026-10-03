@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { supabase } from "@/integrations/supabase/client";
 import { useSubmitRateLimit } from "@/hooks/use-submit-rate-limit";
-import { notifyLead } from "@/server/notify-lead";
+import { notifyLead } from "@/lib/notify-lead";
 import {
   CAPABILITY_NEEDS,
   LEAD_FORM_DEFAULTS,

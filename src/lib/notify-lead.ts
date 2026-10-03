@@ -106,7 +106,7 @@ async function deliverLeadEmail(lead: LeadEmail) {
 }
 
 export const notifyLead = createServerFn({ method: "POST" })
-  .inputValidator(leadEmailSchema)
+  .validator(leadEmailSchema)
   .handler(async ({ data }) => {
     if (data.website) return { ok: true as const };
 
