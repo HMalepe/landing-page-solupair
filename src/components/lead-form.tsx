@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { supabase } from "@/integrations/supabase/client";
 import { useSubmitRateLimit } from "@/hooks/use-submit-rate-limit";
+import { notifyLead } from "@/server/notify-lead";
 import {
   CAPABILITY_NEEDS,
   LEAD_FORM_DEFAULTS,
@@ -99,6 +100,27 @@ export function LeadForm({ initialQuote, onSubmitted }: LeadFormProps) {
       });
 
       if (error) throw error;
+
+      await notifyLead({
+        data: {
+          name: values.name,
+          business: values.business,
+          needs: values.needs,
+          budgetBand: values.budgetBand,
+          contact: values.contact,
+          website: values.website,
+          quote: initialQuote
+            ? {
+                projectType: initialQuote.selection.projectType,
+                extraPages: initialQuote.selection.extraPages,
+                addOns: initialQuote.selection.addOns,
+                urgency: initialQuote.selection.urgency,
+                rangeMin: initialQuote.range.min,
+                rangeMax: initialQuote.range.max,
+              }
+            : null,
+        },
+      });
 
       markSubmitted();
       toast.success("Booked.", {
