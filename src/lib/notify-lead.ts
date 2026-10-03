@@ -1,3 +1,5 @@
+import { lookup } from "node:dns";
+import type { LookupFunction } from "node:dns";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { CAPABILITY_NEEDS } from "@/lib/lead-schema";
@@ -79,30 +81,82 @@ function enquiryText(lead: LeadEmail) {
   return lines.join("\n");
 }
 
+function readEnv(name: string) {
+  const value = process.env[name];
+  return typeof value === "string" ? value.trim().replace(/^['"]|['"]$/g, "") : "";
+}
+
+const ipv4Lookup: LookupFunction = (hostname, options, callback) => {
+  if (typeof options === "function") {
+    lookup(hostname, { family: 4 }, options);
+    return;
+  }
+  lookup(hostname, { ...options, family: 4 }, callback);
+};
+
+function deliveryReason(error: unknown) {
+  if (!error || typeof error !== "object") return "smtp";
+  const failure = error as { code?: unknown; responseCode?: unknown };
+  if (failure.code === "NOT_CONFIGURED") return "not-configured";
+  if (failure.code === "EAUTH" || failure.responseCode === 535 || failure.responseCode === 534) {
+    return "auth";
+  }
+  if (failure.responseCode === 553 || failure.responseCode === 550) return "sender";
+  if (typeof failure.code === "string" && /^[A-Z0-9_]{2,24}$/.test(failure.code)) {
+    return failure.code.toLowerCase();
+  }
+  if (typeof failure.responseCode === "number") return String(failure.responseCode);
+  return "smtp";
+}
+
 async function deliverLeadEmail(lead: LeadEmail) {
-  const user = process.env.ZOHO_SMTP_USER;
-  const pass = process.env.ZOHO_SMTP_PASS;
+  const user = readEnv("ZOHO_SMTP_USER");
+  // Zoho shows app passwords in groups of four. The spaces are not part of the password.
+  const pass = readEnv("ZOHO_SMTP_PASS").replace(/\s+/g, "");
   if (!user || !pass) {
-    throw new Error("Mailbox delivery is not configured.");
+    throw Object.assign(new Error("Mailbox delivery is not configured."), { code: "NOT_CONFIGURED" });
   }
 
   const nodemailer = await import("nodemailer");
-  const transport = nodemailer.createTransport({
-    host: "smtp.zoho.com",
-    port: 465,
-    secure: true,
-    auth: { user, pass },
-  });
-
   const replyTo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.contact) ? lead.contact : undefined;
-
-  await transport.sendMail({
+  const message = {
     from: `Solupair website <${user}>`,
     to: CONTACT_EMAIL,
     replyTo,
     subject: singleLine(`New enquiry from ${lead.name} — ${lead.business}`, 140),
     text: enquiryText(lead),
-  });
+  };
+  const attempts = [
+    { port: 465, secure: true },
+    { port: 587, secure: false },
+  ];
+
+  let lastError: unknown;
+  for (const attempt of attempts) {
+    const transport = nodemailer.createTransport({
+      host: "smtp.zoho.com",
+      port: attempt.port,
+      secure: attempt.secure,
+      requireTLS: !attempt.secure,
+      auth: { user, pass },
+      lookup: ipv4Lookup,
+      connectionTimeout: 8_000,
+      greetingTimeout: 8_000,
+      socketTimeout: 12_000,
+    });
+    try {
+      await transport.sendMail(message);
+      return;
+    } catch (error) {
+      lastError = error;
+      const reason = deliveryReason(error);
+      if (reason === "auth" || reason === "sender") break;
+    } finally {
+      transport.close();
+    }
+  }
+
+  throw lastError;
 }
 
 export const notifyLead = createServerFn({ method: "POST" })
@@ -114,7 +168,7 @@ export const notifyLead = createServerFn({ method: "POST" })
       await deliverLeadEmail(data);
     } catch (error) {
       console.error("Lead email failed", error);
-      throw new Error("Could not deliver the enquiry email.");
+      throw new Error(`Could not deliver the enquiry email. (${deliveryReason(error)})`);
     }
 
     return { ok: true as const };

@@ -1,8 +1,14 @@
 import { z } from "zod";
 import { BUDGET_OPTIONS } from "@/lib/site";
 
-/** The hero eyebrow's four capabilities — reused as the lead form's "what do you need" tags. */
-export const CAPABILITY_NEEDS = ["WhatsApp", "Automation", "Websites", "Dashboards"] as const;
+/** Choices on the booking form's "what do you need" tags. */
+export const CAPABILITY_NEEDS = [
+  "WhatsApp",
+  "Automation",
+  "Websites",
+  "Dashboards",
+  "Other software",
+] as const;
 export type CapabilityNeed = (typeof CAPABILITY_NEEDS)[number];
 
 const EMAIL_RE = /\S+@\S+\.\S+/;
