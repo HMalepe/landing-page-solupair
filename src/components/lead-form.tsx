@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { supabase } from "@/integrations/supabase/client";
 import { useSubmitRateLimit } from "@/hooks/use-submit-rate-limit";
 import { notifyLead } from "@/lib/notify-lead";
 import {
@@ -15,14 +14,12 @@ import {
   type LeadFormValues,
 } from "@/lib/lead-schema";
 import { BUDGET_OPTIONS, CONTACT_EMAIL } from "@/lib/site";
-import { getUtmParams } from "@/lib/utm";
 import {
   formatZAR,
   type ProjectTypeId,
   type QuoteRange,
   type QuoteSelection,
 } from "@/lib/quote-config";
-import type { Json } from "@/integrations/supabase/types";
 
 export type LeadFormQuotePrefill = {
   selection: QuoteSelection;
@@ -49,19 +46,6 @@ function needsForProjectType(type: ProjectTypeId): CapabilityNeed[] {
     default:
       return [];
   }
-}
-
-function describeError(error: unknown) {
-  if (error && typeof error === "object") {
-    const { code, message } = error as { code?: unknown; message?: unknown };
-    return (
-      [code, message]
-        .filter((part) => typeof part === "string" && part)
-        .join(": ")
-        .slice(0, 300) || "unknown"
-    );
-  }
-  return String(error).slice(0, 300);
 }
 
 export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFormProps) {
@@ -93,38 +77,7 @@ export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFo
       return;
     }
 
-    const utm = getUtmParams();
-
-    // The database save and the email are independent deliveries: either one
-    // reaching us is enough, so a failure in one must not block the other.
-    // Only when both fail does the visitor see the error.
-    let saveError: string | undefined;
-    try {
-      const { error } = await supabase.from("leads").insert({
-        name: values.name,
-        business: values.business,
-        needs: values.needs,
-        budget_band: values.budgetBand,
-        contact: values.contact,
-        quote_project_type: initialQuote?.selection.projectType ?? null,
-        quote_config: initialQuote
-          ? (JSON.parse(JSON.stringify(initialQuote.selection)) as Json)
-          : null,
-        quote_range_min: initialQuote?.range.min ?? null,
-        quote_range_max: initialQuote?.range.max ?? null,
-        utm_source: utm.utm_source ?? null,
-        utm_medium: utm.utm_medium ?? null,
-        utm_campaign: utm.utm_campaign ?? null,
-        utm_term: utm.utm_term ?? null,
-        utm_content: utm.utm_content ?? null,
-      });
-      if (error) throw error;
-    } catch (error) {
-      saveError = describeError(error);
-      console.error("Lead save failed", error);
-    }
-
-    let emailed = false;
+    // Enquiries are delivered by email only; there is no database copy.
     try {
       await notifyLead({
         data: {
@@ -134,7 +87,6 @@ export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFo
           budgetBand: values.budgetBand,
           contact: values.contact,
           website: values.website,
-          saveError,
           quote: initialQuote
             ? {
                 projectType: initialQuote.selection.projectType,
@@ -147,24 +99,18 @@ export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFo
             : null,
         },
       });
-      emailed = true;
+      markSubmitted();
+      toast.success("Booked.", {
+        description: "We'll call you back within 1–2 business days.",
+      });
+      form.reset(defaults);
+      onSubmitted?.();
     } catch (error) {
       console.error("Lead email failed", error);
-    }
-
-    if (saveError && !emailed) {
       toast.error("That didn't send.", {
         description: `Check your connection and try again, or email us directly at ${CONTACT_EMAIL}.`,
       });
-      return;
     }
-
-    markSubmitted();
-    toast.success("Booked.", {
-      description: "We'll call you back within 1–2 business days.",
-    });
-    form.reset(defaults);
-    onSubmitted?.();
   });
 
   const needs = form.watch("needs");
