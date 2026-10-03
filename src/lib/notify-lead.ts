@@ -28,8 +28,6 @@ const leadEmailSchema = z.object({
   budgetBand: z.enum(BUDGET_OPTIONS),
   contact: z.string().trim().min(5).max(160),
   website: z.string().max(200).optional(),
-  // Why the browser could not save this lead to the database, if it could not.
-  saveError: z.string().max(300).optional(),
   quote: z
     .object({
       projectType: z.enum(PROJECT_TYPE_IDS),
@@ -80,13 +78,6 @@ function enquiryText(lead: LeadEmail) {
       `Add-ons: ${addOns}`,
       `Timing: ${urgency ? `${urgency.label} (${urgency.description})` : lead.quote.urgency}`,
       `Estimate: ${formatZAR(lead.quote.rangeMin)} – ${formatZAR(lead.quote.rangeMax)}`,
-    );
-  }
-
-  if (lead.saveError) {
-    lines.push(
-      "",
-      `Note: this enquiry was not saved to the database (${singleLine(lead.saveError, 300)}).`,
     );
   }
 
@@ -177,7 +168,6 @@ export const notifyLead = createServerFn({ method: "POST" })
   .validator(leadEmailSchema)
   .handler(async ({ data }) => {
     if (data.website) return { ok: true as const };
-    if (data.saveError) console.error("Lead save failed in the browser:", data.saveError);
 
     try {
       await deliverLeadEmail(data);
