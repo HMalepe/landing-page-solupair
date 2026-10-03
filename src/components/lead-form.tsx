@@ -51,6 +51,19 @@ function needsForProjectType(type: ProjectTypeId): CapabilityNeed[] {
   }
 }
 
+function describeError(error: unknown) {
+  if (error && typeof error === "object") {
+    const { code, message } = error as { code?: unknown; message?: unknown };
+    return (
+      [code, message]
+        .filter((part) => typeof part === "string" && part)
+        .join(": ")
+        .slice(0, 300) || "unknown"
+    );
+  }
+  return String(error).slice(0, 300);
+}
+
 export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFormProps) {
   const quick = variant === "quick";
   const { checkAllowed, markSubmitted } = useSubmitRateLimit();
@@ -82,9 +95,10 @@ export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFo
 
     const utm = getUtmParams();
 
-    // Wrapped: a misconfigured client throws synchronously (missing env vars),
-    // a real network failure rejects — both must land on the same instructive
-    // error copy instead of an uncaught exception.
+    // The database save and the email are independent deliveries: either one
+    // reaching us is enough, so a failure in one must not block the other.
+    // Only when both fail does the visitor see the error.
+    let saveError: string | undefined;
     try {
       const { error } = await supabase.from("leads").insert({
         name: values.name,
@@ -104,9 +118,14 @@ export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFo
         utm_term: utm.utm_term ?? null,
         utm_content: utm.utm_content ?? null,
       });
-
       if (error) throw error;
+    } catch (error) {
+      saveError = describeError(error);
+      console.error("Lead save failed", error);
+    }
 
+    let emailed = false;
+    try {
       await notifyLead({
         data: {
           name: values.name,
@@ -115,6 +134,7 @@ export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFo
           budgetBand: values.budgetBand,
           contact: values.contact,
           website: values.website,
+          saveError,
           quote: initialQuote
             ? {
                 projectType: initialQuote.selection.projectType,
@@ -127,18 +147,24 @@ export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFo
             : null,
         },
       });
+      emailed = true;
+    } catch (error) {
+      console.error("Lead email failed", error);
+    }
 
-      markSubmitted();
-      toast.success("Booked.", {
-        description: "We'll call you back within 1–2 business days.",
-      });
-      form.reset(defaults);
-      onSubmitted?.();
-    } catch {
+    if (saveError && !emailed) {
       toast.error("That didn't send.", {
         description: `Check your connection and try again, or email us directly at ${CONTACT_EMAIL}.`,
       });
+      return;
     }
+
+    markSubmitted();
+    toast.success("Booked.", {
+      description: "We'll call you back within 1–2 business days.",
+    });
+    form.reset(defaults);
+    onSubmitted?.();
   });
 
   const needs = form.watch("needs");
@@ -229,39 +255,39 @@ export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFo
       </div>
 
       {!quick && (
-      <div className="contact-field">
-        <p className="contact-field-label" id="lead-budget-label">
-          Rough budget
-        </p>
-        <ToggleGroup
-          type="single"
-          value={budgetBand}
-          onValueChange={(value) => {
-            if (value)
-              form.setValue("budgetBand", value as LeadFormValues["budgetBand"], {
-                shouldValidate: true,
-              });
-          }}
-          className="!justify-start flex-wrap gap-2"
-          aria-labelledby="lead-budget-label"
-        >
-          {BUDGET_OPTIONS.map((band) => (
-            <ToggleGroupItem
-              key={band}
-              value={band}
-              variant="outline"
-              className="rounded-full border-input px-4 data-[state=on]:border-accent data-[state=on]:bg-accent/15 data-[state=on]:text-accent-foreground"
-            >
-              {band}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-        {errors.budgetBand && (
-          <p role="alert" className="text-xs text-destructive">
-            {errors.budgetBand.message}
+        <div className="contact-field">
+          <p className="contact-field-label" id="lead-budget-label">
+            Rough budget
           </p>
-        )}
-      </div>
+          <ToggleGroup
+            type="single"
+            value={budgetBand}
+            onValueChange={(value) => {
+              if (value)
+                form.setValue("budgetBand", value as LeadFormValues["budgetBand"], {
+                  shouldValidate: true,
+                });
+            }}
+            className="!justify-start flex-wrap gap-2"
+            aria-labelledby="lead-budget-label"
+          >
+            {BUDGET_OPTIONS.map((band) => (
+              <ToggleGroupItem
+                key={band}
+                value={band}
+                variant="outline"
+                className="rounded-full border-input px-4 data-[state=on]:border-accent data-[state=on]:bg-accent/15 data-[state=on]:text-accent-foreground"
+              >
+                {band}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+          {errors.budgetBand && (
+            <p role="alert" className="text-xs text-destructive">
+              {errors.budgetBand.message}
+            </p>
+          )}
+        </div>
       )}
 
       <div className={`contact-field${quick ? " order-2" : ""}`}>
