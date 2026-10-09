@@ -2,6 +2,8 @@ import { type ReactNode, Fragment } from "react";
 import { motion } from "framer-motion";
 import hospitalPortrait from "@/assets/florida-day-hospital-portrait.webp";
 import selantraPortrait from "@/assets/selantra-portrait.webp";
+import breeBlogDesktop from "@/assets/bree-blog-desktop.webp";
+import breeBlogPhone from "@/assets/bree-blog-phone.webp";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   ArrowDownRight,
@@ -936,6 +938,43 @@ export function SelantraBeautyPreview({ isActive = true }: { isActive?: boolean 
   );
 }
 
+/** Bree beyond the Counter — pharmacist and creator's editorial blog. */
+export function BreeBlogPreview({ isActive = true }: { isActive?: boolean }) {
+  const { prefersReducedMotion: reduce } = useDeviceProfile();
+  const animate = isActive && !reduce;
+
+  return (
+    <ShowcaseFrame surface="light">
+      <WindowDots title="bree-s-blog.vercel.app" />
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-[#f5f3ee]">
+        <img
+          src={breeBlogDesktop}
+          alt="Bree beyond the Counter blog homepage"
+          className="h-full w-full object-cover object-left-top"
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+        />
+        <motion.div
+          className="absolute right-[17%] top-[9%] sm:right-[9%] sm:top-[7%] w-[19%] max-w-[118px] overflow-hidden rounded-[10px] border-[3px] border-[#1c1c1c] bg-[#1c1c1c] shadow-[0_12px_32px_rgba(0,0,0,0.35)] sm:rounded-[14px] sm:border-4"
+          initial={{ opacity: animate ? 0 : 1, y: animate ? 10 : 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: animate ? 0.5 : 0, delay: animate ? 0.15 : 0 }}
+        >
+          <img
+            src={breeBlogPhone}
+            alt="The same blog on a phone"
+            className="block aspect-[390/844] w-full object-cover object-top"
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+          />
+        </motion.div>
+      </div>
+    </ShowcaseFrame>
+  );
+}
+
 /**
  * Case-study fields, outcome-first per Solupair's portfolio brief:
  * `before` (buyer's situation), `intervention` (what we built), `outcome`
@@ -1062,5 +1101,27 @@ export const PROJECT_SHOWCASES = [
       body: "Guests see skin, hair and hand care, then pay with PayFast when they reserve a visit.",
     },
     Preview: SelantraBeautyPreview,
+  },
+  {
+    id: "bree-blog",
+    name: "Bree beyond the Counter",
+    cardTitle: "Bree's Blog",
+    valueTag: "Creator website",
+    cardLine: "An editorial blog for a pharmacist sharing health notes and life.",
+    before:
+      "Health tips, travel and everyday life were scattered across Instagram and TikTok, with no home of their own.",
+    intervention:
+      "A motion-rich editorial blog with a journal, featured series and links to her socials, fast on any phone.",
+    outcome: {
+      status: "pending",
+      value: "ask us for the readership numbers on this build",
+    } as CaseOutcome,
+    tag: "Pharmacist & creator · Johannesburg",
+    explainer: {
+      lead: "Health notes",
+      accent: "with a home",
+      body: "Bree's health notes, series and journal live on one editorial site that reads beautifully on a phone or a laptop.",
+    },
+    Preview: BreeBlogPreview,
   },
 ] as const;
