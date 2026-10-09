@@ -4,6 +4,8 @@ import hospitalPortrait from "@/assets/florida-day-hospital-portrait.webp";
 import selantraPortrait from "@/assets/selantra-portrait.webp";
 import breeBlogDesktop from "@/assets/bree-blog-desktop.webp";
 import breeBlogPhone from "@/assets/bree-blog-phone.webp";
+import offTheClockDesktop from "@/assets/off-the-clock-desktop.webp";
+import offTheClockPhone from "@/assets/off-the-clock-phone.webp";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import {
   ArrowDownRight,
@@ -938,32 +940,55 @@ export function SelantraBeautyPreview({ isActive = true }: { isActive?: boolean 
   );
 }
 
-/** Bree beyond the Counter — pharmacist and creator's editorial blog. */
-export function BreeBlogPreview({ isActive = true }: { isActive?: boolean }) {
+/**
+ * A live client site shown as real HD screenshots: the desktop page inside the
+ * browser frame, with the phone view layered on top. Screenshots are 2x
+ * captures so they stay sharp on retina screens.
+ */
+function SiteScreenshotPreview({
+  isActive,
+  url,
+  desktop,
+  desktopAlt,
+  desktopPosition,
+  phone,
+  phoneAlt,
+  phonePosition = "right-[17%] top-[9%] w-[19%]",
+}: {
+  isActive: boolean;
+  url: string;
+  desktop: string;
+  desktopAlt: string;
+  desktopPosition: string;
+  phone: string;
+  phoneAlt: string;
+  /** Mobile placement and width of the phone mockup; desktop always sits top right. */
+  phonePosition?: string;
+}) {
   const { prefersReducedMotion: reduce } = useDeviceProfile();
   const animate = isActive && !reduce;
 
   return (
     <ShowcaseFrame surface="light">
-      <WindowDots title="bree-s-blog.vercel.app" />
+      <WindowDots title={url} />
       <div className="relative min-h-0 flex-1 overflow-hidden bg-[#f5f3ee]">
         <img
-          src={breeBlogDesktop}
-          alt="Bree beyond the Counter blog homepage"
-          className="h-full w-full object-cover object-left-top"
+          src={desktop}
+          alt={desktopAlt}
+          className={`h-full w-full object-cover ${desktopPosition}`}
           loading="lazy"
           decoding="async"
           draggable={false}
         />
         <motion.div
-          className="absolute right-[17%] top-[9%] sm:right-[9%] sm:top-[7%] w-[19%] max-w-[118px] overflow-hidden rounded-[10px] border-[3px] border-[#1c1c1c] bg-[#1c1c1c] shadow-[0_12px_32px_rgba(0,0,0,0.35)] sm:rounded-[14px] sm:border-4"
+          className={`absolute ${phonePosition} max-w-[118px] overflow-hidden rounded-[10px] border-[3px] border-[#1c1c1c] bg-[#1c1c1c] shadow-[0_12px_32px_rgba(0,0,0,0.35)] sm:left-auto sm:right-[9%] sm:top-[7%] sm:w-[19%] sm:rounded-[14px] sm:border-4`}
           initial={{ opacity: animate ? 0 : 1, y: animate ? 10 : 0 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: animate ? 0.5 : 0, delay: animate ? 0.15 : 0 }}
         >
           <img
-            src={breeBlogPhone}
-            alt="The same blog on a phone"
+            src={phone}
+            alt={phoneAlt}
             className="block aspect-[390/844] w-full object-cover object-top"
             loading="lazy"
             decoding="async"
@@ -972,6 +997,37 @@ export function BreeBlogPreview({ isActive = true }: { isActive?: boolean }) {
         </motion.div>
       </div>
     </ShowcaseFrame>
+  );
+}
+
+/** Bree beyond the Counter — pharmacist and creator's editorial blog. */
+export function BreeBlogPreview({ isActive = true }: { isActive?: boolean }) {
+  return (
+    <SiteScreenshotPreview
+      isActive={isActive}
+      url="bree-s-blog.vercel.app"
+      desktop={breeBlogDesktop}
+      desktopAlt="Bree beyond the Counter blog homepage"
+      desktopPosition="object-left-top"
+      phone={breeBlogPhone}
+      phoneAlt="The same blog on a phone"
+    />
+  );
+}
+
+/** Off The Clock — leadership and wellbeing podcast site. */
+export function OffTheClockPreview({ isActive = true }: { isActive?: boolean }) {
+  return (
+    <SiteScreenshotPreview
+      isActive={isActive}
+      url="off-the-clock-cursor.vercel.app"
+      desktop={offTheClockDesktop}
+      desktopAlt="Off The Clock podcast homepage"
+      desktopPosition="object-center"
+      phone={offTheClockPhone}
+      phoneAlt="The hosts section of the same site on a phone"
+      phonePosition="left-[5%] top-[50%] w-[15%]"
+    />
   );
 }
 
@@ -1123,5 +1179,27 @@ export const PROJECT_SHOWCASES = [
       body: "Bree's health notes, series and journal live on one editorial site that reads beautifully on a phone or a laptop.",
     },
     Preview: BreeBlogPreview,
+  },
+  {
+    id: "off-the-clock",
+    name: "Off The Clock",
+    cardTitle: "Off The Clock",
+    valueTag: "Podcast website",
+    cardLine: "A home for a leadership and wellbeing podcast, its hosts and the book.",
+    before:
+      "The podcast's episodes, hosts and Peter's book had no single place that told the story behind the show.",
+    intervention:
+      "A cinematic one-page site with a film hero, the hosts, episodes, an FAQ and a newsletter sign-up.",
+    outcome: {
+      status: "pending",
+      value: "ask us for the subscriber numbers on this build",
+    } as CaseOutcome,
+    tag: "Leadership & wellbeing podcast",
+    explainer: {
+      lead: "The person",
+      accent: "behind the role",
+      body: "Listeners meet the hosts, the story and the book in one place, then go straight to the episodes on YouTube.",
+    },
+    Preview: OffTheClockPreview,
   },
 ] as const;
