@@ -6,6 +6,8 @@ import selantraDesktop from "@/assets/selantra-desktop.webp";
 import selantraPhone from "@/assets/selantra-phone.webp";
 import valhallaDesktop from "@/assets/valhalla-desktop.webp";
 import valhallaPhone from "@/assets/valhalla-phone.webp";
+import linkedinAutoposterDesktop from "@/assets/linkedin-autoposter-desktop.webp";
+import linkedinAutoposterPhone from "@/assets/linkedin-autoposter-phone.webp";
 import breeBlogDesktop from "@/assets/bree-blog-desktop.webp";
 import breeBlogPhone from "@/assets/bree-blog-phone.webp";
 import offTheClockDesktop from "@/assets/off-the-clock-desktop.webp";
@@ -923,6 +925,22 @@ export function ValhallaPreview({ isActive = true }: { isActive?: boolean }) {
   );
 }
 
+/** LinkedIn Autoposter — Claude drafts, you approve, it publishes on schedule. */
+export function LinkedInAutoposterPreview({ isActive = true }: { isActive?: boolean }) {
+  return (
+    <SiteScreenshotPreview
+      isActive={isActive}
+      url="linkedin-auto-post-two.vercel.app"
+      desktop={linkedinAutoposterDesktop}
+      desktopAlt="The LinkedIn Autoposter queue with a scheduled post and its LinkedIn preview"
+      desktopPosition="object-left-top"
+      phone={linkedinAutoposterPhone}
+      phoneAlt="A scheduled post with its LinkedIn preview, on a phone"
+      phonePosition="right-[6%] top-[36%] w-[19%]"
+    />
+  );
+}
+
 /**
  * Case-study fields, outcome-first per Solupair's portfolio brief:
  * `before` (buyer's situation), `intervention` (what we built), `outcome`
@@ -1115,5 +1133,27 @@ export const PROJECT_SHOWCASES = [
       body: "Couples see the films, the photographs and the portrait work, then enquire in a tap from any page.",
     },
     Preview: ValhallaPreview,
+  },
+  {
+    id: "linkedin-autoposter",
+    name: "LinkedIn Autoposter",
+    cardTitle: "LinkedIn Autoposter",
+    valueTag: "Content automation",
+    cardLine: "Claude drafts the posts, you approve, it publishes on schedule.",
+    before:
+      "Posting on LinkedIn every week meant writing, scheduling and remembering, so the profile went quiet.",
+    intervention:
+      "An approval queue where Claude drafts posts in your voice and each approved post publishes to LinkedIn on the schedule you set.",
+    outcome: {
+      status: "pending",
+      value: "ask us for a walkthrough of this build",
+    } as CaseOutcome,
+    tag: "Content automation · LinkedIn",
+    explainer: {
+      lead: "Posts drafted,",
+      accent: "approved by you",
+      body: "Claude writes drafts from your topics and voice. Nothing publishes until you approve it, then it goes out on your schedule.",
+    },
+    Preview: LinkedInAutoposterPreview,
   },
 ] as const;
