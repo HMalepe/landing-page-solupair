@@ -8,6 +8,8 @@ import valhallaDesktop from "@/assets/valhalla-desktop.webp";
 import valhallaPhone from "@/assets/valhalla-phone.webp";
 import linkedinAutoposterDesktop from "@/assets/linkedin-autoposter-desktop.webp";
 import linkedinAutoposterPhone from "@/assets/linkedin-autoposter-phone.webp";
+import webscrapeDesktop from "@/assets/webscrape-desktop.webp";
+import webscrapePhone from "@/assets/webscrape-phone.webp";
 import breeBlogDesktop from "@/assets/bree-blog-desktop.webp";
 import breeBlogPhone from "@/assets/bree-blog-phone.webp";
 import offTheClockDesktop from "@/assets/off-the-clock-desktop.webp";
@@ -827,7 +829,7 @@ function SiteScreenshotPreview({
           draggable={false}
         />
         <motion.div
-          className={`absolute ${phonePosition} max-w-[118px] overflow-hidden rounded-[10px] border-[3px] border-[#1c1c1c] bg-[#1c1c1c] shadow-[0_12px_32px_rgba(0,0,0,0.35)] sm:left-auto sm:right-[9%] sm:top-[21%] sm:w-[19%] sm:rounded-[14px] sm:border-4`}
+          className={`absolute ${phonePosition} max-w-[118px] overflow-hidden rounded-[10px] border-[3px] border-[#1c1c1c] bg-[#1c1c1c] shadow-[0_12px_32px_rgba(0,0,0,0.35)] ring-1 ring-white/30 sm:left-auto sm:right-[9%] sm:top-[21%] sm:w-[19%] sm:rounded-[14px] sm:border-4`}
           initial={{ opacity: animate ? 0 : 1, y: animate ? 10 : 0 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: animate ? 0.5 : 0, delay: animate ? 0.15 : 0 }}
@@ -937,6 +939,21 @@ export function LinkedInAutoposterPreview({ isActive = true }: { isActive?: bool
       phone={linkedinAutoposterPhone}
       phoneAlt="A scheduled post with its LinkedIn preview, on a phone"
       phonePosition="right-[6%] top-[36%] w-[19%]"
+    />
+  );
+}
+
+/** WebScrape — a crawler that finds and ranks business leads. */
+export function WebScrapePreview({ isActive = true }: { isActive?: boolean }) {
+  return (
+    <SiteScreenshotPreview
+      isActive={isActive}
+      url="WebScrape · Lead Finder"
+      desktop={webscrapeDesktop}
+      desktopAlt="The WebScrape lead finder: a city search, lead totals and a ranked table of businesses with contact details"
+      desktopPosition="object-left-top"
+      phone={webscrapePhone}
+      phoneAlt="The same lead finder on a phone, showing the lead totals and a ranked lead"
     />
   );
 }
@@ -1155,5 +1172,27 @@ export const PROJECT_SHOWCASES = [
       body: "Claude writes drafts from your topics and voice. Nothing publishes until you approve it, then it goes out on your schedule.",
     },
     Preview: LinkedInAutoposterPreview,
+  },
+  {
+    id: "webscrape",
+    name: "WebScrape Lead Finder",
+    cardTitle: "WebScrape Lead Finder",
+    valueTag: "Lead generation",
+    cardLine: "A crawler that finds, scores and ranks the leads worth calling.",
+    before:
+      "Finding businesses that need a website, and then finding their contact details, was slow manual searching.",
+    intervention:
+      "A web crawler that scans Google Maps for local businesses, checks their websites, and ranks each lead with phone, email and WhatsApp ready to use.",
+    outcome: {
+      status: "pending",
+      value: "ask us for a demo of this build",
+    } as CaseOutcome,
+    tag: "Lead generation · web crawler",
+    explainer: {
+      lead: "The best leads,",
+      accent: "ranked for you",
+      body: "Type a city and the crawler finds businesses with no website, social-only or a weak one, scores each lead, and lists their phone, email and WhatsApp, best first.",
+    },
+    Preview: WebScrapePreview,
   },
 ] as const;
