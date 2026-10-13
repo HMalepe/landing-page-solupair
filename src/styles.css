@@ -4325,6 +4325,16 @@ main > header,
   overflow: hidden;
 }
 
+/* Room around the "Want a price first?" link so it doesn't crowd the form note or the footer. */
+.contact-booking-panel--open .contact-booking-panel__inner {
+  padding-bottom: 1.5rem;
+}
+
+.contact-booking-panel__inner > .contact-text-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+}
+
 .contact-lead {
   margin-top: clamp(0.85rem, 2vh, 1.25rem);
   max-width: 32rem;
