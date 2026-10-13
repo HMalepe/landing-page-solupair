@@ -125,13 +125,6 @@ export function ProjectsSection() {
               Swipe, tap arrows, dots or cards below to browse builds.
             </motion.p>
           </div>
-          <motion.p
-            className="projects-description"
-            {...revealProps(reduceMotion, sectionInView, 0.06)}
-          >
-            Websites and WhatsApp bots that take PayFast payments, plus dashboards and booking flows
-            that cut missed messages and messy admin.
-          </motion.p>
         </header>
 
         <motion.div className="projects-stage" {...revealProps(reduceMotion, sectionInView, 0.08)}>
