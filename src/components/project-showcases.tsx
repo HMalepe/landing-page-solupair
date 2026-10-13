@@ -14,6 +14,8 @@ import excavationDesktop from "@/assets/excavation-desktop.webp";
 import excavationPhone from "@/assets/excavation-phone.webp";
 import videoVaultDesktop from "@/assets/video-vault-desktop.webp";
 import videoVaultPhone from "@/assets/video-vault-phone.webp";
+import triviaReelDesktop from "@/assets/trivia-reel-desktop.webp";
+import triviaReelPhone from "@/assets/trivia-reel-phone.webp";
 import breeBlogDesktop from "@/assets/bree-blog-desktop.webp";
 import breeBlogPhone from "@/assets/bree-blog-phone.webp";
 import offTheClockDesktop from "@/assets/off-the-clock-desktop.webp";
@@ -994,6 +996,22 @@ export function VideoVaultPreview({ isActive = true }: { isActive?: boolean }) {
   );
 }
 
+/** Trivia Reel: films split-screen trivia reaction videos in one take. */
+export function TriviaReelPreview({ isActive = true }: { isActive?: boolean }) {
+  return (
+    <SiteScreenshotPreview
+      isActive={isActive}
+      url="Trivia Reel"
+      desktop={triviaReelDesktop}
+      desktopAlt="Trivia Reel in three steps: choose a quiz, the question on screen above the live camera, then the answer reveal"
+      desktopPosition="object-left-top"
+      phone={triviaReelPhone}
+      phoneAlt="Trivia Reel on a phone, showing a trivia answer above the live camera with shuffle and record buttons"
+      phonePosition="right-[6%] top-[36%] w-[16%]"
+    />
+  );
+}
+
 /**
  * Case-study fields, outcome-first per Solupair's portfolio brief:
  * `before` (buyer's situation), `intervention` (what we built), `outcome`
@@ -1274,5 +1292,27 @@ export const PROJECT_SHOWCASES = [
       body: "Paste a link from a major social platform and the video downloads in the background. Filter your library by platform, search by link, download it again or turn a clip into a GIF.",
     },
     Preview: VideoVaultPreview,
+  },
+  {
+    id: "trivia-reel",
+    name: "Trivia Reel",
+    cardTitle: "Trivia Reel",
+    valueTag: "Content tools",
+    cardLine: "Films a trivia reaction video in one take, already split-screen.",
+    before:
+      "Trivia reaction videos meant filming in one app, then stacking the quiz over the camera in an editor and syncing the voice by hand.",
+    intervention:
+      "A phone-first recorder that puts the question above your live camera on one canvas and records the voice with it. Mark each answer right, close or wrong afterwards and it adds the colour and a clap or buzzer.",
+    outcome: {
+      status: "pending",
+      value: "ask us for a walkthrough of this build",
+    } as CaseOutcome,
+    tag: "Trivia video recorder",
+    explainer: {
+      lead: "Question on top,",
+      accent: "you on the bottom",
+      body: "Pick a quiz, tap through the questions while you film, then mark each answer. The file downloads already stacked and synced, with no editing step.",
+    },
+    Preview: TriviaReelPreview,
   },
 ] as const;
