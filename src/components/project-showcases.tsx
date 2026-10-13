@@ -12,6 +12,8 @@ import webscrapeDesktop from "@/assets/webscrape-desktop.webp";
 import webscrapePhone from "@/assets/webscrape-phone.webp";
 import excavationDesktop from "@/assets/excavation-desktop.webp";
 import excavationPhone from "@/assets/excavation-phone.webp";
+import videoVaultDesktop from "@/assets/video-vault-desktop.webp";
+import videoVaultPhone from "@/assets/video-vault-phone.webp";
 import breeBlogDesktop from "@/assets/bree-blog-desktop.webp";
 import breeBlogPhone from "@/assets/bree-blog-phone.webp";
 import offTheClockDesktop from "@/assets/off-the-clock-desktop.webp";
@@ -976,6 +978,22 @@ export function ExcavationPreview({ isActive = true }: { isActive?: boolean }) {
   );
 }
 
+/** Video Vault: a social media video downloader with a live dashboard. */
+export function VideoVaultPreview({ isActive = true }: { isActive?: boolean }) {
+  return (
+    <SiteScreenshotPreview
+      isActive={isActive}
+      url="Video Vault"
+      desktop={videoVaultDesktop}
+      desktopAlt="Video Vault dashboard: a paste-a-link bar, download stats and a grid of saved videos from YouTube, TikTok, Instagram and more"
+      desktopPosition="object-left-top"
+      phone={videoVaultPhone}
+      phoneAlt="Video Vault on a phone, showing the link bar, stats and platform filters"
+      phonePosition="right-[6%] top-[36%] w-[16%]"
+    />
+  );
+}
+
 /**
  * Case-study fields, outcome-first per Solupair's portfolio brief:
  * `before` (buyer's situation), `intervention` (what we built), `outcome`
@@ -1234,5 +1252,27 @@ export const PROJECT_SHOWCASES = [
       body: "Learners answer questions, try short tasks and chat with a guide, then get a report on which subjects fit them, what each one opens or closes, and one move for this week.",
     },
     Preview: ExcavationPreview,
+  },
+  {
+    id: "video-vault",
+    name: "Video Vault",
+    cardTitle: "Video Vault",
+    valueTag: "Media tools",
+    cardLine: "Paste a link, get the video back. Saves it and trims clips to GIFs.",
+    before:
+      "Saving a video from a social platform meant sketchy converter sites, pop-ups and no record of what had already been downloaded.",
+    intervention:
+      "A private dashboard where you paste a link from YouTube, TikTok, Instagram, X, Reddit, Facebook or LinkedIn. It downloads at up to 720p, shows live progress, keeps a searchable library and cuts short GIFs.",
+    outcome: {
+      status: "pending",
+      value: "ask us for a walkthrough of this build",
+    } as CaseOutcome,
+    tag: "Social media video downloader",
+    explainer: {
+      lead: "Any link,",
+      accent: "saved in seconds",
+      body: "Paste a link from a major social platform and the video downloads in the background. Filter your library by platform, search by link, download it again or turn a clip into a GIF.",
+    },
+    Preview: VideoVaultPreview,
   },
 ] as const;
