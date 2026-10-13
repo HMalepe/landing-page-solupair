@@ -24,6 +24,11 @@ import {
   SITE_URL,
 } from "../lib/site-seo";
 
+// A reload should always start fresh at the top: drop the saved scroll positions
+// (TanStack's sessionStorage cache), any #hash, and the browser's own restoration
+// before the page paints or hydrates.
+const RELOAD_TO_TOP_SCRIPT = `(function(){try{var n=performance.getEntriesByType("navigation")[0];if(!n||n.type!=="reload")return;history.scrollRestoration="manual";for(var i=sessionStorage.length-1;i>=0;i--){var k=sessionStorage.key(i);if(k&&k.indexOf("tsr-scroll")===0)sessionStorage.removeItem(k)}if(location.hash)history.replaceState(null,"",location.pathname+location.search);window.scrollTo(0,0)}catch(e){}})();`;
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -115,6 +120,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "twitter:image", content: `${SITE_URL}${SITE_OG_IMAGE}` },
     ],
+    scripts: [{ children: RELOAD_TO_TOP_SCRIPT }],
     links: [
       {
         rel: "canonical",
