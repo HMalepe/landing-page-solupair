@@ -10,6 +10,8 @@ import linkedinAutoposterDesktop from "@/assets/linkedin-autoposter-desktop.webp
 import linkedinAutoposterPhone from "@/assets/linkedin-autoposter-phone.webp";
 import webscrapeDesktop from "@/assets/webscrape-desktop.webp";
 import webscrapePhone from "@/assets/webscrape-phone.webp";
+import excavationDesktop from "@/assets/excavation-desktop.webp";
+import excavationPhone from "@/assets/excavation-phone.webp";
 import breeBlogDesktop from "@/assets/bree-blog-desktop.webp";
 import breeBlogPhone from "@/assets/bree-blog-phone.webp";
 import offTheClockDesktop from "@/assets/off-the-clock-desktop.webp";
@@ -958,6 +960,22 @@ export function WebScrapePreview({ isActive = true }: { isActive?: boolean }) {
   );
 }
 
+/** The Excavation: School Edition — a career and subject aptitude test for learners. */
+export function ExcavationPreview({ isActive = true }: { isActive?: boolean }) {
+  return (
+    <SiteScreenshotPreview
+      isActive={isActive}
+      url="The Excavation · School Edition"
+      desktop={excavationDesktop}
+      desktopAlt="The Excavation home page: choose your subjects from who you are, with a sample question from the questionnaire"
+      desktopPosition="object-left-top"
+      phone={excavationPhone}
+      phoneAlt="A sample learner report on a phone, showing the strongest pull and best-fit subjects"
+      phonePosition="right-[6%] top-[36%] w-[16%]"
+    />
+  );
+}
+
 /**
  * Case-study fields, outcome-first per Solupair's portfolio brief:
  * `before` (buyer's situation), `intervention` (what we built), `outcome`
@@ -1194,5 +1212,27 @@ export const PROJECT_SHOWCASES = [
       body: "Type a city and the crawler finds businesses with no website, social-only or a weak one, scores each lead, and lists their phone, email and WhatsApp, best first.",
     },
     Preview: WebScrapePreview,
+  },
+  {
+    id: "excavation",
+    name: "The Excavation",
+    cardTitle: "The Excavation",
+    valueTag: "Career guidance",
+    cardLine: "Helps Grade 9 and 11 learners choose subjects from who they are.",
+    before:
+      "Learners picked their Grade 10 subjects from marks alone, with little insight into their interests, strengths or what each choice closes off.",
+    intervention:
+      "A scored questionnaire, short skill checks and a guided conversation that end in a report of best-fit subjects, what each one opens or closes, and one move for this week.",
+    outcome: {
+      status: "pending",
+      value: "ask us for a school pilot walkthrough",
+    } as CaseOutcome,
+    tag: "Aptitude test · Grade 9 & 11 · South Africa",
+    explainer: {
+      lead: "Subjects chosen",
+      accent: "from who you are",
+      body: "Learners answer questions, try short tasks and chat with a guide, then get a report on which subjects fit them, what each one opens or closes, and one move for this week.",
+    },
+    Preview: ExcavationPreview,
   },
 ] as const;
