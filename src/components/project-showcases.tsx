@@ -196,7 +196,7 @@ export function ExpiryDeskDashboardPreview({ isActive = true }: { isActive?: boo
 
   return (
     <ShowcaseFrame surface="light">
-      <WindowDots title="app.expirydesk.co.za — Riverside Pharmacy" />
+      <WindowDots title="ExpiryDesk · Riverside Pharmacy" />
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[linear-gradient(180deg,oklch(0.995_0.006_275)_0%,oklch(0.96_0.012_280)_100%)] p-3 sm:p-4">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
@@ -370,7 +370,7 @@ export function LivePulseDashboardPreview({ isActive = true }: { isActive?: bool
 
   return (
     <ShowcaseFrame surface="light">
-      <WindowDots title="dashboard.solupair.co.za — Live Pulse" />
+      <WindowDots title="Live Pulse · Dashboard" />
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <aside className="hidden w-[26%] shrink-0 flex-col border-r border-black/[0.06] bg-[oklch(0.985_0.008_285)] p-2.5 sm:flex">
           <div className="mb-3 flex items-center gap-2">
@@ -585,7 +585,7 @@ export function BotFaqsDashboardPreview({ isActive = true }: { isActive?: boolea
 
   return (
     <ShowcaseFrame surface="light">
-      <WindowDots title="dashboard.solupair.co.za — Bot FAQs" />
+      <WindowDots title="Bot FAQs · Dashboard" />
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <aside className="hidden w-[24%] shrink-0 flex-col border-r border-black/[0.06] bg-[oklch(0.985_0.01_145)] p-2.5 sm:flex">
           <div className="mb-3 flex items-center gap-2">
@@ -859,7 +859,7 @@ export function BreeBlogPreview({ isActive = true }: { isActive?: boolean }) {
   return (
     <SiteScreenshotPreview
       isActive={isActive}
-      url="bree-s-blog.vercel.app"
+      url="Bree beyond the Counter"
       desktop={breeBlogDesktop}
       desktopAlt="Bree beyond the Counter blog homepage"
       desktopPosition="object-left-top"
@@ -874,7 +874,7 @@ export function OffTheClockPreview({ isActive = true }: { isActive?: boolean }) 
   return (
     <SiteScreenshotPreview
       isActive={isActive}
-      url="off-the-clock-cursor.vercel.app"
+      url="Off The Clock"
       desktop={offTheClockDesktop}
       desktopAlt="Off The Clock podcast homepage"
       desktopPosition="object-center"
@@ -890,7 +890,7 @@ export function FloridaDayHospitalPreview({ isActive = true }: { isActive?: bool
   return (
     <SiteScreenshotPreview
       isActive={isActive}
-      url="floridadayhospital.co.za"
+      url="Florida Day Hospital"
       desktop={floridaDayHospitalDesktop}
       desktopAlt="Florida Day Hospital homepage"
       desktopPosition="object-left"
@@ -906,7 +906,7 @@ export function SelantraBeautyPreview({ isActive = true }: { isActive?: boolean 
   return (
     <SiteScreenshotPreview
       isActive={isActive}
-      url="beauty.selantra.co.za"
+      url="Selantra Beauty Studio"
       desktop={selantraDesktop}
       desktopAlt="Selantra Beauty Studio homepage"
       desktopPosition="object-left"
@@ -922,7 +922,7 @@ export function ValhallaPreview({ isActive = true }: { isActive?: boolean }) {
   return (
     <SiteScreenshotPreview
       isActive={isActive}
-      url="photography-1-omega.vercel.app"
+      url="Take It To Valhalla"
       desktop={valhallaDesktop}
       desktopAlt="Take It To Valhalla weddings homepage"
       desktopPosition="object-top"
@@ -938,7 +938,7 @@ export function LinkedInAutoposterPreview({ isActive = true }: { isActive?: bool
   return (
     <SiteScreenshotPreview
       isActive={isActive}
-      url="linkedin-auto-post-two.vercel.app"
+      url="LinkedIn Autoposter"
       desktop={linkedinAutoposterDesktop}
       desktopAlt="The LinkedIn Autoposter queue with a scheduled post and its LinkedIn preview"
       desktopPosition="object-left-top"
