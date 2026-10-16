@@ -1024,6 +1024,23 @@ type CaseOutcome = {
   value: string;
 };
 
+/**
+ * Public live sites for the builds that have one, keyed by slide id. Client dashboards
+ * (Live Pulse, Bot FAQs, the WhatsApp agent) and tools that only run locally (WebScrape,
+ * Video Vault) are deliberately left out — those slides keep just "Book a call".
+ */
+export const PROJECT_LIVE_URLS: Record<string, string> = {
+  "expiry-desk": "https://www.expirydesk.co.za",
+  "florida-day-hospital": "https://www.floridadayhospital.co.za",
+  "selantra-beauty": "https://beauty.selantra.co.za",
+  "bree-blog": "https://bree-s-blog.vercel.app",
+  "off-the-clock": "https://off-the-clock-cursor.vercel.app",
+  valhalla: "https://photography-1-omega.vercel.app",
+  "linkedin-autoposter": "https://linkedin-auto-post-two.vercel.app",
+  excavation: "https://excavation-virid.vercel.app",
+  "trivia-reel": "https://quizhub-lyart.vercel.app",
+};
+
 export const PROJECT_SHOWCASES = [
   {
     id: "expiry-desk",
@@ -1036,7 +1053,7 @@ export const PROJECT_SHOWCASES = [
       "A live dashboard that flags at-risk stock by expiry date and tracks recovered value automatically.",
     // TODO(owner): replace with the confirmed write-off/recovery number for this build.
     outcome: { status: "pending", value: "ask us for the write-off numbers on this build" } as CaseOutcome,
-    tag: "Pharmacy inventory · expiry tracking",
+    tag: "Pharmacy inventory",
     explainer: {
       lead: "Stock seen",
       accent: "before it expires",
