@@ -15,7 +15,7 @@ export function LegalPageShell({
   children: ReactNode;
 }) {
   return (
-    <main className="legal-page min-h-[100dvh] bg-background font-sans text-foreground">
+    <main id="main" tabIndex={-1} className="legal-page min-h-[100dvh] bg-background font-sans text-foreground">
       <div className="legal-page-shell relative isolate min-h-[100dvh] overflow-x-clip">
         <div className="legal-page-glow legal-page-glow--left" aria-hidden />
         <div className="legal-page-glow legal-page-glow--right" aria-hidden />

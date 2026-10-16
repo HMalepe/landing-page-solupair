@@ -1,3 +1,4 @@
+import { track } from "@vercel/analytics";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -100,6 +101,7 @@ export function LeadForm({ initialQuote, onSubmitted, variant = "full" }: LeadFo
         },
       });
       markSubmitted();
+      track("lead_submitted", { variant: initialQuote ? "quote" : "quick" });
       toast.success("Booked.", {
         description: "We'll call you back within 1–2 business days.",
       });

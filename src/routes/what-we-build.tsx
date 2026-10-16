@@ -21,7 +21,7 @@ export const Route = createFileRoute("/what-we-build")({
 
 function WhatWeBuildPage() {
   return (
-    <main className="build-page min-h-[100dvh] bg-background font-sans text-foreground">
+    <main id="main" tabIndex={-1} className="build-page min-h-[100dvh] bg-background font-sans text-foreground">
       <div className="build-direction build-page-shell relative isolate min-h-[100dvh] overflow-x-clip">
         <div className="build-direction-glow build-direction-glow--left" aria-hidden />
         <div className="build-direction-glow build-direction-glow--right" aria-hidden />

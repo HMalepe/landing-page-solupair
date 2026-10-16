@@ -115,7 +115,7 @@ function Hero() {
 
 function NovaHome() {
   return (
-    <main className="scroll-snap-canvas min-h-[100dvh] bg-background font-sans text-foreground">
+    <main id="main" tabIndex={-1} className="scroll-snap-canvas min-h-[100dvh] bg-background font-sans text-foreground">
       <Hero />
       <ProjectsSection />
       <FinalCtaSection />

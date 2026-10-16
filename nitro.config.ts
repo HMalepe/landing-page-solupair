@@ -10,12 +10,27 @@
 // Vercel strips s-maxage/stale-while-revalidate before the response reaches
 // the browser (visitors see just `cache-control: public`); check
 // `x-vercel-cache: HIT` on a repeat request to confirm it's working.
+// Baseline security headers for every response. A strict Content-Security-Policy is
+// intentionally left out: the app relies on inline scripts and third-party fonts, so
+// one needs to be tuned and tested separately before it can be enforced.
+const SECURITY_HEADERS = {
+  "strict-transport-security": "max-age=31536000",
+  "x-content-type-options": "nosniff",
+  "x-frame-options": "SAMEORIGIN",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=()",
+};
+
 const STATIC_PAGE_CACHE = {
-  headers: { "cache-control": "public, s-maxage=3600, stale-while-revalidate=86400" },
+  headers: {
+    ...SECURITY_HEADERS,
+    "cache-control": "public, s-maxage=3600, stale-while-revalidate=86400",
+  },
 };
 
 export default {
   routeRules: {
+    "/**": { headers: SECURITY_HEADERS },
     "/": STATIC_PAGE_CACHE,
     "/pricing": STATIC_PAGE_CACHE,
     "/privacy": STATIC_PAGE_CACHE,

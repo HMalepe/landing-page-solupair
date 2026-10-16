@@ -8,6 +8,7 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
+import { Analytics } from "@vercel/analytics/react";
 import { Suspense, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -23,6 +24,23 @@ import {
   SITE_TITLE,
   SITE_URL,
 } from "../lib/site-seo";
+import { CONTACT_EMAIL, CONTACT_PHONE, LEGAL_NAME } from "../lib/site";
+
+const ORGANIZATION_JSON_LD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  name: "Solupair",
+  legalName: LEGAL_NAME,
+  url: SITE_URL,
+  logo: `${SITE_URL}/apple-touch-icon.png`,
+  image: `${SITE_URL}${SITE_OG_IMAGE}`,
+  description: SITE_DESCRIPTION,
+  email: CONTACT_EMAIL,
+  telephone: CONTACT_PHONE,
+  areaServed: { "@type": "Country", name: "South Africa" },
+  address: { "@type": "PostalAddress", addressCountry: "ZA" },
+  serviceType: ["Website design", "Custom dashboards", "WhatsApp automation", "Custom software"],
+});
 
 // A reload should always start fresh at the top: drop the saved scroll positions
 // (TanStack's sessionStorage cache), any #hash, and the browser's own restoration
@@ -100,6 +118,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: SITE_DESCRIPTION,
       },
       { name: "author", content: "Solupair Pty Ltd" },
+      { name: "theme-color", content: "#07051c" },
       { property: "og:title", content: SITE_TITLE },
       {
         property: "og:description",
@@ -120,7 +139,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "twitter:image", content: `${SITE_URL}${SITE_OG_IMAGE}` },
     ],
-    scripts: [{ children: RELOAD_TO_TOP_SCRIPT }],
+    scripts: [
+      { children: RELOAD_TO_TOP_SCRIPT },
+      { type: "application/ld+json", children: ORGANIZATION_JSON_LD },
+    ],
     links: [
       {
         rel: "canonical",
@@ -173,6 +195,9 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
         {children}
         <Scripts />
       </body>
@@ -190,6 +215,7 @@ function RootComponent() {
       </Suspense>
       <Toaster />
       <DevicePreview />
+      <Analytics />
     </QueryClientProvider>
   );
 }
