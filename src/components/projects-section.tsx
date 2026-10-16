@@ -6,7 +6,8 @@ import {
   type ShowcaseCarouselState,
   type ShowcaseSliderHandle,
 } from "@/components/project-showcase-slider";
-import { PROJECT_SHOWCASES } from "@/components/project-showcases";
+import { PROJECT_LIVE_URLS, PROJECT_SHOWCASES } from "@/components/project-showcases";
+import { track } from "@vercel/analytics";
 import { ProjectValueCards } from "@/components/project-value-cards";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useSectionInView } from "@/hooks/use-section-in-view";
@@ -48,6 +49,7 @@ export function ProjectsSection() {
   const { prefersReducedMotion: reduceMotion } = useDeviceProfile();
 
   const project = projects[carousel.index];
+  const liveUrl = PROJECT_LIVE_URLS[project.id];
 
   const syncCarousel = useCallback((state: ShowcaseCarouselState) => {
     setCarousel(state);
@@ -188,17 +190,31 @@ export function ProjectsSection() {
                         <h3 className="project-showcase-title min-w-0 font-display font-black tracking-tight text-foreground">
                           {project.name}
                         </h3>
+                        <div className="flex shrink-0 flex-wrap items-center gap-2 self-start sm:gap-3 sm:self-auto">
+                        {liveUrl && (
+                          <a
+                            href={liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => track("project_live_click", { project: project.id })}
+                            className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex shrink-0"
+                          >
+                            <span>View live site</span>
+                            <ArrowUpRight className="size-4" aria-hidden />
+                          </a>
+                        )}
                         <a
                           href="#book"
                           onClick={(e) => {
                             e.preventDefault();
                             openBookingForm();
                           }}
-                          className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex shrink-0 self-start sm:self-auto"
+                          className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex shrink-0"
                         >
                           <span>Book a call</span>
                           <ArrowUpRight className="size-4" aria-hidden />
                         </a>
+                        </div>
                       </div>
                     </motion.div>
                   </AnimatePresence>
@@ -234,6 +250,18 @@ export function ProjectsSection() {
                   <span>Book a call</span>
                   <ArrowUpRight className="size-4" aria-hidden />
                 </a>
+                {liveUrl && (
+                  <a
+                    href={liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => track("project_live_click", { project: project.id })}
+                    className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex w-full justify-center sm:w-auto"
+                  >
+                    <span>View live site</span>
+                    <ArrowUpRight className="size-4" aria-hidden />
+                  </a>
+                )}
               </motion.div>
             </AnimatePresence>
 
