@@ -29,7 +29,7 @@ function PricingPage() {
   };
 
   return (
-    <main className="pricing-page min-h-[100dvh] bg-background font-sans text-foreground">
+    <main id="main" tabIndex={-1} className="pricing-page min-h-[100dvh] bg-background font-sans text-foreground">
       <div className="relative isolate min-h-[100dvh] overflow-x-clip">
         <SiteHeader sticky />
         <QuoteBuilderSection onLockQuote={lockQuote} />

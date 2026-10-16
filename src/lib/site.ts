@@ -19,6 +19,10 @@ export const BUDGET_OPTIONS = [
 export const CONTACT_EMAIL = `info@${SITE_HOST}`;
 export const CONTACT_PHONE = "+27624760899";
 export const CONTACT_PHONE_DISPLAY = "+27 62 476 0899";
+export const CONTACT_WHATSAPP_URL = `https://wa.me/${CONTACT_PHONE.replace(/\D/g, "")}?text=${encodeURIComponent(
+  "Hi Solupair, I'd like to talk about a project.",
+)}`;
+export const CONTACT_PHONE_HREF = `tel:${CONTACT_PHONE}`;
 
 export function absoluteUrl(path = "/") {
   const normalized = path.startsWith("/") ? path : `/${path}`;

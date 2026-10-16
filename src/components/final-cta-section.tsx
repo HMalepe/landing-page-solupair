@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
 import { useSectionInView } from "@/hooks/use-section-in-view";
-import { CONTACT_EMAIL } from "@/lib/site";
+import { track } from "@vercel/analytics";
+import { CONTACT_EMAIL, CONTACT_WHATSAPP_URL } from "@/lib/site";
 import { openBookingForm } from "@/lib/open-booking-form";
 
 const QUESTION = "HAVE A MESSY BUSINESS PROCESS?";
@@ -431,6 +432,15 @@ export function FinalCtaSection() {
             className="final-cta-btn hero-btn hero-btn--primary touch-target"
           >
             <span>Book a call</span>
+          </a>
+          <a
+            href={CONTACT_WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track("whatsapp_click", { source: "final-cta" })}
+            className="final-cta-email"
+          >
+            WhatsApp us
           </a>
           <a href={`mailto:${CONTACT_EMAIL}`} className="final-cta-email">
             Or email {CONTACT_EMAIL}

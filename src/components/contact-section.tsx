@@ -1,8 +1,14 @@
 import { Link } from "@tanstack/react-router";
+import { track } from "@vercel/analytics";
 import { useEffect, useRef, useState } from "react";
 import { ContactHelixBackground } from "@/components/contact-helix-background";
 import { LeadForm } from "@/components/lead-form";
 import { useSectionInView } from "@/hooks/use-section-in-view";
+import {
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_PHONE_HREF,
+  CONTACT_WHATSAPP_URL,
+} from "@/lib/site";
 import { BOOKING_FORM_EVENT, openBookingForm } from "@/lib/open-booking-form";
 
 function revealBookingForm() {
@@ -92,6 +98,25 @@ export function ContactSection() {
                 className="contact-text-link mt-1 block break-all text-base text-foreground transition hover:text-brand-cyan"
               >
                 info@solupair.co.za
+              </a>
+            </div>
+            <div className="contact-details-block">
+              <div className="contact-details-label">WhatsApp &amp; phone</div>
+              <a
+                href={CONTACT_WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track("whatsapp_click", { source: "contact" })}
+                className="contact-text-link mt-1 block text-base text-foreground transition hover:text-brand-cyan"
+              >
+                Message us on WhatsApp
+              </a>
+              <a
+                href={CONTACT_PHONE_HREF}
+                onClick={() => track("call_click", { source: "contact" })}
+                className="contact-text-link mt-1 block text-base text-foreground transition hover:text-brand-cyan"
+              >
+                {CONTACT_PHONE_DISPLAY}
               </a>
             </div>
             <div className="contact-details-block">
