@@ -191,29 +191,30 @@ export function ProjectsSection() {
                           {project.name}
                         </h3>
                         <div className="flex shrink-0 flex-wrap items-center gap-2 self-start sm:gap-3 sm:self-auto">
-                        {liveUrl && (
+                          {liveUrl && (
+                            <a
+                              href={liveUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`View ${project.name} live site (opens in a new tab)`}
+                              onClick={() => track("project_live_click", { project: project.id })}
+                              className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex shrink-0"
+                            >
+                              <span>View live site</span>
+                              <ArrowUpRight className="size-4" aria-hidden />
+                            </a>
+                          )}
                           <a
-                            href={liveUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => track("project_live_click", { project: project.id })}
+                            href="#book"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              openBookingForm();
+                            }}
                             className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex shrink-0"
                           >
-                            <span>View live site</span>
+                            <span>Book a call</span>
                             <ArrowUpRight className="size-4" aria-hidden />
                           </a>
-                        )}
-                        <a
-                          href="#book"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            openBookingForm();
-                          }}
-                          className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex shrink-0"
-                        >
-                          <span>Book a call</span>
-                          <ArrowUpRight className="size-4" aria-hidden />
-                        </a>
                         </div>
                       </div>
                     </motion.div>
@@ -255,6 +256,7 @@ export function ProjectsSection() {
                     href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`View ${project.name} live site (opens in a new tab)`}
                     onClick={() => track("project_live_click", { project: project.id })}
                     className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex w-full justify-center sm:w-auto"
                   >
