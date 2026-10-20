@@ -4,6 +4,7 @@ import floridaDayHospitalDesktop from "@/assets/florida-day-hospital-desktop.web
 import floridaDayHospitalPhone from "@/assets/florida-day-hospital-phone.webp";
 import selantraDesktop from "@/assets/selantra-desktop.webp";
 import selantraPhone from "@/assets/selantra-phone.webp";
+import valhallaDesktopMobile from "@/assets/valhalla-desktop-mobile.webp";
 import valhallaDesktop from "@/assets/valhalla-desktop.webp";
 import valhallaPhone from "@/assets/valhalla-phone.webp";
 import linkedinAutoposterDesktop from "@/assets/linkedin-autoposter-desktop.webp";
@@ -808,6 +809,7 @@ function SiteScreenshotPreview({
   phone,
   phoneAlt,
   phonePosition = "right-[17%] top-[9%] w-[19%]",
+  mobileDesktop,
 }: {
   isActive: boolean;
   url: string;
@@ -818,6 +820,8 @@ function SiteScreenshotPreview({
   phoneAlt: string;
   /** Mobile placement and width of the phone mockup; desktop always sits top right. */
   phonePosition?: string;
+  /** Taller crop of the desktop shot for phones, where the wide frame would cut the page off. */
+  mobileDesktop?: string;
 }) {
   const { prefersReducedMotion: reduce } = useDeviceProfile();
   const animate = isActive && !reduce;
@@ -826,10 +830,20 @@ function SiteScreenshotPreview({
     <ShowcaseFrame surface="light">
       <WindowDots title={url} />
       <div className="relative min-h-0 flex-1 overflow-hidden bg-[#f5f3ee]">
+        {mobileDesktop && (
+          <img
+            src={mobileDesktop}
+            alt={desktopAlt}
+            className="h-full w-full object-cover object-top sm:hidden"
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+          />
+        )}
         <img
           src={desktop}
-          alt={desktopAlt}
-          className={`h-full w-full object-cover ${desktopPosition}`}
+          alt={mobileDesktop ? "" : desktopAlt}
+          className={`h-full w-full object-cover ${desktopPosition}${mobileDesktop ? " hidden sm:block" : ""}`}
           loading="lazy"
           decoding="async"
           draggable={false}
@@ -926,6 +940,7 @@ export function ValhallaPreview({ isActive = true }: { isActive?: boolean }) {
       desktop={valhallaDesktop}
       desktopAlt="Take It To Valhalla weddings homepage"
       desktopPosition="object-top"
+      mobileDesktop={valhallaDesktopMobile}
       phone={valhallaPhone}
       phoneAlt="The portraits page of the same site on a phone"
       phonePosition="right-[17%] top-[6%] w-[14%]"
