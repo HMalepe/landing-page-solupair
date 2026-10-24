@@ -6,7 +6,7 @@ export const SITE_TITLE = "Solupair — Websites, Dashboards & WhatsApp Automati
 export const SITE_DESCRIPTION =
   "Custom websites, live dashboards and WhatsApp automation for South African businesses. Designed and built in Johannesburg and Cape Town.";
 
-/** Social preview image — 1200×630, generated from src/scripts/generate-og-image.* */
-export const SITE_OG_IMAGE = "/og-image.png";
+/** Social preview image — 1200×630, generated from scripts/generate-og-image.mjs — bump the -vN suffix when the image changes */
+export const SITE_OG_IMAGE = "/og-image-v2.png";
 export const SITE_OG_IMAGE_WIDTH = 1200;
 export const SITE_OG_IMAGE_HEIGHT = 630;

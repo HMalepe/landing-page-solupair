@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 
+// The output file name carries a version suffix: chat apps and social networks cache link
+// previews by image URL, so a changed image only shows up once its URL changes too.
 const WIDTH = 1200;
 const HEIGHT = 630;
 
@@ -95,8 +97,8 @@ const html = `<!doctype html>
     <div class="glow glow--pink"></div>
     <div class="glow glow--purple"></div>
     <img class="wordmark" src="data:image/png;base64,${wordmarkBase64}" />
-    <div class="headline">BOOKINGS <span class="accent">HANDLED</span><br />WHILE YOU TREAT</div>
-    <div class="eyebrow">WhatsApp<span class="sep">·</span>Automation<span class="sep">·</span>Websites<span class="sep">·</span>Dashboards</div>
+    <div class="headline">DIGITAL <span class="accent">SOLUTIONS</span><br />FOR YOUR BUSINESS</div>
+    <div class="eyebrow">Websites<span class="sep">·</span>Dashboards<span class="sep">·</span>WhatsApp automation<span class="sep">·</span>South Africa</div>
   </div>
 </body>
 </html>`;
@@ -109,7 +111,7 @@ const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT } 
 await page.setContent(html);
 await page.waitForTimeout(150); // let the embedded font settle before capture
 const buffer = await page.screenshot({ type: "png" });
-writeFileSync(join(root, "public/og-image.png"), buffer);
+writeFileSync(join(root, "public/og-image-v2.png"), buffer);
 await browser.close();
 
-console.log(`Wrote public/og-image.png (${WIDTH}x${HEIGHT})`);
+console.log(`Wrote public/og-image-v2.png (${WIDTH}x${HEIGHT})`);
