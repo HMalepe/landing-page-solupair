@@ -63,7 +63,7 @@ export function ContactSection() {
       ref={sectionRef}
       id="contact"
       data-scroll-snap="contact"
-      aria-labelledby="contact-heading"
+      aria-label="Contact"
       className={`contact-section safe-area-x section-surface snap-section-compact relative isolate flex flex-col justify-start overflow-x-visible px-4 pt-10 pb-10 sm:px-10 sm:pt-12 sm:pb-12 lg:px-14 lg:pt-14 lg:pb-14${sectionInView ? " contact-in-view" : ""}`}
     >
       <div className="contact-helix-anchor" aria-hidden>
@@ -72,28 +72,6 @@ export function ContactSection() {
       </div>
       <div className="contact-shell relative z-10 mx-auto w-full max-w-7xl border-t border-subtle pt-6 sm:pt-8 lg:pt-10">
         <div className="contact-grid">
-          <div className="contact-intro">
-            <h2
-              id="contact-heading"
-              className="contact-heading contact-reveal contact-reveal--heading font-display font-black uppercase tracking-tighter text-foreground"
-            >
-              <button
-                type="button"
-                className="contact-heading-btn"
-                aria-expanded={open}
-                aria-controls="book"
-                onClick={() => openBookingForm()}
-              >
-                Let&apos;s Talk
-              </button>
-            </h2>
-            <p className="contact-lead contact-reveal contact-reveal--lead">
-              {open
-                ? "Your name, how to reach you, and what you need. We'll call within 1–2 business days."
-                : "Tell us how to reach you and we'll call you back."}
-            </p>
-          </div>
-
           <aside className="contact-details contact-reveal contact-reveal--details">
             <div className="contact-details-block">
               <div className="contact-details-label">Email</div>
@@ -126,23 +104,6 @@ export function ContactSection() {
           </aside>
 
           <div className="contact-booking contact-reveal contact-reveal--form">
-            {!open && (
-              <div className="flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  className="hero-btn hero-btn--primary touch-target"
-                  onClick={() => openBookingForm()}
-                >
-                  <span>Book a call</span>
-                </button>
-                <Link
-                  to="/pricing"
-                  className="hero-btn hero-btn--secondary touch-target inline-flex"
-                >
-                  <span>Get a price</span>
-                </Link>
-              </div>
-            )}
             <div
               id="book"
               className={`contact-booking-panel${open ? " contact-booking-panel--open" : ""}`}
