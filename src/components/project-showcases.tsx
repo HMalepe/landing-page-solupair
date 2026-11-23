@@ -1056,6 +1056,17 @@ export const PROJECT_LIVE_URLS: Record<string, string> = {
   "trivia-reel": "https://quizhub-lyart.vercel.app",
 };
 
+/**
+ * Slides with a hands-on demo instead of a website: the button opens the demo directly.
+ * The number lives only in the link, never on screen.
+ */
+export const PROJECT_TRY_LINKS: Record<string, { url: string; label: string }> = {
+  "whatsapp-agent": {
+    url: `https://wa.me/27624760899?text=${encodeURIComponent("Hi")}`,
+    label: "Test WhatsApp Chatbot",
+  },
+};
+
 export const PROJECT_SHOWCASES = [
   {
     id: "expiry-desk",

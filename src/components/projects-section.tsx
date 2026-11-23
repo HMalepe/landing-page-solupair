@@ -6,7 +6,7 @@ import {
   type ShowcaseCarouselState,
   type ShowcaseSliderHandle,
 } from "@/components/project-showcase-slider";
-import { PROJECT_LIVE_URLS, PROJECT_SHOWCASES } from "@/components/project-showcases";
+import { PROJECT_LIVE_URLS, PROJECT_SHOWCASES, PROJECT_TRY_LINKS } from "@/components/project-showcases";
 import { track } from "@vercel/analytics";
 import { ProjectValueCards } from "@/components/project-value-cards";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
@@ -49,7 +49,9 @@ export function ProjectsSection() {
   const { prefersReducedMotion: reduceMotion } = useDeviceProfile();
 
   const project = projects[carousel.index];
-  const liveUrl = PROJECT_LIVE_URLS[project.id];
+  const tryLink = PROJECT_TRY_LINKS[project.id];
+  const liveUrl = PROJECT_LIVE_URLS[project.id] ?? tryLink?.url;
+  const liveLabel = PROJECT_LIVE_URLS[project.id] ? "View live site" : tryLink?.label;
 
   const syncCarousel = useCallback((state: ShowcaseCarouselState) => {
     setCarousel(state);
@@ -196,11 +198,11 @@ export function ProjectsSection() {
                               href={liveUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              aria-label={`View ${project.name} live site (opens in a new tab)`}
+                              aria-label={`${liveLabel}: ${project.name} (opens in a new tab)`}
                               onClick={() => track("project_live_click", { project: project.id })}
                               className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex shrink-0"
                             >
-                              <span>View live site</span>
+                              <span>{liveLabel}</span>
                               <ArrowUpRight className="size-4" aria-hidden />
                             </a>
                           )}
@@ -256,11 +258,11 @@ export function ProjectsSection() {
                     href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`View ${project.name} live site (opens in a new tab)`}
+                    aria-label={`${liveLabel}: ${project.name} (opens in a new tab)`}
                     onClick={() => track("project_live_click", { project: project.id })}
                     className="projects-contact-cta hero-btn hero-btn--secondary touch-target inline-flex w-full justify-center sm:w-auto"
                   >
-                    <span>View live site</span>
+                    <span>{liveLabel}</span>
                     <ArrowUpRight className="size-4" aria-hidden />
                   </a>
                 )}
